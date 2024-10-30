@@ -1,0 +1,23 @@
+package org.firstinspires.ftc.teamcode.tuning;
+
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+
+public class MotorTester extends LinearOpMode {
+    @Override
+    public void runOpMode() throws InterruptedException {
+        DcMotorEx motor = hardwareMap.get(DcMotorEx.class, "motor");
+        motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        waitForStart();
+
+        while (opModeIsActive()) {
+            if (gamepad1.x){
+                motor.setPower(0.8);
+            } else {
+                motor.setPower(0);
+            }
+        }
+    }
+}
