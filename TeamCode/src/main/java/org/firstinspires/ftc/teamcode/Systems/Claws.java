@@ -6,13 +6,12 @@ import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.CRServo;
 
 
 public class Claws {
 
-    DcMotorEx clawMotor;
+    CRServo clawServo;
 
     private class ClawAction implements Action {
 
@@ -21,7 +20,7 @@ public class Claws {
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            toggleMotor();
+            toggleServo();
             return true;
         }
 
@@ -43,25 +42,24 @@ public class Claws {
     }
 
     public Claws(OpMode opMode) {
-        clawMotor = opMode.hardwareMap.get(DcMotorEx.class, "clawMotor");
-        clawMotor.setPower(ClawState.OFF.state);
-        clawMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        clawServo = opMode.hardwareMap.get(CRServo.class, "clawServo");
+        clawServo.setPower(ClawState.OFF.state);
     }
 
     public boolean isActive() {
-        return clawMotor.getPower() == ClawState.ON.state;
+        return clawServo.getPower() == ClawState.ON.state;
     }
 
-    public void setMotor(ClawState state) {
-        clawMotor.setPower(state.state);
+    public void setServo(ClawState state) {
+        clawServo.setPower(state.state);
     }
 
-    public void toggleMotor() {
+    public void toggleServo() {
         if (isActive()) {
-            setMotor(ClawState.OFF);
+            setServo(ClawState.OFF);
         }
         else {
-            setMotor(ClawState.ON);
+            setServo(ClawState.ON);
         }
     }
 }
