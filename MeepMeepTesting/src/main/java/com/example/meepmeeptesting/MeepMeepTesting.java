@@ -20,13 +20,15 @@ public class MeepMeepTesting {
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .build();
 
-        Pose2d beginPose = new Pose2d(58, -60, -Math.PI);
+        Pose2d beginPose = new Pose2d(58, -63,  3 * (1./4)*Math.PI);
         TrajectoryActionBuilder start_2_box = myBot.getDrive().actionBuilder(beginPose)
-                .splineTo(new Vector2d(38,-34),Math.PI/4)
+                .waitSeconds(2)
+                .strafeToSplineHeading(new Vector2d(58,-38),  3* (1./4)*Math.PI )
                 // goes to right sample
                 .waitSeconds(1) // grabs sample
-                .strafeToSplineHeading(new Vector2d(0,-48),-0.75*Math.PI)
-                .splineTo(new Vector2d(-56,-56),-0.88*Math.PI)
+                .setTangent(Math.PI)
+
+                .splineToSplineHeading(new Pose2d(-56,-56,1.25*Math.PI), Math.PI)
                 // strafe-turns and then splines to basket
                 .waitSeconds(1) //elevator
                 .strafeToSplineHeading(new Vector2d(-36,-34),0.75*Math.PI)
@@ -47,9 +49,10 @@ public class MeepMeepTesting {
                 .strafeToSplineHeading(new Vector2d(-56,-56),1.25*Math.PI)
                 // goes to basket
                 .waitSeconds(1) //elevator
-                .strafeToSplineHeading(new Vector2d(-56,-36),Math.PI/2)
+//                .strafeToSplineHeading(new Vector2d(-56,-36),Math.PI/2)
                 // goes to sample pool
-                .splineTo(new Vector2d(-26,0),0)
+                .setTangent(Math.PI * 0.5)
+                .splineToSplineHeading(new Pose2d(-26,0, 0),0)
                 .waitSeconds(1) //grabs sample
                 .strafeToSplineHeading(new Vector2d(-36,-10),-0.75*Math.PI)
                 .splineTo(new Vector2d(-56,-56),-0.75*Math.PI)
