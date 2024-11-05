@@ -113,7 +113,7 @@ public class Elevators {
     }
 
     public void toggleHorizontal() {
-        if (getHorizontalState() == ElevatorState.HORIZONTAL_RETRACTED.state) {
+        if (getHorizontalState() == ElevatorState.HORIZONTAL_EXTENDED.state) {
             setHorizontalState(ElevatorState.HORIZONTAL_RETRACTED.state);
         }
         else {
