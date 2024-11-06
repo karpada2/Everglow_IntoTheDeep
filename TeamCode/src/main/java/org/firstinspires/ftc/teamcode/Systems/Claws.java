@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 
 public class Claws {
 
-    CRServo clawServo;
+    CRServo claw;
 
     private class ClawAction implements Action {
 
@@ -42,16 +42,16 @@ public class Claws {
     }
 
     public Claws(OpMode opMode) {
-        clawServo = opMode.hardwareMap.get(CRServo.class, "clawServo");
-        clawServo.setPower(ClawState.OFF.state);
+        claw = opMode.hardwareMap.get(CRServo.class, "claw");
+        claw.setPower(ClawState.OFF.state);
     }
 
     public boolean isActive() {
-        return clawServo.getPower() == ClawState.ON.state;
+        return claw.getPower() == ClawState.ON.state;
     }
 
     public void setServo(ClawState state) {
-        clawServo.setPower(state.state);
+        claw.setPower(state.state);
     }
 
     public void toggleServo() {

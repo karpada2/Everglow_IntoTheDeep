@@ -13,10 +13,10 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class Elevators {
     final int epsilon = 5;
 
-    DcMotorEx verticalMotor1;
-    DcMotorEx verticalMotor2;
-    Servo horizontalServo1;
-    Servo horizontalServo2;
+    DcMotorEx rightVert;
+    DcMotorEx leftVert;
+    Servo rightHor;
+    Servo leftHor;
 
     int verticalDestination;
 
@@ -76,13 +76,13 @@ public class Elevators {
     }
 
     public Elevators(OpMode opMode) {
-        verticalMotor1 = opMode.hardwareMap.get(DcMotorEx.class, "verticalMotor1");
-        verticalMotor2 = opMode.hardwareMap.get(DcMotorEx.class, "verticalMotor2");
-        horizontalServo1 = opMode.hardwareMap.get(Servo.class, "horizontalServo1");
-        horizontalServo2 = opMode.hardwareMap.get(Servo.class, "horizontalServo2");
+        rightVert = opMode.hardwareMap.get(DcMotorEx.class, "rightVert");
+        leftVert = opMode.hardwareMap.get(DcMotorEx.class, "leftVert");
+        rightHor = opMode.hardwareMap.get(Servo.class, "rightHor");
+        leftHor = opMode.hardwareMap.get(Servo.class, "leftHor");
 
-        verticalMotor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        verticalMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightVert.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftVert.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         setVerticalDestination((int) ElevatorState.VERTICAL_MIN.state);
 
@@ -94,22 +94,22 @@ public class Elevators {
     }
 
     public int getVerticalCurrentPosition() {
-        return verticalMotor1.getCurrentPosition();
+        return rightVert.getCurrentPosition();
     }
 
     public void setVerticalDestination(int destination) {
-        verticalMotor1.setTargetPosition(destination);
-        verticalMotor2.setTargetPosition(destination);
+        rightVert.setTargetPosition(destination);
+        leftVert.setTargetPosition(destination);
         verticalDestination = destination;
     }
 
     public double getHorizontalState() {
-        return horizontalServo1.getPosition();
+        return rightHor.getPosition();
     }
 
     public void setHorizontalState(double destination) {
-        horizontalServo1.setPosition(destination);
-        horizontalServo2.setPosition(destination);
+        rightHor.setPosition(destination);
+        leftHor.setPosition(destination);
     }
 
     public void toggleHorizontal() {
