@@ -84,6 +84,9 @@ public class Elevators {
         rightVert.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         leftVert.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
+        leftHor.setDirection(Servo.Direction.REVERSE);
+        rightHor.setDirection(Servo.Direction.FORWARD);
+
         setVerticalDestination((int) ElevatorState.VERTICAL_MIN.state);
 
         setHorizontalState(ElevatorState.HORIZONTAL_RETRACTED.state);
