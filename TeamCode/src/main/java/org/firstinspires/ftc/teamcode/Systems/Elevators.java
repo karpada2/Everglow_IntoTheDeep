@@ -20,6 +20,7 @@ public class Elevators {
 
     int verticalDestination;
 
+    // sets the vertical elevator to the specified position
     public class VerticalElevatorAction implements Action {
         private final int destination;
 
@@ -39,6 +40,7 @@ public class Elevators {
         }
     }
 
+    // sets the horizontal elevator to the specified position
     public class HorizontalElevatorAction implements Action {
         private final double destination;
 
@@ -53,7 +55,7 @@ public class Elevators {
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            setHorizontalState(destination);
+            setHorizontalPosition(destination);
             return true;
         }
     }
@@ -62,11 +64,14 @@ public class Elevators {
     public enum ElevatorState {
         VERTICAL_MIN(0),
         VERTICAL_PICKUP(1),
-        VERTICAL_LOW(2),
-        VERTICAL_HIGH(3),
-        VERTICAL_MAX(4),
-        HORIZONTAL_RETRACTED(5),
-        HORIZONTAL_EXTENDED(6);
+        VERTICAL_HURDLE(2),
+        VERTICAL_LOW(3),
+        VERTICAL_HIGH(4),
+        VERTICAL_MAX(5),
+        HORIZONTAL_RETRACTED(0.0),
+        HORIZONTAL_HALFWAY(0.3),
+        HORIZONTAL_EXTENDED(0.6),
+        HORIZONTAL_MAX(1.0);
 
         public final double state;
 
@@ -89,7 +94,7 @@ public class Elevators {
 
         setVerticalDestination((int) ElevatorState.VERTICAL_MIN.state);
 
-        setHorizontalState(ElevatorState.HORIZONTAL_RETRACTED.state);
+        setHorizontalPosition(ElevatorState.HORIZONTAL_RETRACTED.state);
     }
 
     public int getVerticalDestination() {
@@ -100,6 +105,7 @@ public class Elevators {
         return rightVert.getCurrentPosition();
     }
 
+    // sets the destination of the vertical motors to the specified number of ticks
     public void setVerticalDestination(int destination) {
         rightVert.setTargetPosition(destination);
         leftVert.setTargetPosition(destination);
@@ -110,20 +116,23 @@ public class Elevators {
         return rightHor.getPosition();
     }
 
-    public void setHorizontalState(double destination) {
-        rightHor.setPosition(destination);
-        leftHor.setPosition(destination);
+
+    public void setHorizontalPosition(double position) {
+        rightHor.setPosition(position);
+        leftHor.setPosition(position);
     }
 
+    // toggles the horizontal elevator between being
     public void toggleHorizontal() {
         if (getHorizontalState() == ElevatorState.HORIZONTAL_EXTENDED.state) {
-            setHorizontalState(ElevatorState.HORIZONTAL_RETRACTED.state);
+            setHorizontalPosition(ElevatorState.HORIZONTAL_RETRACTED.state);
         }
         else {
-            setHorizontalState(ElevatorState.HORIZONTAL_EXTENDED.state);
+            setHorizontalPosition(ElevatorState.HORIZONTAL_EXTENDED.state);
         }
     }
 
+    // checks whether the elevator is close enough (+- epsilon) to it's destination
     public boolean isElevatorInDestination() {
         if (getVerticalCurrentPosition() < getVerticalDestination()) {
             return getVerticalCurrentPosition() >= getVerticalDestination() - epsilon;

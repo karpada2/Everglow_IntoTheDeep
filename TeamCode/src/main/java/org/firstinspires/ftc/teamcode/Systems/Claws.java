@@ -24,9 +24,9 @@ public class Claws {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             if (turnOn) {
-                setServo(ClawState.TAKE_IN);
+                setState(ClawState.TAKE_IN);
             } else {
-                setServo(ClawState.OFF);
+                setState(ClawState.OFF);
             }
             return true;
         }
@@ -48,9 +48,9 @@ public class Claws {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             if (turnOn) {
-                setServo(ClawState.SPIT);
+                setState(ClawState.SPIT);
             } else {
-                setServo(ClawState.OFF);
+                setState(ClawState.OFF);
             }
             return true;
         }
@@ -91,7 +91,7 @@ public class Claws {
     }
 
     // sets the servo to the needed power level in the enum
-    public void setServo(ClawState state) {
+    public void setState(ClawState state) {
         claw.setPower(state.state);
     }
 }
