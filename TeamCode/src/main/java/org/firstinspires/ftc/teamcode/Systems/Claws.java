@@ -13,14 +13,45 @@ public class Claws {
 
     CRServo claw;
 
-    private class ClawAction implements Action {
+    // takes in a boolean, and takes in a sample if it is true, turns off otherwise
+    private class ClawTakeInAction implements Action {
+        boolean turnOn;
 
-        public ClawAction() {
+        public ClawTakeInAction(boolean turnOn) {
+            this.turnOn = turnOn;
         }
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            toggleServo();
+            if (turnOn) {
+                setServo(ClawState.TAKE_IN);
+            } else {
+                setServo(ClawState.OFF);
+            }
+            return true;
+        }
+
+        @Override
+        public void preview(@NonNull Canvas fieldOverlay) {
+            Action.super.preview(fieldOverlay);
+        }
+    }
+
+    // takes in a boolean, and spits out the sample if it is true, turns off otherwise
+    private class ClawSpitAction implements Action {
+        boolean turnOn;
+
+        public ClawSpitAction(boolean turnOn) {
+            this.turnOn = turnOn;
+        }
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            if (turnOn) {
+                setServo(ClawState.SPIT);
+            } else {
+                setServo(ClawState.OFF);
+            }
             return true;
         }
 
@@ -31,8 +62,9 @@ public class Claws {
     }
 
     public enum ClawState {
+        SPIT(-0.5),
         OFF(0),
-        ON(0.5);
+        TAKE_IN(0.5);
 
         public final double state;
 
@@ -46,20 +78,20 @@ public class Claws {
         claw.setPower(ClawState.OFF.state);
     }
 
-    public boolean isActive() {
-        return claw.getPower() == ClawState.ON.state;
-    }
-
-    public void setServo(ClawState state) {
-        claw.setPower(state.state);
-    }
-
-    public void toggleServo() {
-        if (isActive()) {
-            setServo(ClawState.OFF);
+    public ClawState getState() {
+        if (claw.getPower() == ClawState.SPIT.state) {
+            return ClawState.SPIT;
+        }
+        else if (claw.getPower() == ClawState.TAKE_IN.state) {
+            return ClawState.TAKE_IN;
         }
         else {
-            setServo(ClawState.ON);
+            return ClawState.OFF;
         }
+    }
+
+    // sets the servo to the needed power level in the enum
+    public void setServo(ClawState state) {
+        claw.setPower(state.state);
     }
 }
