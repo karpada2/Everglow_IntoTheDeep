@@ -8,7 +8,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Systems.Claws;
 import org.firstinspires.ftc.teamcode.Systems.Elevators;
-import org.firstinspires.ftc.teamcode.Systems.Elevators.ElevatorState;
 
 
 public class NewOpMode extends LinearOpMode {
@@ -36,7 +35,14 @@ public class NewOpMode extends LinearOpMode {
         boolean ClawState = true;
         boolean flagClawSpit = true;
 
+        double AnalogueExtensionVertical;
+        double VerticalAnalogueFactor = 1;
+
+        double HorizontalAnalogueFactor = 1;
+        double AnalogueExtensionHorizontal;
+
         while (opModeIsActive()) {
+            //driving
             drive.setDrivePowers(new PoseVelocity2d(
                     new Vector2d(
                             -gamepad1.left_stick_y,
@@ -48,69 +54,58 @@ public class NewOpMode extends LinearOpMode {
             drive.updatePoseEstimate();
 
 
-            if(gamepad2.dpad_down){
-                elevator.setVerticalDestination((int)ElevatorState.VERTICAL_PICKUP.state);
-                flagElevatorVerticalDpadDown = false;
+            if(gamepad2.dpad_down && flagElevatorVerticalDpadDown){
+                elevator.setVerticalDestination(Elevators.VerticalState.VERTICAL_PICKUP.state);
             }
             flagElevatorVerticalDpadDown = !gamepad2.dpad_down;
 
-            if(gamepad2.dpad_left){
-                elevator.setVerticalDestination((int)ElevatorState.VERTICAL_HURDLE.state);
-                flagElevatorVerticalDpadLeft = false;
+            if(gamepad2.dpad_left && flagElevatorVerticalDpadLeft){
+                elevator.setVerticalDestination(Elevators.VerticalState.VERTICAL_HURDLE.state);
             }
             flagElevatorVerticalDpadLeft = !gamepad2.dpad_left;
 
-            if(gamepad2.dpad_up){
-                elevator.setVerticalDestination((int)ElevatorState.VERTICAL_LOW.state);
-                flagElevatorVerticalDpadUp = false;
+            if(gamepad2.dpad_up && flagElevatorVerticalDpadUp){
+                elevator.setVerticalDestination(Elevators.VerticalState.VERTICAL_LOW.state);
             }
             flagElevatorVerticalDpadUp = !gamepad2.dpad_up;
 
-            if(gamepad2.dpad_right){
-                elevator.setVerticalDestination((int)ElevatorState.VERTICAL_HIGH.state);
-                flagElevatorVerticalDpadRight = false;
+            if(gamepad2.dpad_right && flagElevatorVerticalDpadRight){
+                elevator.setVerticalDestination(Elevators.VerticalState.VERTICAL_HIGH.state);
             }
             flagElevatorVerticalDpadRight = !gamepad2.dpad_right;
 
 
-            double VerticalAnalogueFactor = 1;
-            double AnalogueExtensionVertical = -gamepad2.left_stick_y;
+            AnalogueExtensionVertical = -gamepad2.left_stick_y;
             elevator.setVerticalDestination((int)(elevator.getVerticalDestination() + AnalogueExtensionVertical * VerticalAnalogueFactor));
 
             if(gamepad2.x && flagElevatorHorizontalX) {
-                elevator.setHorizontalPosition(ElevatorState.HORIZONTAL_EXTENDED.state);
-                flagElevatorHorizontalX = false;
+                elevator.setHorizontalPosition(Elevators.HorizontalState.HORIZONTAL_EXTENDED.state);
             }
-            flagElevatorHorizontalX = !gamepad2.x;
+            flagElevatorHorizontalX = !gamepad2.cross;
 
             if(gamepad2.triangle && flagElevatorHorizontalTriangle){
-                elevator.setHorizontalPosition(ElevatorState.HORIZONTAL_RETRACTED.state);
-                flagElevatorHorizontalTriangle = false;
+                elevator.setHorizontalPosition(Elevators.HorizontalState.HORIZONTAL_RETRACTED.state);
             }
             flagElevatorHorizontalTriangle = !gamepad2.triangle;
 
 
             if(gamepad2.circle && flagElevatorHorizontalCircle){
-                elevator.setHorizontalPosition(ElevatorState.HORIZONTAL_HALFWAY.state);
-                flagElevatorHorizontalCircle = false;
+                elevator.setHorizontalPosition(Elevators.HorizontalState.HORIZONTAL_HALFWAY.state);
             }
             flagElevatorHorizontalCircle = !gamepad2.circle;
 
-            double HorizontalAnalogueFactor = 1;
-            double AnalogueExtensionHorizontal = -gamepad2.right_stick_x;
+            AnalogueExtensionHorizontal = -gamepad2.right_stick_x;
             elevator.setHorizontalPosition(elevator.getHorizontalState() + AnalogueExtensionHorizontal * HorizontalAnalogueFactor);
 
             // take in trigger
             if(gamepad2.right_trigger > epsilon  && flagClawTakeIn){
                 claw.setState(Claws.ClawState.TAKE_IN);
-                flagClawTakeIn = false;
             }
             flagClawTakeIn = !(gamepad2.right_trigger > epsilon);
 
             // spit trigger
             if(gamepad2.right_bumper && flagClawSpit){
                 claw.setState(Claws.ClawState.SPIT);
-                flagClawSpit = false;
             }
             flagClawSpit = !gamepad2.right_bumper;
 
@@ -120,6 +115,8 @@ public class NewOpMode extends LinearOpMode {
             }
 
 
+            telemetry.addData("position:", drive.pose);
+            telemetry.update();
         }
 
     }

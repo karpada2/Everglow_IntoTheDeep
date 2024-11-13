@@ -61,13 +61,23 @@ public class Elevators {
     }
 
     // Vertical min is lowest possible, max is highest possible, low and high are terms for the baskets
-    public enum ElevatorState {
+    public enum VerticalState {
         VERTICAL_MIN(0),
         VERTICAL_PICKUP(1),
         VERTICAL_HURDLE(2),
         VERTICAL_LOW(3),
         VERTICAL_HIGH(4),
-        VERTICAL_MAX(5),
+        VERTICAL_MAX(5);
+
+
+        public final int state;
+
+        VerticalState(int state) {
+            this.state = state;
+        }
+    }
+
+    public enum HorizontalState{
         HORIZONTAL_RETRACTED(0.0),
         HORIZONTAL_HALFWAY(0.3),
         HORIZONTAL_EXTENDED(0.6),
@@ -75,7 +85,7 @@ public class Elevators {
 
         public final double state;
 
-        ElevatorState(double state) {
+        HorizontalState(double state) {
             this.state = state;
         }
     }
@@ -86,15 +96,16 @@ public class Elevators {
         rightHor = opMode.hardwareMap.get(Servo.class, "rightHor");
         leftHor = opMode.hardwareMap.get(Servo.class, "leftHor");
 
+        setVerticalDestination((int) VerticalState.VERTICAL_MIN.state);
+
         rightVert.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         leftVert.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         leftHor.setDirection(Servo.Direction.REVERSE);
         rightHor.setDirection(Servo.Direction.FORWARD);
 
-        setVerticalDestination((int) ElevatorState.VERTICAL_MIN.state);
+        setHorizontalPosition(HorizontalState.HORIZONTAL_RETRACTED.state);
 
-        setHorizontalPosition(ElevatorState.HORIZONTAL_RETRACTED.state);
     }
 
     public int getVerticalDestination() {
@@ -124,11 +135,11 @@ public class Elevators {
 
     // toggles the horizontal elevator between being
     public void toggleHorizontal() {
-        if (getHorizontalState() == ElevatorState.HORIZONTAL_EXTENDED.state) {
-            setHorizontalPosition(ElevatorState.HORIZONTAL_RETRACTED.state);
+        if (getHorizontalState() == HorizontalState.HORIZONTAL_EXTENDED.state) {
+            setHorizontalPosition(HorizontalState.HORIZONTAL_RETRACTED.state);
         }
         else {
-            setHorizontalPosition(ElevatorState.HORIZONTAL_EXTENDED.state);
+            setHorizontalPosition(HorizontalState.HORIZONTAL_EXTENDED.state);
         }
     }
 
@@ -138,5 +149,10 @@ public class Elevators {
             return getVerticalCurrentPosition() >= getVerticalDestination() - epsilon;
         }
         return getVerticalCurrentPosition() <= getVerticalDestination() + epsilon;
+    }
+
+    public void setVerticalPower(double power){
+        rightVert.setPower(power);
+        leftVert.setPower(power);
     }
 }
