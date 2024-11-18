@@ -14,7 +14,7 @@ public class Claws {
     CRServo claw;
 
     // takes in a boolean, and takes in a sample if it is true, turns off otherwise
-    private class ClawTakeInAction implements Action {
+    public class ClawTakeInAction implements Action {
         boolean turnOn;
 
         public ClawTakeInAction(boolean turnOn) {
@@ -38,7 +38,7 @@ public class Claws {
     }
 
     // takes in a boolean, and spits out the sample if it is true, turns off otherwise
-    private class ClawSpitAction implements Action {
+    public class ClawSpitAction implements Action {
         boolean turnOn;
 
         public ClawSpitAction(boolean turnOn) {
@@ -93,5 +93,15 @@ public class Claws {
     // sets the servo to the needed power level in the enum
     public void setState(ClawState state) {
         claw.setPower(state.state);
+    }
+
+    public Action takeIn() {
+        return new ClawTakeInAction(true);
+    }
+    public Action turnOff() {
+        return new ClawTakeInAction(false);
+    }
+    public Action clawSpit() {
+        return new ClawSpitAction(true);
     }
 }

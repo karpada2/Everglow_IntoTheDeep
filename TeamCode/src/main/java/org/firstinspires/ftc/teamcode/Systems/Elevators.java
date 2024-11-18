@@ -161,4 +161,12 @@ public class Elevators {
         rightVert.setPower(power);
         leftVert.setPower(power);
     }
+
+    public Action vertMoveTo(VerticalState state) {
+        return new Elevators.VerticalElevatorAction(state.state);
+    }
+
+    public Action horMoveTo(HorizontalState state) {
+        return new Elevators.HorizontalElevatorAction(state.state);
+    }
 }
