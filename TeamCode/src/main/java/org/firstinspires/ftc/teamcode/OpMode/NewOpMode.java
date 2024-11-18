@@ -77,8 +77,9 @@ public class NewOpMode extends LinearOpMode {
             flagElevatorVerticalDpadRight = !gamepad2.dpad_right;
 
 
-            AnalogueExtensionVertical = -gamepad2.left_stick_y;
-            elevator.setVerticalDestination((int)(elevator.getVerticalDestination() + AnalogueExtensionVertical * VerticalAnalogueFactor));
+            // Read line 105
+//            AnalogueExtensionVertical = -gamepad2.left_stick_y;
+//            elevator.setVerticalDestination((int)(elevator.getVerticalDestination() + AnalogueExtensionVertical * VerticalAnalogueFactor));
 
             if(gamepad2.cross && flagElevatorHorizontalX) {
                 elevator.setHorizontalPosition(Elevators.HorizontalState.HORIZONTAL_EXTENDED.state);
@@ -101,8 +102,9 @@ public class NewOpMode extends LinearOpMode {
             }
             flagElevatorHorizontalCircle = !gamepad2.circle;
 
-            AnalogueExtensionHorizontal = -gamepad2.right_stick_x;
-            elevator.setHorizontalPosition(elevator.getHorizontalState() + AnalogueExtensionHorizontal * HorizontalAnalogueFactor);
+            //Currently Broken, might cause damage to robot
+//            AnalogueExtensionHorizontal = -gamepad2.right_stick_x;
+//            elevator.setHorizontalPosition(elevator.getHorizontalState() + AnalogueExtensionHorizontal * HorizontalAnalogueFactor);
 
             telemetry.addData("Epsilon: ", epsilon);
             telemetry.addData("Right trigger thing: ", gamepad2.right_trigger);
