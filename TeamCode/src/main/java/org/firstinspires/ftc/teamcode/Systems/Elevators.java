@@ -8,6 +8,7 @@ import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 public class Elevators {
@@ -63,11 +64,11 @@ public class Elevators {
     // Vertical min is lowest possible, max is highest possible, low and high are terms for the baskets
     public enum VerticalState {
         VERTICAL_MIN(0),
-        VERTICAL_PICKUP(1),
-        VERTICAL_HURDLE(2),
-        VERTICAL_LOW(3),
-        VERTICAL_HIGH(4),
-        VERTICAL_MAX(5);
+        VERTICAL_PICKUP(0),
+        VERTICAL_HURDLE(480),
+        VERTICAL_LOW(3070),
+        VERTICAL_HIGH(4243),
+        VERTICAL_MAX(4243);
 
 
         public final int state;
@@ -78,9 +79,10 @@ public class Elevators {
     }
 
     public enum HorizontalState{
-        HORIZONTAL_RETRACTED(0.0),
-        HORIZONTAL_HALFWAY(0.3),
-        HORIZONTAL_EXTENDED(0.6),
+        HORIZONTAL_RETRACTED(0),
+        HORIZONTAL_HALFWAY(0.55),
+        HORIZONTAL_EXTENDED(0.685),
+        HORIZONTAL_DROP(0.5),
         HORIZONTAL_MAX(1.0);
 
         public final double state;
@@ -96,8 +98,12 @@ public class Elevators {
         rightHor = opMode.hardwareMap.get(Servo.class, "rightHor");
         leftHor = opMode.hardwareMap.get(Servo.class, "leftHor");
 
-        setVerticalDestination((int) VerticalState.VERTICAL_MIN.state);
+        rightVert.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftVert.setDirection(DcMotorSimple.Direction.FORWARD);
 
+        setVerticalDestination(VerticalState.VERTICAL_MIN.state);
+        rightVert.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        leftVert.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         rightVert.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         leftVert.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 

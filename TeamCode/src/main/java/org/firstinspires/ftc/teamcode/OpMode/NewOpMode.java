@@ -4,12 +4,13 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Systems.Claws;
 import org.firstinspires.ftc.teamcode.Systems.Elevators;
 
-
+@TeleOp(name = "FirstOpMode")
 public class NewOpMode extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
@@ -17,7 +18,7 @@ public class NewOpMode extends LinearOpMode {
 
         Claws claw = new Claws(this);
         Elevators elevator = new Elevators(this);
-
+        elevator.setVerticalPower(0.8);
 
         waitForStart();
 
@@ -30,6 +31,7 @@ public class NewOpMode extends LinearOpMode {
         boolean flagElevatorHorizontalX = true;
         boolean flagElevatorHorizontalTriangle = true;
         boolean flagElevatorHorizontalCircle = true;
+        boolean flagElevatorHorizontalSquare = true;
 
         boolean flagClawTakeIn = true;
         boolean ClawState = true;
@@ -54,7 +56,7 @@ public class NewOpMode extends LinearOpMode {
             drive.updatePoseEstimate();
 
 
-            if(gamepad2.dpad_down && flagElevatorVerticalDpadDown){
+            if(gamepad2.dpad_down && flagElevatorVerticalDpadDown) {
                 elevator.setVerticalDestination(Elevators.VerticalState.VERTICAL_PICKUP.state);
             }
             flagElevatorVerticalDpadDown = !gamepad2.dpad_down;
@@ -78,7 +80,7 @@ public class NewOpMode extends LinearOpMode {
             AnalogueExtensionVertical = -gamepad2.left_stick_y;
             elevator.setVerticalDestination((int)(elevator.getVerticalDestination() + AnalogueExtensionVertical * VerticalAnalogueFactor));
 
-            if(gamepad2.x && flagElevatorHorizontalX) {
+            if(gamepad2.cross && flagElevatorHorizontalX) {
                 elevator.setHorizontalPosition(Elevators.HorizontalState.HORIZONTAL_EXTENDED.state);
             }
             flagElevatorHorizontalX = !gamepad2.cross;
@@ -87,6 +89,11 @@ public class NewOpMode extends LinearOpMode {
                 elevator.setHorizontalPosition(Elevators.HorizontalState.HORIZONTAL_RETRACTED.state);
             }
             flagElevatorHorizontalTriangle = !gamepad2.triangle;
+
+            if(gamepad2.square && flagElevatorHorizontalSquare){
+                elevator.setHorizontalPosition(Elevators.HorizontalState.HORIZONTAL_DROP.state);
+            }
+            flagElevatorHorizontalSquare = !gamepad2.square;
 
 
             if(gamepad2.circle && flagElevatorHorizontalCircle){
@@ -97,8 +104,13 @@ public class NewOpMode extends LinearOpMode {
             AnalogueExtensionHorizontal = -gamepad2.right_stick_x;
             elevator.setHorizontalPosition(elevator.getHorizontalState() + AnalogueExtensionHorizontal * HorizontalAnalogueFactor);
 
+            telemetry.addData("Epsilon: ", epsilon);
+            telemetry.addData("Right trigger thing: ", gamepad2.right_trigger);
+            telemetry.addData("flag claw take in: ", flagClawTakeIn);
+
             // take in trigger
             if(gamepad2.right_trigger > epsilon  && flagClawTakeIn){
+                telemetry.addLine("Should be taking in ");
                 claw.setState(Claws.ClawState.TAKE_IN);
             }
             flagClawTakeIn = !(gamepad2.right_trigger > epsilon);
@@ -116,6 +128,8 @@ public class NewOpMode extends LinearOpMode {
 
 
             telemetry.addData("position:", drive.pose);
+            telemetry.addData("right_bumper:", gamepad2.right_trigger);
+            telemetry.addData("right_trigger:", gamepad2.right_bumper);
             telemetry.update();
         }
 
