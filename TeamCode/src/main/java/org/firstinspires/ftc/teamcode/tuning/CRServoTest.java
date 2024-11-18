@@ -11,17 +11,17 @@ public class CRServoTest extends LinearOpMode {
         CRServo servo = hardwareMap.get(CRServo.class, "claw");
 
         waitForStart();
-//        while (opModeIsActive()) {
-//            if (gamepad1.cross) {
-//                servo.setPower(0.8);
-//            }
-//            else if (gamepad1.circle) {
-//                servo.setPower(-0.8);
-//            }
-//            else {
-//                servo.setPower(0);
-//            }
-//        }
+        while (opModeIsActive()) {
+            if (gamepad1.cross) {
+                servo.setPower(0.8);
+            }
+            else if (gamepad1.circle) {
+                servo.setPower(-0.8);
+            }
+            else {
+                servo.setPower(0);
+            }
+        }
 
     }
 }

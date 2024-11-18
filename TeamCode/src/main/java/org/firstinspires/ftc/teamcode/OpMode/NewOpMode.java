@@ -90,10 +90,10 @@ public class NewOpMode extends LinearOpMode {
             }
             flagElevatorHorizontalTriangle = !gamepad2.triangle;
 
-            if(gamepad2.square && flagElevatorHorizontalSquare){
-                elevator.setHorizontalPosition(Elevators.HorizontalState.HORIZONTAL_DROP.state);
-            }
-            flagElevatorHorizontalSquare = !gamepad2.square;
+//            if(gamepad2.square && flagElevatorHorizontalSquare){
+//                elevator.setHorizontalPosition(Elevators.HorizontalState.HORIZONTAL_DROP.state);
+//            }
+//            flagElevatorHorizontalSquare = !gamepad2.square;
 
 
             if(gamepad2.circle && flagElevatorHorizontalCircle){

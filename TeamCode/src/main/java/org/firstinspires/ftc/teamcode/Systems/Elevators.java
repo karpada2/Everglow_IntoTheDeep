@@ -82,7 +82,7 @@ public class Elevators {
         HORIZONTAL_RETRACTED(0),
         HORIZONTAL_HALFWAY(0.55),
         HORIZONTAL_EXTENDED(0.685),
-        HORIZONTAL_DROP(0.5),
+//        HORIZONTAL_DROP(0.5),
         HORIZONTAL_MAX(1.0);
 
         public final double state;
