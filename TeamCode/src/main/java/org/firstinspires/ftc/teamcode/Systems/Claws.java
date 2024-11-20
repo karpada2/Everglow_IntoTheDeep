@@ -8,10 +8,28 @@ import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 
+import org.firstinspires.ftc.teamcode.EverglowLibrary.Systems.Executor;
+import org.firstinspires.ftc.teamcode.EverglowLibrary.Systems.ISequenceable;
 
-public class Claws {
+
+public class Claws extends Executor {
 
     CRServo claw;
+
+    @Override
+    public boolean isFinished() {
+        return false;
+    }
+
+    @Override
+    public void stop() {
+
+    }
+
+    @Override
+    public void run() {
+
+    }
 
     public class ClawAction implements Action {
 

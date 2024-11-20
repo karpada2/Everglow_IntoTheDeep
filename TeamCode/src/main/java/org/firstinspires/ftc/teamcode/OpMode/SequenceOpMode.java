@@ -3,40 +3,46 @@ package org.firstinspires.ftc.teamcode.OpMode;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
-import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
-import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.EverglowLibrary.ThreadHandleLib.SequenceControl;
+import org.firstinspires.ftc.teamcode.EverglowLibrary.ThreadHandleLib.SequenceRunner;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Systems.Claws;
 import org.firstinspires.ftc.teamcode.Systems.Elevators;
 
 
-@TeleOp(name="Action OpMode")
-public class ActionNewOpMode extends LinearOpMode {
+@TeleOp(name="Sequence OpMode")
+public class SequenceOpMode extends LinearOpMode {
 
     double trigger_threshold = 0.5;
 
-    Elevators elevators = new Elevators(this);
-    Claws claw = new Claws(this);
+    Elevators elevators;
+    Claws claw;
     MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
 
     @Override
     public void runOpMode() throws InterruptedException {
-        Actions.runBlocking(
-                new SequentialAction(
-                        elevators.vertMoveTo(Elevators.VerticalState.VERTICAL_MIN),
-                        elevators.horMoveTo(Elevators.HorizontalState.HORIZONTAL_RETRACTED)
-                )
-        );
+//        Actions.runBlocking(
+//                new SequentialAction(
+//                        elevators.vertMoveTo(Elevators.VerticalState.VERTICAL_MIN),
+//                        elevators.horMoveTo(Elevators.HorizontalState.HORIZONTAL_RETRACTED)
+//                )
+//        );
+
+        claw = new Claws(this);
+        elevators = new Elevators(this);
+        SequenceControl sequenceControl = new SequenceControl(elevators, claw);
+        SequenceRunner sequenceRunner = new SequenceRunner();
 
         boolean flagRightBumper = true;
         boolean flagLeftBumper = true;
 
         boolean flagTriangle = true;
         boolean flagCircle = true;
+        boolean flagSquare = true;
 
         boolean flagDpadUp = true;
         boolean flagDpadLeft = true;
@@ -84,42 +90,36 @@ public class ActionNewOpMode extends LinearOpMode {
             Action hurdleAction = null;
 
             if (gamepad2.triangle && flagTriangle) {
-                hurdleAction = new SequentialAction(
-                        elevators.vertMoveTo(Elevators.VerticalState.VERTICAL_HURDLE),
-                        elevators.horMoveTo(Elevators.HorizontalState.HORIZONTAL_HALFWAY),
-                        elevators.vertMoveTo(Elevators.VerticalState.VERTICAL_PICKUP)
-                );
+                //pickUp - to halfWay
+                sequenceRunner.RunSequence(sequenceControl.halfPickUpSeq);
             }
-            else if (gamepad2.circle && flagCircle) {
-                hurdleAction = new SequentialAction(
-                        elevators.vertMoveTo(Elevators.VerticalState.VERTICAL_HURDLE),
-                        elevators.horMoveTo(Elevators.HorizontalState.HORIZONTAL_RETRACTED),
-                        elevators.vertMoveTo(Elevators.VerticalState.VERTICAL_PICKUP)
-                );
+            else if (gamepad2.square && flagSquare){
+                // pickup - to extanded
+                sequenceRunner.RunSequence(sequenceControl.extendedPickUpSeq);
+            }else if (gamepad2.circle && flagCircle) {
+                //return from pickup
+                sequenceRunner.RunSequence(sequenceControl.returnFromPickUp);
             }
 
             flagTriangle = !gamepad2.triangle;
             flagCircle = !gamepad2.circle;
+            flagSquare = !gamepad2.square;
 
             Action basketAction = null;
 
             if (gamepad2.dpad_left && flagDpadLeft) {
-                basketAction = new SequentialAction(
-                        elevators.vertMoveTo(Elevators.VerticalState.VERTICAL_LOW),
-                        elevators.horMoveTo(Elevators.HorizontalState.HORIZONTAL_HALFWAY),
-                        claw.clawSpit()
-                );
+                // low basket
+                sequenceRunner.RunSequence(sequenceControl.getReadyToDropLowSeq);
             }
             else if (gamepad2.dpad_up && flagDpadUp) {
-                basketAction = new SequentialAction(
-                        elevators.vertMoveTo(Elevators.VerticalState.VERTICAL_HIGH),
-                        elevators.horMoveTo(Elevators.HorizontalState.HORIZONTAL_HALFWAY),
-                        claw.clawSpit()
-                );
+                // high basket
+                sequenceRunner.RunSequence(sequenceControl.getReadyToDropHighSeq);
             }
 
             flagDpadLeft = !gamepad2.dpad_left;
             flagDpadUp = !gamepad2.dpad_up;
+
+            sequenceRunner.Update();
 
             /*
             right bumper - claw takeIn

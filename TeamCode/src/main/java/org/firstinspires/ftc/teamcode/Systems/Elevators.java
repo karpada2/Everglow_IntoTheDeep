@@ -1,15 +1,14 @@
 package org.firstinspires.ftc.teamcode.Systems;
 
-import androidx.annotation.NonNull;
-
-import com.acmerobotics.dashboard.canvas.Canvas;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.teamcode.EverglowLibrary.Systems.Executor;
+
+import java.util.Calendar;
 
 public class Elevators {
     final int epsilon = 5;
@@ -21,7 +20,76 @@ public class Elevators {
 
     int verticalDestination;
 
+
+
+    boolean isVert = false;
+
+    public class VerticalExecutor extends Executor{
+        private final int destSeuqance;
+        private final int startPos;
+        private final double power = 0.8;
+        public VerticalExecutor(VerticalState state) {
+            startPos = getVerticalCurrentPosition();
+            destSeuqance = state.state;
+        }
+        @Override
+        public boolean isFinished() {
+            double epsilon = 15;
+            boolean isStartBigger = startPos > destSeuqance;
+            boolean isFinish = (isStartBigger &&  startPos - destSeuqance <= epsilon)
+                    || (!isStartBigger &&  destSeuqance - startPos <= epsilon);
+
+            if(isFinish && destSeuqance == VerticalState.VERTICAL_PICKUP.state)
+                setVerticalPower(0);
+
+            return isFinish;
+        }
+
+        @Override
+        public void stop() {
+            setVerticalPower(0);
+        }
+
+        @Override
+        public void run() {
+            setVerticalPower(power);
+            setVerticalDestination(destSeuqance);
+        }
+    }
+
+    public class HorizontalExecutor extends Executor {
+        private final double destSeuqence;
+        private long startTime;
+        private final boolean m_toWait;
+        public HorizontalExecutor(HorizontalState state, boolean toWait) {
+            destSeuqence = state.state;
+            m_toWait = toWait;
+        }
+        @Override
+        public boolean isFinished() {
+            if (m_toWait) {
+                return Calendar.getInstance().getTimeInMillis() - startTime >= 300;
+            }
+            else
+                return true;
+        }
+
+        @Override
+        public void stop() {
+            setHorizontalPosition(getHorizontalState());
+        }
+
+        @Override
+        public void run() {
+            if(m_toWait){
+                startTime = Calendar.getInstance().getTimeInMillis();
+            }
+            setHorizontalPosition(destSeuqence);
+        }
+    }
+
     // sets the vertical elevator to the specified position
+    /*
     public class VerticalElevatorAction implements Action {
         private final int destination;
 
@@ -60,6 +128,8 @@ public class Elevators {
             return true;
         }
     }
+
+     */
 
     // Vertical min is lowest possible, max is highest possible, low and high are terms for the baskets
     public enum VerticalState {
@@ -162,11 +232,11 @@ public class Elevators {
         leftVert.setPower(power);
     }
 
-    public Action vertMoveTo(VerticalState state) {
-        return new Elevators.VerticalElevatorAction(state.state);
+    public Executor getVerticalExecutor(VerticalState verticalState){
+        return new VerticalExecutor(verticalState);
     }
 
-    public Action horMoveTo(HorizontalState state) {
-        return new Elevators.HorizontalElevatorAction(state.state);
+    public Executor getHorizontalExecutor(HorizontalState horizontalState, boolean isToWait){
+        return new HorizontalExecutor(horizontalState, isToWait);
     }
 }
