@@ -20,43 +20,35 @@ public class MeepMeepTesting {
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .build();
 
-        Pose2d beginPose = new Pose2d(58, -63,  3 * (1./4)*Math.PI);
-        TrajectoryActionBuilder start_2_box = myBot.getDrive().actionBuilder(beginPose)
-                .waitSeconds(2)
-                .strafeToSplineHeading(new Vector2d(58,-38),  3* (1./4)*Math.PI )
-                // goes to right sample
-                .waitSeconds(1) // grabs sample
-                .setTangent(Math.PI)
+        Pose2d beginPose = new Pose2d(-20, -63,  3 * (1./4)*Math.PI);
+        TrajectoryActionBuilder left_start_path = myBot.getDrive().actionBuilder(beginPose)
 
-                .splineToSplineHeading(new Pose2d(-56,-56,1.25*Math.PI), Math.PI)
-                // strafe-turns and then splines to basket
-                .waitSeconds(1) //elevator
                 .strafeToSplineHeading(new Vector2d(-36,-34),0.75*Math.PI)
                 // goes to right sample on the left
                 .waitSeconds(1) //grabs sample
+                //elevator
                 .strafeToSplineHeading(new Vector2d(-56,-56),1.25*Math.PI)
                 // goes to basket
-                .waitSeconds(1) //elevator
                 .strafeToSplineHeading(new Vector2d(-48, -34),0.75*Math.PI)
                 // goes to middle sample on the left
                 .waitSeconds(1) //grabs sample
+                //elevator
                 .strafeToSplineHeading(new Vector2d(-56,-56),1.25*Math.PI)
                 // goes to basket
-                .waitSeconds(1) //elevator
                 .strafeToSplineHeading(new Vector2d(-57, -34),0.75*Math.PI)
                 // goes to left sample on the left
                 .waitSeconds(1) //grabs sample
+                //elevator
                 .strafeToSplineHeading(new Vector2d(-56,-56),1.25*Math.PI)
                 // goes to basket
-                .waitSeconds(1) //elevator
 //                .strafeToSplineHeading(new Vector2d(-56,-36),Math.PI/2)
                 // goes to sample pool
                 .setTangent(Math.PI * 0.5)
                 .splineToSplineHeading(new Pose2d(-26,0, 0),0)
                 .waitSeconds(1) //grabs sample
+                //elevator
                 .strafeToSplineHeading(new Vector2d(-36,-10),-0.75*Math.PI)
                 .splineTo(new Vector2d(-56,-56),-0.75*Math.PI)
-                .waitSeconds(1) //elevator
                 ;
 
 //                .splineToConstantHeading(new Vector2d(0,-60), Math.PI);
