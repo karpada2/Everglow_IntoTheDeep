@@ -25,7 +25,7 @@ public class MeepMeepTesting {
                 .waitSeconds(2)
                 .strafeToSplineHeading(new Vector2d(-36,-34),0.75*Math.PI)
                 // goes to right sample on the left
-                .waitSeconds(1) //grabs sample
+                .waitSeconds(1) //grabs sample remove
                 //elevator
                 .strafeToSplineHeading(new Vector2d(-56,-56),1.25*Math.PI)
                 // goes to basket
