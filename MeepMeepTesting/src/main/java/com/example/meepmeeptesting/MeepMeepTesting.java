@@ -20,7 +20,7 @@ public class MeepMeepTesting {
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .build();
 
-        Pose2d beginPose = new Pose2d(-20, -63,  3 * (1./4)*Math.PI);
+        Pose2d beginPose = new Pose2d(-20, -63,  3 * (1./2)*Math.PI);
         TrajectoryActionBuilder left_start_path = myBot.getDrive().actionBuilder(beginPose)
 
                 .strafeToSplineHeading(new Vector2d(-36,-34),0.75*Math.PI)
@@ -51,30 +51,8 @@ public class MeepMeepTesting {
                 .splineTo(new Vector2d(-56,-56),-0.75*Math.PI)
                 ;
 
-//                .splineToConstantHeading(new Vector2d(0,-60), Math.PI);
-//                .lineToYSplineHeading(33, Math.toRadians(0));
-//                .lineToX(60);
-//                .waitSeconds(2)
-//                .setTangent(Math.toRadians(90))
-//                .lineToY(48)
-//                .setTangent(Math.toRadians(0))
-//                .lineToX(32)
-//                .strafeTo(new Vector2d(44.5, 30))
-//                .turn(Math.toRadians(180))
-//                .lineToX(47.5)
-//                .waitSeconds(3);
 
-
-//        Action start_2_box = myBot.getDrive().actionBuilder(beginPose)
-//                .splineTo(new Vector2d(25, -11), Math.PI
-//                )
-//                .build();
-
-//        Action start_2_box = myBot.getDrive().actionBuilder(beginPose)
-//                .splineTo(new Vector2d(25, -11), Math.PI
-//                )
-//                .build();
-        myBot.runAction(start_2_box.build());
+        myBot.runAction(left_start_path.build());
 
 
         meepMeep.setBackground(MeepMeep.Background.FIELD_INTO_THE_DEEP_JUICE_DARK)
