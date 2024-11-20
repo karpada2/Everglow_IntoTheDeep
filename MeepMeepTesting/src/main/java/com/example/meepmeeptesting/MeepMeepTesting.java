@@ -20,9 +20,9 @@ public class MeepMeepTesting {
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .build();
 
-        Pose2d beginPose = new Pose2d(-20, -63,  3 * (1./2)*Math.PI);
+        Pose2d beginPose = new Pose2d(-20, -63,   (1./2)*Math.PI);
         TrajectoryActionBuilder left_start_path = myBot.getDrive().actionBuilder(beginPose)
-
+                .waitSeconds(2)
                 .strafeToSplineHeading(new Vector2d(-36,-34),0.75*Math.PI)
                 // goes to right sample on the left
                 .waitSeconds(1) //grabs sample
