@@ -494,4 +494,9 @@ public final class MecanumDrive {
                 defaultVelConstraint, defaultAccelConstraint
         );
     }
+
+    public static double linearInputToExponential(double power){
+        double base = 6;
+        return (Math.pow(base, Math.abs(power)) - 1) / (base - 1) * Math.signum(power);
+    }
 }

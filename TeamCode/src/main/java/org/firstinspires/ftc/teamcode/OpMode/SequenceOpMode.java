@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.OpMode;
 
+import static org.firstinspires.ftc.teamcode.MecanumDrive.linearInputToExponential;
+
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
@@ -55,10 +57,10 @@ public class SequenceOpMode extends LinearOpMode {
             // driving
             drive.setDrivePowers(new PoseVelocity2d(
                     new Vector2d(
-                            -gamepad1.left_stick_y/2,
-                            -gamepad1.left_stick_x/2
+                            linearInputToExponential(-gamepad1.left_stick_y),
+                            linearInputToExponential(-gamepad1.left_stick_x)
                     ),
-                    -gamepad1.right_stick_x/2
+                    linearInputToExponential(-gamepad1.right_stick_x)
             ));
 
             drive.updatePoseEstimate();
@@ -130,6 +132,8 @@ public class SequenceOpMode extends LinearOpMode {
             dpad left - action to move to high basket and put the sample in
              */
         }
+        sequenceRunner.Interapt();
+        sleep(500);
     }
 }
 
