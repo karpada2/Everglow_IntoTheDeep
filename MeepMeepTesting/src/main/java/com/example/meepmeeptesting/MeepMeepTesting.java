@@ -39,16 +39,15 @@ public class MeepMeepTesting {
                 // goes to left sample on the left
                 .waitSeconds(1) //grabs sample
                 //elevator
-                .strafeToSplineHeading(new Vector2d(-56,-56),1.25*Math.PI)
                 // goes to basket
-//                .strafeToSplineHeading(new Vector2d(-56,-36),Math.PI/2)
+                .strafeToSplineHeading(new Vector2d(-56,-56),1.25*Math.PI)
                 // goes to sample pool
                 .setTangent(Math.PI * 0.5)
                 .splineToSplineHeading(new Pose2d(-26,0, 0),0)
                 .waitSeconds(1) //grabs sample
                 //elevator
-                .strafeToSplineHeading(new Vector2d(-36,-10),-0.75*Math.PI)
-                .splineTo(new Vector2d(-56,-56),-0.75*Math.PI)
+                .setTangent(-(0.75)*Math.PI)
+                .splineToSplineHeading(new Pose2d(-56,-56,1.25*Math.PI),1.25*Math.PI)
                 ;
 
 
