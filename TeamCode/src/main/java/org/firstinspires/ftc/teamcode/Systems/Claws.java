@@ -13,6 +13,21 @@ public class Claws {
 
     CRServo claw;
 
+    public class ClawAction implements Action {
+
+        ClawState state;
+
+        public ClawAction(ClawState state) {
+            this.state = state;
+        }
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            setState(this.state);
+            return true;
+        }
+    }
+
     // takes in a boolean, and takes in a sample if it is true, turns off otherwise
     public class ClawTakeInAction implements Action {
         boolean turnOn;
@@ -103,5 +118,8 @@ public class Claws {
     }
     public Action clawSpit() {
         return new ClawSpitAction(true);
+    }
+    public Action setClawAction(ClawState state) {
+        return new ClawAction(state);
     }
 }

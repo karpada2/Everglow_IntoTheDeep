@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.OpMode;
 
 import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.SequentialAction;
@@ -33,77 +32,103 @@ public class ActionNewOpMode extends LinearOpMode {
                 )
         );
 
+        boolean flagRightBumper = true;
+        boolean flagLeftBumper = true;
+
+        boolean flagTriangle = true;
+        boolean flagCircle = true;
+
+        boolean flagDpadUp = true;
+        boolean flagDpadLeft = true;
+
         waitForStart();
 
-        Action controllerAction = null; // person controlling the elevators and claws
+        Claws.ClawState currentClawState = Claws.ClawState.OFF;
 
         while (opModeIsActive()) {
             // driving
             drive.setDrivePowers(new PoseVelocity2d(
                     new Vector2d(
-                            -gamepad1.left_stick_y,
-                            -gamepad1.left_stick_x
+                            -gamepad1.left_stick_y/2,
+                            -gamepad1.left_stick_x/2
                     ),
-                    -gamepad1.right_stick_x
+                    -gamepad1.right_stick_x/2
             ));
 
             drive.updatePoseEstimate();
 
-            Action lastAction = null;
 
-            if (gamepad2.dpad_down) {
-                controllerAction = elevators.vertMoveTo(Elevators.VerticalState.VERTICAL_PICKUP);
-            }
-            else if (gamepad2.dpad_left) {
-                controllerAction = elevators.vertMoveTo(Elevators.VerticalState.VERTICAL_HURDLE);
-            }
-            else if (gamepad2.dpad_up) {
-                controllerAction = elevators.vertMoveTo(Elevators.VerticalState.VERTICAL_LOW);
-            }
-            else if (gamepad2.dpad_right) {
-                controllerAction = elevators.vertMoveTo(Elevators.VerticalState.VERTICAL_HIGH);
-            }
 
-            if (gamepad2.cross) {
-                lastAction = elevators.horMoveTo(Elevators.HorizontalState.HORIZONTAL_EXTENDED);
-            }
-            else if (gamepad2.triangle) {
-                lastAction = elevators.horMoveTo(Elevators.HorizontalState.HORIZONTAL_RETRACTED);
-            }
-            else if (gamepad2.square) {
-                lastAction = elevators.horMoveTo(Elevators.HorizontalState.HORIZONTAL_DROP);
-            }
-            else if (gamepad2.circle) {
-                lastAction = elevators.horMoveTo(Elevators.HorizontalState.HORIZONTAL_HALFWAY);
-            }
-
-            if (lastAction != null) {
-                if (controllerAction != null) {
-                    controllerAction = new ParallelAction(controllerAction, lastAction);
+            if (gamepad2.right_bumper && flagRightBumper) {
+                if (currentClawState == Claws.ClawState.OFF || currentClawState == Claws.ClawState.SPIT) {
+                    currentClawState = Claws.ClawState.TAKE_IN;
                 }
                 else {
-                    controllerAction = lastAction;
+                    currentClawState = Claws.ClawState.OFF;
+                }
+            }
+            else if (gamepad2.left_bumper && flagLeftBumper) {
+                if (currentClawState == Claws.ClawState.OFF || currentClawState == Claws.ClawState.TAKE_IN) {
+                    currentClawState = Claws.ClawState.SPIT;
+                }
+                else {
+                    currentClawState = Claws.ClawState.OFF;
                 }
             }
 
-            if (gamepad2.right_trigger > trigger_threshold) {
-                lastAction = claw.takeIn();
+            flagRightBumper = !gamepad2.right_bumper;
+            flagLeftBumper = !gamepad2.left_bumper;
+
+            Action clawAction = claw.setClawAction(currentClawState);
+
+            Action hurdleAction = null;
+
+            if (gamepad2.triangle && flagTriangle) {
+                hurdleAction = new SequentialAction(
+                        elevators.vertMoveTo(Elevators.VerticalState.VERTICAL_HURDLE),
+                        elevators.horMoveTo(Elevators.HorizontalState.HORIZONTAL_HALFWAY),
+                        elevators.vertMoveTo(Elevators.VerticalState.VERTICAL_PICKUP)
+                );
             }
-            else if (gamepad2.right_bumper) {
-                lastAction = claw.clawSpit();
-            }
-            else {
-                lastAction = claw.turnOff();
+            else if (gamepad2.circle && flagCircle) {
+                hurdleAction = new SequentialAction(
+                        elevators.vertMoveTo(Elevators.VerticalState.VERTICAL_HURDLE),
+                        elevators.horMoveTo(Elevators.HorizontalState.HORIZONTAL_RETRACTED),
+                        elevators.vertMoveTo(Elevators.VerticalState.VERTICAL_PICKUP)
+                );
             }
 
-            if (controllerAction != null) {
-                controllerAction = new ParallelAction(controllerAction, lastAction);
+            flagTriangle = !gamepad2.triangle;
+            flagCircle = !gamepad2.circle;
+
+            Action basketAction = null;
+
+            if (gamepad2.dpad_left && flagDpadLeft) {
+                basketAction = new SequentialAction(
+                        elevators.vertMoveTo(Elevators.VerticalState.VERTICAL_LOW),
+                        elevators.horMoveTo(Elevators.HorizontalState.HORIZONTAL_HALFWAY),
+                        claw.clawSpit()
+                );
             }
-            else {
-                controllerAction = lastAction;
+            else if (gamepad2.dpad_up && flagDpadUp) {
+                basketAction = new SequentialAction(
+                        elevators.vertMoveTo(Elevators.VerticalState.VERTICAL_HIGH),
+                        elevators.horMoveTo(Elevators.HorizontalState.HORIZONTAL_HALFWAY),
+                        claw.clawSpit()
+                );
             }
 
-            Actions.runBlocking(controllerAction);
+            flagDpadLeft = !gamepad2.dpad_left;
+            flagDpadUp = !gamepad2.dpad_up;
+
+            /*
+            right bumper - claw takeIn
+            left bumper - claw spit
+            triangle - action to get ready for pickup (clear hurdle and that)
+            circle - action to clear hurdle in the opposite way
+            dpad up - action to move to low basket and put the sample in
+            dpad left - action to move to high basket and put the sample in
+             */
         }
     }
 }
