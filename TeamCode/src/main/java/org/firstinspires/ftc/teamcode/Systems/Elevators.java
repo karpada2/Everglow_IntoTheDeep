@@ -149,9 +149,9 @@ public class Elevators {
     }
 
     public enum HorizontalState{
-        HORIZONTAL_RETRACTED(0),
-        HORIZONTAL_HALFWAY(0.55),
-        HORIZONTAL_EXTENDED(1),
+        HORIZONTAL_RETRACTED(0.36),
+        HORIZONTAL_HALFWAY(0.68),
+        HORIZONTAL_EXTENDED(0.99),
 //        HORIZONTAL_DROP(0.5),
         HORIZONTAL_MAX(1.0);
 
