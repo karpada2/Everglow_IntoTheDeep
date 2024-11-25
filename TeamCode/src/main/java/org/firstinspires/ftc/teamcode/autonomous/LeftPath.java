@@ -44,7 +44,7 @@ public class LeftPath extends LinearOpMode {
 
         TrajectoryActionBuilder sample4 = unload3.endTrajectory().fresh()
                 .setTangent(Math.PI * 0.5)
-                .splineToSplineHeading(new Pose2d(-26,0, 0),0)
+                .splineToSplineHeading(new Pose2d(-26,0, 0),0);
 
         TrajectoryActionBuilder unload4 = sample4.endTrajectory().fresh()
                 .setTangent(-(0.75)*Math.PI)

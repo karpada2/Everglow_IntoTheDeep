@@ -51,8 +51,37 @@ public class MeepMeepTesting {
                 ;
 
 
-        myBot.runAction(left_start_path.build());
-
+//        myBot.runAction(left_start_path.build());
+        Pose2d beginPose2 = new Pose2d(20, -63,   (1./2)*Math.PI);
+        TrajectoryActionBuilder right_start_path = myBot.getDrive().actionBuilder(beginPose2)
+                .waitSeconds(2)
+                .strafeToSplineHeading(new Vector2d(36,-34),0.75*Math.PI - Math.PI /2)
+                // goes to right sample on the left
+                .waitSeconds(1) //grabs sample remove
+                //elevator
+                .strafeToSplineHeading(new Vector2d(52,-50),-Math.PI /2)
+                // goes to basket
+                .strafeToSplineHeading(new Vector2d(48, -34),0.75*Math.PI- Math.PI /2)
+                // goes to middle sample on the left
+                .waitSeconds(1) //grabs sample
+                //elevator
+                .strafeToSplineHeading(new Vector2d(54,-50),-Math.PI /2)
+                // goes to basket
+                .strafeToSplineHeading(new Vector2d(57, -34),0.75*Math.PI- Math.PI /2)
+                // goes to left sample on the left
+                .waitSeconds(1) //grabs sample
+                //elevator
+                // goes to basket
+                .strafeToSplineHeading(new Vector2d(56,-50),-Math.PI /2)
+                // goes to sample pool
+                .setTangent(Math.PI * 0.5)
+                .splineToSplineHeading(new Pose2d(26,0, Math.PI),Math.PI)
+                .waitSeconds(1) //grabs sample
+                //elevator
+                .setTangent(-(0.75)*Math.PI + Math.PI / 2)
+                .splineToSplineHeading(new Pose2d(58,-50,- Math.PI / 2),- Math.PI / 2)
+                ;
+        myBot.runAction(right_start_path.build());
 
         meepMeep.setBackground(MeepMeep.Background.FIELD_INTO_THE_DEEP_JUICE_DARK)
                 .setDarkMode(true)
