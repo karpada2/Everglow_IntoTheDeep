@@ -74,7 +74,7 @@ public class SequenceRunner {
     public void RunSequence(){
         if(m_IsFinished && m_RunningSequence != null)
         {
-            startTime = Calendar.getInstance().getTimeInMillis();
+            startTime = System.currentTimeMillis();
             m_IsFinished = false;
             m_Runs = m_RunningSequence.GetRuns();
             isSync = m_RunningSequence.isSequenceSync();

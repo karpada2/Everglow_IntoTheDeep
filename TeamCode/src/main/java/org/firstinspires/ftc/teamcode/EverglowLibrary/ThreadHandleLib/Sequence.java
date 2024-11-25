@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.EverglowLibrary.ThreadHandleLib;
 
 import org.firstinspires.ftc.teamcode.EverglowLibrary.Systems.Executor;
 
-import java.nio.channels.AsynchronousCloseException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,9 +27,9 @@ public class Sequence {
         m_Runs.addAll(AllRuns);
         m_IsRunAsync = isRunAsync;
         if(isRunAsync)
-            setExecutorAsync();
+            setExecutorAsync(); // parallel
         else
-            setExecutorSync();
+            setExecutorSync(); //in Queue
     }
 
     private void setExecutorSync() {
