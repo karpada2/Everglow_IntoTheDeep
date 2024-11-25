@@ -18,9 +18,11 @@ public class NewOpMode extends LinearOpMode {
 
         Claws claw = new Claws(this);
         Elevators elevator = new Elevators(this);
-        elevator.setVerticalPower(0.8);
+        elevator.setVerticalPower(0.0);
 
         waitForStart();
+
+        elevator.setVerticalPower(0.8);
 
         double epsilon = 0.4;
         boolean flagElevatorVerticalDpadDown = true;

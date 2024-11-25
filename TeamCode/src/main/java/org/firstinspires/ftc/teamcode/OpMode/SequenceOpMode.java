@@ -23,7 +23,7 @@ public class SequenceOpMode extends LinearOpMode {
 
     Elevators elevators;
     Claws claw;
-    MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
+    MecanumDrive drive;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -34,6 +34,7 @@ public class SequenceOpMode extends LinearOpMode {
 //                )
 //        );
 
+        drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
         claw = new Claws(this);
         elevators = new Elevators(this);
         SequenceControl sequenceControl = new SequenceControl(elevators, claw);
@@ -48,6 +49,7 @@ public class SequenceOpMode extends LinearOpMode {
 
         boolean flagDpadUp = true;
         boolean flagDpadLeft = true;
+        boolean flagDpadDown = true;
 
         waitForStart();
 
@@ -87,7 +89,7 @@ public class SequenceOpMode extends LinearOpMode {
             flagRightBumper = !gamepad2.right_bumper;
             flagLeftBumper = !gamepad2.left_bumper;
 
-            Action clawAction = claw.setClawAction(currentClawState);
+            claw.setState(currentClawState);
 
             Action hurdleAction = null;
 
@@ -117,12 +119,16 @@ public class SequenceOpMode extends LinearOpMode {
                 // high basket
                 sequenceRunner.RunSequence(sequenceControl.getReadyToDropHighSeq);
             }
+            else if (gamepad2.dpad_down && flagDpadDown) {
+                // return after putting sample
+                sequenceRunner.RunSequence(sequenceControl.returnFromDrop);
+            }
 
             flagDpadLeft = !gamepad2.dpad_left;
             flagDpadUp = !gamepad2.dpad_up;
+            flagDpadDown = !gamepad2.dpad_down;
 
             sequenceRunner.Update();
-
             /*
             right bumper - claw takeIn
             left bumper - claw spit
