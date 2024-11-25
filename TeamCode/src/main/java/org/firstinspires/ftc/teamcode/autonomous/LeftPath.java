@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.teamcode.Systems.ClawsActionBuilder;
 import org.firstinspires.ftc.teamcode.Systems.Elevators;
 
 @Config
@@ -22,7 +23,7 @@ public class LeftPath extends LinearOpMode {
     public void runOpMode()  throws InterruptedException{
         Pose2d beginPose = new Pose2d(-20, -63,   (1./2)*Math.PI);
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
-        Claws claws  = new Claws(this);
+        ClawsActionBuilder claws  = new ClawsActionBuilder(this);
         Elevators elevators  = new Elevators(this);
 
         TrajectoryActionBuilder B_sample1 = drive.actionBuilder(beginPose)
@@ -74,7 +75,7 @@ public class LeftPath extends LinearOpMode {
                                 //lift elevator
                                 unload1
                         ),
-                        //release sample
+                        claws.clawTakeInAction(),
                         new ParallelAction(
                                 //lower elevator
                                 sample2

@@ -11,24 +11,22 @@ import com.qualcomm.robotcore.hardware.CRServo;
 
 public class ClawsActionBuilder {
 
-    CRServo claw;
+    private CRServo claw;
 
     // takes in a boolean, and takes in a sample if it is true, turns off otherwise
     private class ClawTakeInAction implements Action {
-        boolean turnOn;
-
-        public ClawTakeInAction(boolean turnOn) {
-            this.turnOn = turnOn;
-        }
+        boolean turnOn = false;
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             if (turnOn) {
-                setState(ClawState.TAKE_IN);
-            } else {
                 setState(ClawState.OFF);
+                turnOn = false;
+            } else {
+                setState(ClawState.TAKE_IN);
+                turnOn = true;
             }
-            return true;
+            return false;
         }
 
         @Override
@@ -36,29 +34,33 @@ public class ClawsActionBuilder {
             Action.super.preview(fieldOverlay);
         }
     }
+    public Action clawTakeInAction() {
+        return new ClawTakeInAction();
+    }
 
     // takes in a boolean, and spits out the sample if it is true, turns off otherwise
     private class ClawSpitAction implements Action {
-        boolean turnOn;
-
-        public ClawSpitAction(boolean turnOn) {
-            this.turnOn = turnOn;
-        }
+        boolean turnOn = false;
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             if (turnOn) {
-                setState(ClawState.SPIT);
-            } else {
                 setState(ClawState.OFF);
+                turnOn = false;
+            } else {
+                setState(ClawState.SPIT);
+                turnOn = true;
             }
-            return true;
+            return false;
         }
 
         @Override
         public void preview(@NonNull Canvas fieldOverlay) {
             Action.super.preview(fieldOverlay);
         }
+    }
+    public Action clawSpitAction() {
+        return new ClawSpitAction();
     }
 
     public enum ClawState {
