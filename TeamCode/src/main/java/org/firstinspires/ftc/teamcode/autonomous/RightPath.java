@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
@@ -23,31 +24,44 @@ public class RightPath extends LinearOpMode {
         Claws claws  = new Claws(this);
         Elevators elevators  = new Elevators(this);
 
-        TrajectoryActionBuilder sample1 = drive.actionBuilder(beginPose)
+        TrajectoryActionBuilder B_sample1 = drive.actionBuilder(beginPose)
                 .strafeToSplineHeading(new Vector2d(36,-34),0.75*Math.PI - Math.PI /2);
 
-        TrajectoryActionBuilder unload1 = sample1.endTrajectory().fresh()
+        TrajectoryActionBuilder B_unload1 = B_sample1.endTrajectory().fresh()
                 .strafeToSplineHeading(new Vector2d(52,-50),-Math.PI /2);
 
-        TrajectoryActionBuilder sample2 = unload1.endTrajectory().fresh()
+        TrajectoryActionBuilder B_sample2 = B_unload1.endTrajectory().fresh()
                 .strafeToSplineHeading(new Vector2d(48, -34),0.75*Math.PI- Math.PI /2);
 
-        TrajectoryActionBuilder unload2 = sample2.endTrajectory().fresh()
+        TrajectoryActionBuilder B_unload2 = B_sample2.endTrajectory().fresh()
                 .strafeToSplineHeading(new Vector2d(54,-50),-Math.PI /2);
 
-        TrajectoryActionBuilder sample3 = unload2.endTrajectory().fresh()
+        TrajectoryActionBuilder B_sample3 = B_unload2.endTrajectory().fresh()
                 .strafeToSplineHeading(new Vector2d(57, -34),0.75*Math.PI- Math.PI /2);
 
-        TrajectoryActionBuilder unload3 = sample3.endTrajectory().fresh()
+        TrajectoryActionBuilder B_unload3 = B_sample3.endTrajectory().fresh()
                 .strafeToSplineHeading(new Vector2d(56,-50),-Math.PI /2);
 
-        TrajectoryActionBuilder sample4 = unload3.endTrajectory().fresh()
+        TrajectoryActionBuilder B_sample4 = B_unload3.endTrajectory().fresh()
                 .setTangent(Math.PI * 0.5)
                 .splineToSplineHeading(new Pose2d(26,0, Math.PI),Math.PI);
 
-        TrajectoryActionBuilder unload4 = sample4.endTrajectory().fresh()
+        TrajectoryActionBuilder B_unload4 = B_sample4.endTrajectory().fresh()
                 .setTangent(-(0.75)*Math.PI + Math.PI / 2)
                 .splineToSplineHeading(new Pose2d(58,-50,- Math.PI / 2),- Math.PI / 2);
+
+        // All the actions are Trajectory Builders, need to be converted to actions
+        Action sample1 = B_sample1.build();
+        Action unload1 = B_unload1.build();
+
+        Action sample2 = B_sample2.build();
+        Action unload2 = B_unload2.build();
+
+        Action sample3 = B_sample3.build();
+        Action unload3 = B_unload3.build();
+
+        Action sample4 = B_sample4.build();
+        Action unload4 = B_unload4.build();
 
 //        Actions.runBlocking(v_e to 0 and h_e to 0)
 //        Actions.runBlocking(set elevator power to 0.8)
@@ -68,8 +82,7 @@ public class RightPath extends LinearOpMode {
                         //release sample
                         sample4,
                         //pick up sample
-                        unload4,
-
+                        unload4
 
                 )
         );
