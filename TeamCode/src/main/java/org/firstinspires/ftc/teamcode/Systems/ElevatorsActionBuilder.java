@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 
-public class Elevators {
+public class ElevatorsActionBuilder {
     final int epsilon = 5;
 
     DcMotorEx rightVert;
@@ -80,7 +80,7 @@ public class Elevators {
         }
     }
 
-    public Elevators(OpMode opMode) {
+    public ElevatorsActionBuilder(OpMode opMode) {
         rightVert = opMode.hardwareMap.get(DcMotorEx.class, "rightVert");
         leftVert = opMode.hardwareMap.get(DcMotorEx.class, "leftVert");
         rightHor = opMode.hardwareMap.get(Servo.class, "rightHor");
