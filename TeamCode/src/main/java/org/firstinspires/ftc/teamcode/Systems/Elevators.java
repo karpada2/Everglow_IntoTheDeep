@@ -135,7 +135,7 @@ public class Elevators {
     public enum VerticalState {
         VERTICAL_MIN(0),
         VERTICAL_PICKUP(0),
-        VERTICAL_HURDLE(480),
+        VERTICAL_HURDLE(720),
         VERTICAL_LOW(3070),
         VERTICAL_HIGH(4243),
         VERTICAL_MAX(4243);
@@ -174,6 +174,8 @@ public class Elevators {
         setVerticalDestination(VerticalState.VERTICAL_MIN.state);
         rightVert.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         leftVert.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        rightVert.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftVert.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightVert.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         leftVert.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
