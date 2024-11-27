@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 
 
-public class ClawsActionBuilder {
+public class Claws {
 
     CRServo claw;
 
@@ -73,7 +73,7 @@ public class ClawsActionBuilder {
         }
     }
 
-    public ClawsActionBuilder(OpMode opMode) {
+    public Claws(OpMode opMode) {
         claw = opMode.hardwareMap.get(CRServo.class, "claw");
         claw.setPower(ClawState.OFF.state);
     }

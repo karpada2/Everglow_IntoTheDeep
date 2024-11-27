@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.EverglowLibrary.Systems.Executor;
 
 import java.util.Calendar;
 
-public class Elevators {
+public class Elevators{
     final int epsilon = 5;
 
     DcMotorEx rightVert;
