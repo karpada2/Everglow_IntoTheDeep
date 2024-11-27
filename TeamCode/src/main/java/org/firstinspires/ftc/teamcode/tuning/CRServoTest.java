@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 public class CRServoTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
-        CRServo servo = hardwareMap.get(CRServo.class, "servo");
+        CRServo servo = hardwareMap.get(CRServo.class, "claw");
 
         waitForStart();
         while (opModeIsActive()) {

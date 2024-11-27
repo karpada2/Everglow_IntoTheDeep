@@ -1,16 +1,16 @@
 package org.firstinspires.ftc.teamcode.Systems;
 
-import androidx.annotation.NonNull;
-
-import com.acmerobotics.dashboard.canvas.Canvas;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
-public class ElevatorsActionBuilder {
+import org.firstinspires.ftc.teamcode.EverglowLibrary.Systems.Executor;
+
+import java.util.Calendar;
+
+public class Elevators {
     final int epsilon = 5;
 
     DcMotorEx rightVert;
@@ -20,7 +20,76 @@ public class ElevatorsActionBuilder {
 
     int verticalDestination;
 
+
+
+    boolean isVert = false;
+
+    public class VerticalExecutor extends Executor{
+        private final int destSeuqance;
+        private final int startPos;
+        private final double power = 0.8;
+        public VerticalExecutor(VerticalState state) {
+            startPos = getVerticalCurrentPosition();
+            destSeuqance = state.state;
+        }
+        @Override
+        public boolean isFinished() {
+            double epsilon = 15;
+            boolean isStartBigger = startPos > destSeuqance;
+            boolean isFinish = (isStartBigger &&  startPos - destSeuqance <= epsilon)
+                    || (!isStartBigger &&  destSeuqance - startPos <= epsilon);
+
+            if(isFinish && destSeuqance == VerticalState.VERTICAL_PICKUP.state)
+                setVerticalPower(0);
+
+            return isFinish;
+        }
+
+        @Override
+        public void stop() {
+            setVerticalPower(0);
+        }
+
+        @Override
+        public void run() {
+            setVerticalPower(power);
+            setVerticalDestination(destSeuqance);
+        }
+    }
+
+    public class HorizontalExecutor extends Executor {
+        private final double destSeuqence;
+        private long startTime;
+        private final boolean m_toWait;
+        public HorizontalExecutor(HorizontalState state, boolean toWait) {
+            destSeuqence = state.state;
+            m_toWait = toWait;
+        }
+        @Override
+        public boolean isFinished() {
+            if (m_toWait) {
+                return Calendar.getInstance().getTimeInMillis() - startTime >= 300;
+            }
+            else
+                return true;
+        }
+
+        @Override
+        public void stop() {
+            setHorizontalPosition(getHorizontalState());
+        }
+
+        @Override
+        public void run() {
+            if(m_toWait){
+                startTime = Calendar.getInstance().getTimeInMillis();
+            }
+            setHorizontalPosition(destSeuqence);
+        }
+    }
+
     // sets the vertical elevator to the specified position
+    /*
     public class VerticalElevatorAction implements Action {
         private final int destination;
 
@@ -60,41 +129,61 @@ public class ElevatorsActionBuilder {
         }
     }
 
+     */
+
     // Vertical min is lowest possible, max is highest possible, low and high are terms for the baskets
-    public enum ElevatorState {
+    public enum VerticalState {
         VERTICAL_MIN(0),
-        VERTICAL_PICKUP(1),
-        VERTICAL_HURDLE(2),
-        VERTICAL_LOW(3),
-        VERTICAL_HIGH(4),
-        VERTICAL_MAX(5),
-        HORIZONTAL_RETRACTED(0.0),
-        HORIZONTAL_HALFWAY(0.3),
-        HORIZONTAL_EXTENDED(0.6),
-        HORIZONTAL_MAX(1.0);
+        VERTICAL_PICKUP(0),
+        VERTICAL_HURDLE(720),
+        VERTICAL_LOW(3070),
+        VERTICAL_HIGH(4243),
+        VERTICAL_MAX(4243);
 
-        public final double state;
 
-        ElevatorState(double state) {
+        public final int state;
+
+        VerticalState(int state) {
             this.state = state;
         }
     }
 
-    public ElevatorsActionBuilder(OpMode opMode) {
+    public enum HorizontalState{
+        HORIZONTAL_RETRACTED(0.36),
+        HORIZONTAL_HALFWAY(0.68),
+        HORIZONTAL_EXTENDED(0.99),
+//        HORIZONTAL_DROP(0.5),
+        HORIZONTAL_MAX(1.0);
+
+        public final double state;
+
+        HorizontalState(double state) {
+            this.state = state;
+        }
+    }
+
+    public Elevators(OpMode opMode) {
         rightVert = opMode.hardwareMap.get(DcMotorEx.class, "rightVert");
         leftVert = opMode.hardwareMap.get(DcMotorEx.class, "leftVert");
         rightHor = opMode.hardwareMap.get(Servo.class, "rightHor");
         leftHor = opMode.hardwareMap.get(Servo.class, "leftHor");
 
+        rightVert.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftVert.setDirection(DcMotorSimple.Direction.FORWARD);
+
+        setVerticalDestination(VerticalState.VERTICAL_MIN.state);
+        rightVert.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        leftVert.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        rightVert.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftVert.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightVert.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         leftVert.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         leftHor.setDirection(Servo.Direction.REVERSE);
         rightHor.setDirection(Servo.Direction.FORWARD);
 
-        setVerticalDestination((int) ElevatorState.VERTICAL_MIN.state);
+        setHorizontalPosition(HorizontalState.HORIZONTAL_RETRACTED.state);
 
-        setHorizontalPosition(ElevatorState.HORIZONTAL_RETRACTED.state);
     }
 
     public int getVerticalDestination() {
@@ -124,11 +213,11 @@ public class ElevatorsActionBuilder {
 
     // toggles the horizontal elevator between being
     public void toggleHorizontal() {
-        if (getHorizontalState() == ElevatorState.HORIZONTAL_EXTENDED.state) {
-            setHorizontalPosition(ElevatorState.HORIZONTAL_RETRACTED.state);
+        if (getHorizontalState() == HorizontalState.HORIZONTAL_EXTENDED.state) {
+            setHorizontalPosition(HorizontalState.HORIZONTAL_RETRACTED.state);
         }
         else {
-            setHorizontalPosition(ElevatorState.HORIZONTAL_EXTENDED.state);
+            setHorizontalPosition(HorizontalState.HORIZONTAL_EXTENDED.state);
         }
     }
 
@@ -138,5 +227,18 @@ public class ElevatorsActionBuilder {
             return getVerticalCurrentPosition() >= getVerticalDestination() - epsilon;
         }
         return getVerticalCurrentPosition() <= getVerticalDestination() + epsilon;
+    }
+
+    public void setVerticalPower(double power){
+        rightVert.setPower(power);
+        leftVert.setPower(power);
+    }
+
+    public Executor getVerticalExecutor(VerticalState verticalState){
+        return new VerticalExecutor(verticalState);
+    }
+
+    public Executor getHorizontalExecutor(HorizontalState horizontalState, boolean isToWait){
+        return new HorizontalExecutor(horizontalState, isToWait);
     }
 }
