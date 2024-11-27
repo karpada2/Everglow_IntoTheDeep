@@ -23,7 +23,7 @@ public class LeftPath extends LinearOpMode {
     public void runOpMode()  throws InterruptedException{
         Pose2d beginPose = new Pose2d(-20, -63,   (1./2)*Math.PI);
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
-        ClawsActionBuilder claws  = new ClawsActionBuilder(this);
+        //ClawsActionBuilder claws  = new ClawsActionBuilder(this);
         //Elevators elevators  = new Elevators(this);
 
         TrajectoryActionBuilder B_sample1 = drive.actionBuilder(beginPose)
@@ -68,6 +68,8 @@ public class LeftPath extends LinearOpMode {
 //        Actions.runBlocking(v_e to 0 and h_e to 0)
 //        Actions.runBlocking(set elevator power to 0.8)
 
+        waitForStart();
+
         Actions.runBlocking(
                 new SequentialAction(
                         sample1,
@@ -75,7 +77,7 @@ public class LeftPath extends LinearOpMode {
                                 //lift elevator
                                 unload1
                         ),
-                        claws.clawTakeInAction(),
+                        //claws.clawTakeInAction(),
                         new ParallelAction(
                                 //lower elevator
                                 sample2
