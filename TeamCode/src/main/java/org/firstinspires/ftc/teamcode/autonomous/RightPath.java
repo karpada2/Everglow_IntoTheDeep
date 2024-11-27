@@ -14,6 +14,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Systems.Elevators;
 
+import org.firstinspires.ftc.teamcode.Systems.ClawsActionBuilder;
+import org.firstinspires.ftc.teamcode.Systems.Elevators;
+
 @Config
 @Autonomous(name="RightPath", group="Autonomous")
 public class RightPath extends LinearOpMode {
@@ -21,7 +24,7 @@ public class RightPath extends LinearOpMode {
     public void runOpMode()  throws InterruptedException{
         Pose2d beginPose = new Pose2d(20, -63,   (1./2)*Math.PI);
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
-        Claws claws  = new Claws(this);
+        ClawsActionBuilder claws  = new ClawsActionBuilder(this);
         Elevators elevators  = new Elevators(this);
 
         TrajectoryActionBuilder B_sample1 = drive.actionBuilder(beginPose)
@@ -69,20 +72,22 @@ public class RightPath extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
                         sample1,
-                        //pick up sample
+                        claws.clawTakeInAction(), // takes in sample
                         unload1,
-                        //release sample
+                        claws.clawSpitAction(), //release sample
                         sample2,
-                        //pick up sample
+                        claws.clawTakeInAction(), // takes in sample
                         unload2,
-                        //release sample
+                        claws.clawSpitAction(), //release sample
                         sample3,
-                        //pick up sample
+                        claws.clawTakeInAction(), // takes in sample
                         unload3,
-                        //release sample
+                        claws.clawSpitAction(), //release sample
                         sample4,
-                        //pick up sample
-                        unload4
+                        claws.clawTakeInAction(), // takes in sample
+                        unload4,
+                        claws.clawSpitAction() //release sample
+
 
                 )
         );

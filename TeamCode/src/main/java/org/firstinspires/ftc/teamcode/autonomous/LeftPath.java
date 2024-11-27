@@ -15,6 +15,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Systems.ClawsActionBuilder;
 import org.firstinspires.ftc.teamcode.Systems.Elevators;
+import org.firstinspires.ftc.teamcode.Systems.ElevatorsActionBuilder;
 
 @Config
 @Autonomous(name="LeftPath", group="Autonomous")
@@ -70,43 +71,48 @@ public class LeftPath extends LinearOpMode {
 
         Actions.runBlocking(
                 new SequentialAction(
-                        sample1,
                         new ParallelAction(
-                                //lift elevator
-                                unload1
+                                elevators.getHorizontalAction(Elevators.HorizontalState.HORIZONTAL_HALFWAY), // extends horizontal elevator
+                                 sample1  // goes to the first sample
                         ),
-                        claws.clawTakeInAction(),
-                        new ParallelAction(
-                                //lower elevator
-                                sample2
+                        claws.clawTakeInAction(),   // takes in the sample ,
+                        new ParallelAction(    // starts a parallel action
+                                elevators.getVerticalAction(Elevators.VerticalState.VERTICAL_LOW), // raises the elevators
+                                unload1   // goes to the basket for the first time
                         ),
-                        //pick up sample
-                        new ParallelAction(
-                                //lift elevator
-                                unload2
+                        claws.clawSpitAction(),   // spit out the sample at the low basket
+                        new ParallelAction( // starts a parallel action
+                                elevators.getVerticalAction(Elevators.VerticalState.VERTICAL_MIN), // lowers the elevator
+                                sample2 // goes to the second sample
                         ),
-                        //release sample
+                        claws.clawTakeInAction(), // takes in the second sample
+                        new ParallelAction( // starts a parallel action
+                                elevators.getVerticalAction(Elevators.VerticalState.VERTICAL_LOW), // raises the elevators
+                                unload2 // goes to the basket for the second time
+                        ),
 
-                        new ParallelAction(
-                                //lower elevator
-                                sample3
+                        claws.clawSpitAction(),  //release sample
+                        new ParallelAction(   // starts parallel action
+                                elevators.getVerticalAction(Elevators.VerticalState.VERTICAL_MIN), // lowers the elevators
+                                sample3 // goes to the third sample
                                 ),
-                        //pick up sample
-                        new ParallelAction(
-                                //lift elevator
-                                unload3
+                        claws.clawTakeInAction(), // takes in the sample
+                        new ParallelAction( // starts a parallel action
+                                elevators.getVerticalAction(Elevators.VerticalState.VERTICAL_LOW), // raises the elevators
+                                unload3 // goes for the third sample
                                 ),
-                        //release sample
 
-                        new ParallelAction(
-                                //lower elevator
-                                sample4
+                        claws.clawSpitAction(),  //release sample
+                        new ParallelAction(  // starts a parallel action
+                                elevators.getVerticalAction(Elevators.VerticalState.VERTICAL_MIN), // lowers the elevator
+                                sample4 // goes in for the pitt
                                 ),
-                        //pick up sample
-                        new ParallelAction(
-                                //lift elevator
-                                unload4
-                                )
+                        claws.clawTakeInAction(), // takes in the sample
+                        new ParallelAction( // starts a parallel action
+                                elevators.getVerticalAction(Elevators.VerticalState.VERTICAL_LOW), // raises the elevator
+                                unload4 // goes to the basket
+                                ),
+                        claws.clawSpitAction()  //release sample
 
 
                 )

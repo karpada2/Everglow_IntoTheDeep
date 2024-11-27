@@ -1,5 +1,10 @@
 package org.firstinspires.ftc.teamcode.Systems;
 
+import androidx.annotation.NonNull;
+
+import com.acmerobotics.dashboard.canvas.Canvas;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -89,7 +94,6 @@ public class Elevators{
     }
 
     // sets the vertical elevator to the specified position
-    /*
     public class VerticalElevatorAction implements Action {
         private final int destination;
 
@@ -128,8 +132,6 @@ public class Elevators{
             return true;
         }
     }
-
-     */
 
     // Vertical min is lowest possible, max is highest possible, low and high are terms for the baskets
     public enum VerticalState {
@@ -240,5 +242,13 @@ public class Elevators{
 
     public Executor getHorizontalExecutor(HorizontalState horizontalState, boolean isToWait){
         return new HorizontalExecutor(horizontalState, isToWait);
+    }
+
+    public Action getHorizontalAction(HorizontalState state){
+        return new HorizontalElevatorAction(state.state);
+    }
+
+    public Action getVerticalAction(VerticalState state){
+        return new VerticalElevatorAction(state.state);
     }
 }
