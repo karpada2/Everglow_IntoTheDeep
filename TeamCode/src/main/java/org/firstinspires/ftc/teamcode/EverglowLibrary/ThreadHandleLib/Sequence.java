@@ -12,11 +12,11 @@ import java.util.concurrent.Future;
 
 public class Sequence {
 
-    private Queue<Executor> m_Runs = new LinkedList<>();
-    private Thread m_Thread = new Thread();
-    private boolean m_IsRunAsync;
-    private ExecutorService m_Service;
-    private Queue<Future> m_Futures = new LinkedList<>();
+    private Queue<Executor> runs = new LinkedList<>();
+    private Thread thread = new Thread();
+    private boolean isRunAsync;
+    private ExecutorService service;
+    private Queue<Future> futures = new LinkedList<>();
 
 
     public Sequence(boolean isRunAsync, Executor... AllRuns) {
@@ -24,8 +24,8 @@ public class Sequence {
     }
 
     public Sequence(boolean isRunAsync, List<Executor> AllRuns) {
-        m_Runs.addAll(AllRuns);
-        m_IsRunAsync = isRunAsync;
+        runs.addAll(AllRuns);
+        this.isRunAsync = isRunAsync;
         if(isRunAsync)
             setExecutorAsync(); // parallel
         else
@@ -33,10 +33,10 @@ public class Sequence {
     }
 
     private void setExecutorSync() {
-        m_Thread = new Thread(() -> {
-            Executor[] arrExe = m_Runs.toArray(new Executor[m_Runs.size()]);
+        thread = new Thread(() -> {
+            Executor[] arrExe = runs.toArray(new Executor[runs.size()]);
 
-            for (int i = 0; i<m_Runs.size(); i++){
+            for (int i = 0; i< runs.size(); i++){
                 arrExe[i].run();
                 while (!arrExe[i].isFinished() && !Thread.currentThread().isInterrupted()){
 
@@ -47,34 +47,34 @@ public class Sequence {
         });
     }
 
-    public Executor[] GetRuns(){
-        return m_Runs.toArray(new Executor[m_Runs.size()]);
+    public Executor[] getRuns(){
+        return runs.toArray(new Executor[runs.size()]);
     }
 
 
     private void setExecutorAsync() {
-        if(m_Runs.size() > 0)
-            m_Service = Executors.newFixedThreadPool(m_Runs.size());
+        if(runs.size() > 0)
+            service = Executors.newFixedThreadPool(runs.size());
     }
 
     public void startSequence() {
-        if (m_IsRunAsync) {
-            Executor[] arrExe = m_Runs.toArray(new Executor[m_Runs.size()]);
-            for (int i = 0; i < m_Runs.size(); i++) {
+        if (isRunAsync) {
+            Executor[] arrExe = runs.toArray(new Executor[runs.size()]);
+            for (int i = 0; i < runs.size(); i++) {
                 //run async the run method in order, save the Future class in Queue of the runs
-                m_Futures.add(m_Service.submit(arrExe[i]));
+                futures.add(service.submit(arrExe[i]));
             }
         } else{
-            if(!m_Thread.isAlive()) {
-                m_Thread.start();
+            if(!thread.isAlive()) {
+                thread.start();
             }
         }
     }
 
     public boolean isAllDone() {
-        if (m_IsRunAsync) {
+        if (isRunAsync) {
             for (Future future :
-                    m_Futures) {
+                    futures) {
                 if (!future.isDone())
                     return false;
             }
@@ -84,41 +84,41 @@ public class Sequence {
     }
 
     public boolean isSyncThreadDone() {
-        if (m_Thread != null)
-            return !m_Thread.isAlive();
+        if (thread != null)
+            return !thread.isAlive();
         return true;
     }
 
     public Queue<Future> getFutures() {
-        return m_Futures;
+        return futures;
     }
 
     public Thread getThread() {
-        return m_Thread;
+        return thread;
     }
 
     public boolean isSequenceSync() {
-        return !m_IsRunAsync;
+        return !isRunAsync;
     }
 
     public void setRuns(Queue<Executor> runs) {
         //only if there is nothing in there or the size is zero
-        if (m_Runs != null)
-            if (m_Runs.size() == 0)
-                m_Runs = runs;
+        if (this.runs != null)
+            if (this.runs.size() == 0)
+                this.runs = runs;
             else{
-                m_Runs = runs;
+                this.runs = runs;
             }
 
-        if(m_IsRunAsync)
+        if(isRunAsync)
             setExecutorAsync();
     }
 
     public boolean addRun(Executor run) {
         //only add run the thread isn't started yet
         if (isAllDone()) {
-            m_Runs.add(run);
-            if(m_IsRunAsync)
+            runs.add(run);
+            if(isRunAsync)
                 setExecutorAsync();
             return true;
         }
@@ -126,19 +126,19 @@ public class Sequence {
     }
 
     public Sequence addSequence(Sequence sequence){
-        m_Runs.addAll(sequence.m_Runs);
+        runs.addAll(sequence.runs);
         return this;
     }
 
     public boolean isDone(){
-        return !m_Thread.isAlive();
+        return !thread.isAlive();
     }
 
     public void interruptSequence(){
-        if(m_IsRunAsync)
-            m_Service.shutdown();
+        if(isRunAsync)
+            service.shutdown();
         else
-            m_Thread.interrupt();
+            thread.interrupt();
     }
 
     //todo: set an method that alert when sequence done

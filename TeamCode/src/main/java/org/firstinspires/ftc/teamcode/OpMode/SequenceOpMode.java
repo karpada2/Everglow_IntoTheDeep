@@ -95,14 +95,14 @@ public class SequenceOpMode extends LinearOpMode {
 
             if (gamepad2.triangle && flagTriangle) {
                 //pickUp - to halfWay
-                sequenceRunner.RunSequence(sequenceControl.halfPickUpSeq);
+                sequenceRunner.runSequence(sequenceControl.halfPickUpSeq);
             }
             else if (gamepad2.square && flagSquare){
                 // pickup - to extanded
-                sequenceRunner.RunSequence(sequenceControl.extendedPickUpSeq);
+                sequenceRunner.runSequence(sequenceControl.extendedPickUpSeq);
             }else if (gamepad2.circle && flagCircle) {
                 //return from pickup
-                sequenceRunner.RunSequence(sequenceControl.returnFromPickUp);
+                sequenceRunner.runSequence(sequenceControl.returnFromPickUp);
             }
 
             flagTriangle = !gamepad2.triangle;
@@ -113,22 +113,22 @@ public class SequenceOpMode extends LinearOpMode {
 
             if (gamepad2.dpad_left && flagDpadLeft) {
                 // low basket
-                sequenceRunner.RunSequence(sequenceControl.getReadyToDropLowSeq);
+                sequenceRunner.runSequence(sequenceControl.getReadyToDropLowSeq);
             }
             else if (gamepad2.dpad_up && flagDpadUp) {
                 // high basket
-                sequenceRunner.RunSequence(sequenceControl.getReadyToDropHighSeq);
+                sequenceRunner.runSequence(sequenceControl.getReadyToDropHighSeq);
             }
             else if (gamepad2.dpad_down && flagDpadDown) {
                 // return after putting sample
-                sequenceRunner.RunSequence(sequenceControl.returnFromDrop);
+                sequenceRunner.runSequence(sequenceControl.returnFromDrop);
             }
 
             flagDpadLeft = !gamepad2.dpad_left;
             flagDpadUp = !gamepad2.dpad_up;
             flagDpadDown = !gamepad2.dpad_down;
 
-            sequenceRunner.Update();
+            sequenceRunner.update();
             /*
             right bumper - claw takeIn
             left bumper - claw spit
@@ -138,7 +138,7 @@ public class SequenceOpMode extends LinearOpMode {
             dpad left - action to move to high basket and put the sample in
              */
         }
-        sequenceRunner.Interapt();
+        sequenceRunner.interapt();
         sleep(500);
     }
 }

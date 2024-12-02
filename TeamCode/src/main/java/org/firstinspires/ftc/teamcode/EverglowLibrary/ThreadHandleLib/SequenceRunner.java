@@ -1,23 +1,25 @@
 package org.firstinspires.ftc.teamcode.EverglowLibrary.ThreadHandleLib;
 
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+
 import org.firstinspires.ftc.teamcode.EverglowLibrary.Systems.Executor;
 
 import java.util.Calendar;
 
 public class SequenceRunner {
-    private boolean m_IsFinished = true;
-    private Sequence m_RunningSequence;
-    private Sequence[] m_AllSequences;
-    private int SequenceIndex = 0;
-    private Executor[] m_Runs;
-    private int CurrentRun = 0;
+    private boolean isFinished = true;
+    private Sequence runningSequence;
+    private Sequence[] allSequences;
+    private int sequenceIndex = 0;
+    private Executor[] runs;
+    private int currentRun = 0;
     private boolean isInterapted = false;
     private boolean isSync;
-    private Thread RunThread; //makes longer runs without
+    private Thread runThread; //makes longer runs without
     private Long startTime;
 
     public SequenceRunner(Sequence sequence){
-        TrySetSequence(sequence);
+        trySetSequence(sequence);
     }
 
     public SequenceRunner(){
@@ -29,109 +31,110 @@ public class SequenceRunner {
     }
 
     public SequenceRunner(Sequence... sequences){
-        TrySetSequence(sequences);
+        trySetSequence(sequences);
     }
 
     public SequenceRunner(SequenceInSequence sequence){
-        TrySetSequence(sequence.GetAllSequences());
+        trySetSequence(sequence.GetAllSequences());
     }
 
-    public void Update(){
+    public void update(){
         int countInSec = 3;
-        if(m_Runs == null)
+        if(runs == null)
             return;
 
         if(isInterapted) {
-            m_Runs[CurrentRun].stop();
-            Reset();
+            runs[currentRun].stop();
+            reset();
             return;
         }
+        opMode.telemetry.addData("is finished: ", runs[currentRun].isFinished());
 
-        if(m_Runs[CurrentRun].isFinished() || !isSync
+        if(runs[currentRun].isFinished() || !isSync
                 || Calendar.getInstance().getTimeInMillis() - startTime >= countInSec*1000){
-            CurrentRun++;
-            if(CurrentRun < m_Runs.length){
-                RunThread = new Thread(m_Runs[CurrentRun]);
-                RunThread.start();
+            currentRun++;
+            if(currentRun < runs.length){
+                runThread = new Thread(runs[currentRun]);
+                runThread.start();
             }
             else{
-                SequenceIndex++;
-                m_IsFinished = true;
-                m_Runs = null;
+                sequenceIndex++;
+                isFinished = true;
+                runs = null;
 
-                if(SequenceIndex < m_AllSequences.length)
+                if(sequenceIndex < allSequences.length)
                 {
-                    m_RunningSequence = m_AllSequences[SequenceIndex];
-                    RunSequence();
+                    runningSequence = allSequences[sequenceIndex];
+                    runSequence();
                 }
                 else
                 {
-                    Reset();
+                    reset();
                 }
             }
         }
     }
-    public void RunSequence(){
-        if(m_IsFinished && m_RunningSequence != null)
+    public void runSequence(){
+        if(isFinished && runningSequence != null)
         {
             startTime = System.currentTimeMillis();
-            m_IsFinished = false;
-            m_Runs = m_RunningSequence.GetRuns();
-            isSync = m_RunningSequence.isSequenceSync();
-            CurrentRun = 0;
+            isFinished = false;
+            runs = runningSequence.getRuns();
+            isSync = runningSequence.isSequenceSync();
+            currentRun = 0;
             //m_Runs[CurrentRun].run();
-            RunThread = new Thread(m_Runs[CurrentRun]);
-            RunThread.start();
+            runThread = new Thread(runs[currentRun]);
+            runThread.start();
         }
     }
 
-    public void RunSequence(Sequence sequence){
-        if(m_IsFinished) {
-            TrySetSequence(sequence);
-            RunSequence();
+    public void runSequence(Sequence sequence){
+        if(isFinished) {
+            trySetSequence(sequence);
+            runSequence();
         }
     }
 
-    public void RunSequence(Sequence[] sequences){
-        if(m_IsFinished) {
-            TrySetSequence(sequences);
-            RunSequence();
+    public void runSequence(Sequence[] sequences){
+        if(isFinished) {
+            trySetSequence(sequences);
+            runSequence();
         }
     }
 
-    public void RunSequence(SequenceInSequence sequences){
-        if(m_IsFinished) {
-            TrySetSequence(sequences.GetAllSequences());
-            RunSequence();
+    public void runSequence(SequenceInSequence sequences){
+        if(isFinished) {
+            trySetSequence(sequences.GetAllSequences());
+            runSequence();
         }
     }
 
-    public void TrySetSequence(Sequence sequence){
-        TrySetSequence(new Sequence[] {sequence});
+    public void trySetSequence(Sequence sequence){
+        trySetSequence(new Sequence[] {sequence});
     }
 
-    public void TrySetSequence(Sequence[] sequences){
-        if(m_IsFinished){
-            m_AllSequences = sequences;
-            SequenceIndex = 0;
-            m_RunningSequence = sequences[SequenceIndex];
-            isSync = m_RunningSequence.isSequenceSync();
+    public void trySetSequence(Sequence[] sequences){
+        if(isFinished){
+            allSequences = sequences;
+            sequenceIndex = 0;
+            runningSequence = sequences[sequenceIndex];
+            isSync = runningSequence.isSequenceSync();
         }
     }
 
-    private void Reset(){
-        m_Runs = null;
-        SequenceIndex = 0;
-        m_AllSequences = null;
-        CurrentRun = 0;
+    private void reset(){
+        runs = null;
+        sequenceIndex = 0;
+        allSequences = null;
+        currentRun = 0;
     }
     public boolean IsSequenceDone(){
-        return m_IsFinished;
+        return isFinished;
     }
 
-    public void Interapt(){
+    public void interapt(){
         isInterapted = true;
-        Update();
+        update();
     }
 
 }
