@@ -1,5 +1,10 @@
 package org.firstinspires.ftc.teamcode.Systems;
 
+import androidx.annotation.NonNull;
+
+import com.acmerobotics.dashboard.canvas.Canvas;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -89,7 +94,6 @@ public class Elevators{
     }
 
     // sets the vertical elevator to the specified position
-    /*
     public class VerticalElevatorAction implements Action {
         private final int destination;
 
@@ -104,14 +108,19 @@ public class Elevators{
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            setVerticalDestination(destination);
-            return true;
+            if (leftVert.getPower() == 0.0) {
+                setVerticalPower(0.8);
+            }
+
+            setVerticalDestination(this.destination);
+            return isElevatorInDestination();
         }
     }
 
     // sets the horizontal elevator to the specified position
     public class HorizontalElevatorAction implements Action {
         private final double destination;
+        private double position;
 
         public HorizontalElevatorAction(double destination) {
             this.destination = destination;
@@ -124,12 +133,12 @@ public class Elevators{
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            setHorizontalPosition(destination);
-            return true;
+            position += 0.01;
+            setHorizontalPosition(position);
+
+            return Math.abs(position - destination) <= 0.01;
         }
     }
-
-     */
 
     // Vertical min is lowest possible, max is highest possible, low and high are terms for the baskets
     public enum VerticalState {
@@ -240,5 +249,13 @@ public class Elevators{
 
     public Executor getHorizontalExecutor(HorizontalState horizontalState, boolean isToWait){
         return new HorizontalExecutor(horizontalState, isToWait);
+    }
+
+    public VerticalElevatorAction setVerticalElevatorAction(VerticalState targetState) {
+        return new VerticalElevatorAction(targetState.state);
+    }
+
+    public HorizontalElevatorAction setHorizontalElevatorAction(double horizontalTarget) {
+        return new HorizontalElevatorAction(horizontalTarget);
     }
 }
