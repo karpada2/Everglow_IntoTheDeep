@@ -8,8 +8,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.EverglowLibrary.Systems.Executor;
 
-import java.util.Calendar;
-
 public class Elevators {
     final int epsilon = 5;
 
@@ -67,8 +65,9 @@ public class Elevators {
         }
         @Override
         public boolean isFinished() {
+            int timeToWait = 3000;
             if (m_toWait) {
-                return Calendar.getInstance().getTimeInMillis() - startTime >= 300;
+                return System.currentTimeMillis() - startTime >= timeToWait;
             }
             else
                 return true;
@@ -82,7 +81,8 @@ public class Elevators {
         @Override
         public void run() {
             if(m_toWait){
-                startTime = Calendar.getInstance().getTimeInMillis();
+                startTime = System.currentTimeMillis();
+                stop();
             }
             setHorizontalPosition(destSeuqence);
         }
