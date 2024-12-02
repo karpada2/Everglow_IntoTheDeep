@@ -24,8 +24,8 @@ public class LeftPath extends LinearOpMode {
     public void runOpMode()  throws InterruptedException{
         Pose2d beginPose = new Pose2d(-20, -63,   (1./2)*Math.PI);
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
-        //ClawsActionBuilder claws  = new ClawsActionBuilder(this);
-        //Elevators elevators  = new Elevators(this);
+        ClawsActionBuilder claws  = new ClawsActionBuilder(this);
+        Elevators elevators  = new Elevators(this);
 
         TrajectoryActionBuilder B_sample1 = drive.actionBuilder(beginPose)
                 .strafeToSplineHeading(new Vector2d(-36,-34),0.75*Math.PI);
@@ -81,7 +81,7 @@ public class LeftPath extends LinearOpMode {
                         new ParallelAction(
                                 //lower elevator
                                 sample2,
-                        claws.clawTakeInAction()   // takes in the sample ,
+                        claws.clawTakeInAction(),   // takes in the sample
                         new ParallelAction(    // starts a parallel action
                                 elevators.getVerticalAction(Elevators.VerticalState.VERTICAL_LOW), // raises the elevators
                                 unload1   // goes to the basket for the first time
@@ -122,6 +122,7 @@ public class LeftPath extends LinearOpMode {
 
 
                 )
-        );
+        ));
+
     }
 }
