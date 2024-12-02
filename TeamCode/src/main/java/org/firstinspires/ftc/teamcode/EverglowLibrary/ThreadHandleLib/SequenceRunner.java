@@ -17,13 +17,14 @@ public class SequenceRunner {
     private boolean isSync;
     private Thread runThread; //makes longer runs without
     private Long startTime;
+    private OpMode opMode;
 
     public SequenceRunner(Sequence sequence){
         trySetSequence(sequence);
     }
 
-    public SequenceRunner(){
-
+    public SequenceRunner(OpMode opMode){
+        this.opMode = opMode;
     }
 
     public SequenceRunner(boolean isSync, Executor... executors){

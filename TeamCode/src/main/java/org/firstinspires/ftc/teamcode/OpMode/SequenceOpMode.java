@@ -38,7 +38,7 @@ public class SequenceOpMode extends LinearOpMode {
         claw = new Claws(this);
         elevators = new Elevators(this);
         SequenceControl sequenceControl = new SequenceControl(elevators, claw);
-        SequenceRunner sequenceRunner = new SequenceRunner();
+        SequenceRunner sequenceRunner = new SequenceRunner(this);
 
         boolean flagRightBumper = true;
         boolean flagLeftBumper = true;
@@ -137,6 +137,7 @@ public class SequenceOpMode extends LinearOpMode {
             dpad up - action to move to low basket and put the sample in
             dpad left - action to move to high basket and put the sample in
              */
+            telemetry.update();
         }
         sequenceRunner.interapt();
         sleep(500);

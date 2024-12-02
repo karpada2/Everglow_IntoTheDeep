@@ -32,13 +32,13 @@ public class Elevators {
         }
         @Override
         public boolean isFinished() {
-            double epsilon = 15;
+            double epsilon = 30;
             boolean isStartBigger = startPos > destSeuqance;
             boolean isFinish = (isStartBigger &&  startPos - destSeuqance <= epsilon)
                     || (!isStartBigger &&  destSeuqance - startPos <= epsilon);
 
-            if(isFinish && destSeuqance == VerticalState.VERTICAL_PICKUP.state)
-                setVerticalPower(0);
+//            if(isFinish && destSeuqance == VerticalState.VERTICAL_PICKUP.state)
+//                setVerticalPower(0);
 
             return isFinish;
         }
