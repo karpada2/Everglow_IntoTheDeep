@@ -13,9 +13,11 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
-import org.firstinspires.ftc.teamcode.Systems.ClawsActionBuilder;
+import org.firstinspires.ftc.teamcode.Systems.Claws;
+import org.firstinspires.ftc.teamcode.Systems.Claws.ClawState;
+import org.firstinspires.ftc.teamcode.Systems.Elevators.HorizontalState;
+import org.firstinspires.ftc.teamcode.Systems.Elevators.VerticalState;
 import org.firstinspires.ftc.teamcode.Systems.Elevators;
-import org.firstinspires.ftc.teamcode.Systems.ElevatorsActionBuilder;
 
 @Config
 @Autonomous(name="LeftPath", group="Autonomous")
@@ -24,11 +26,12 @@ public class LeftPath extends LinearOpMode {
     public void runOpMode()  throws InterruptedException{
         Pose2d beginPose = new Pose2d(-20, -63,   (1./2)*Math.PI);
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
-        ClawsActionBuilder claws  = new ClawsActionBuilder(this);
+        Claws claws  = new Claws(this);
         Elevators elevators  = new Elevators(this);
 
         TrajectoryActionBuilder B_sample1 = drive.actionBuilder(beginPose)
-                .strafeToSplineHeading(new Vector2d(-28,-37),0.75*Math.PI);
+                .strafeToSplineHeading(new Vector2d(-28,-37),0.75*Math.PI)
+                .waitSeconds(1);
 
         TrajectoryActionBuilder B_unload1 = B_sample1.endTrajectory().fresh()
                 .strafeToSplineHeading(new Vector2d(-53,-53),1.25*Math.PI);
@@ -77,7 +80,10 @@ public class LeftPath extends LinearOpMode {
 
         Actions.runBlocking(
                 new SequentialAction(
-                        sample1,
+                        new ParallelAction(
+                                sample1,
+                                claws.setClawAction(ClawState.TAKE_IN),
+                                elevators.setHorizontalElevatorAction(HorizontalState.HORIZONTAL_EXTENDED.state)),
                         unload1,
                         sample2,
                         unload2,
