@@ -28,30 +28,30 @@ public class LeftPath extends LinearOpMode {
         Elevators elevators  = new Elevators(this);
 
         TrajectoryActionBuilder B_sample1 = drive.actionBuilder(beginPose)
-                .strafeToSplineHeading(new Vector2d(-36,-34),0.75*Math.PI);
+                .strafeToSplineHeading(new Vector2d(-28,-37),0.75*Math.PI);
 
         TrajectoryActionBuilder B_unload1 = B_sample1.endTrajectory().fresh()
-                .strafeToSplineHeading(new Vector2d(-56,-56),1.25*Math.PI);
+                .strafeToSplineHeading(new Vector2d(-53,-53),1.25*Math.PI);
 
         TrajectoryActionBuilder B_sample2 = B_unload1.endTrajectory().fresh()
-                .strafeToSplineHeading(new Vector2d(-48, -34),0.75*Math.PI);
+                .strafeToSplineHeading(new Vector2d(-45, -37),0.75*Math.PI);
 
         TrajectoryActionBuilder B_unload2 = B_sample2.endTrajectory().fresh()
-                .strafeToSplineHeading(new Vector2d(-56,-56),1.25*Math.PI);
+                .strafeToSplineHeading(new Vector2d(-53,-53),1.25*Math.PI);
 
         TrajectoryActionBuilder B_sample3 = B_unload2.endTrajectory().fresh()
-                .strafeToSplineHeading(new Vector2d(-57, -34),0.75*Math.PI);
+                .strafeToSplineHeading(new Vector2d(-54, -37),0.75*Math.PI);
 
         TrajectoryActionBuilder B_unload3 = B_sample3.endTrajectory().fresh()
-                .strafeToSplineHeading(new Vector2d(-56,-56),1.25*Math.PI);
+                .strafeToSplineHeading(new Vector2d(-53,-53),1.25*Math.PI);
 
         TrajectoryActionBuilder B_sample4 = B_unload3.endTrajectory().fresh()
                 .setTangent(Math.PI * 0.5)
-                .splineToSplineHeading(new Pose2d(-26,0, 0),0);
+                .splineToSplineHeading(new Pose2d(-29,0, 0),0);
 
         TrajectoryActionBuilder B_unload4 = B_sample4.endTrajectory().fresh()
                 .setTangent(-(0.75)*Math.PI)
-                .splineToSplineHeading(new Pose2d(-56,-56,1.25*Math.PI),1.25*Math.PI);
+                .splineToSplineHeading(new Pose2d(-53,-53,1.25*Math.PI),1.25*Math.PI);
 
         Action wait = drive.actionBuilder(new Pose2d(0,0,0))
                 .waitSeconds(3)
@@ -77,65 +77,15 @@ public class LeftPath extends LinearOpMode {
 
         Actions.runBlocking(
                 new SequentialAction(
-                        new ParallelAction(
-                                wait,
-                                //elevators.getHorizontalAction(Elevators.HorizontalState.HORIZONTAL_HALFWAY), // extends horizontal elevator
-                                 sample1  // goes to the first sample
-                        ),
-                        //claws.clawTakeInAction(),
-                        new ParallelAction(
-                                wait,
-                                //lowers elevator
-                                sample2
-                        ),
-                        //claws.clawTakeInAction(),   // takes in the sample
-                        new ParallelAction(    // starts a parallel action
-                                wait,
-                                //elevators.getVerticalAction(Elevators.VerticalState.VERTICAL_LOW), // raises the elevators
-                                unload1   // goes to the basket for the first time
-                        ),
-                        //claws.clawSpitAction(),   // spit out the sample at the low basket
-                        new ParallelAction( // starts a parallel action
-                                wait,
-                                //elevators.getVerticalAction(Elevators.VerticalState.VERTICAL_MIN), // lowers the elevator
-                                sample2 // goes to the second sample
-                        ),
-                        //claws.clawTakeInAction(), // takes in the second sample
-                        new ParallelAction( // starts a parallel action
-                                wait,
-                                //elevators.getVerticalAction(Elevators.VerticalState.VERTICAL_LOW), // raises the elevators
-                                unload2 // goes to the basket for the second time
-                        ),
+                        sample1,
+                        unload1,
+                        sample2,
+                        unload2,
+                        sample3,
+                        unload3,
+                        sample4,
+                        unload4)
 
-                        //claws.clawSpitAction(),  //release sample
-                        new ParallelAction(   // starts parallel action
-                                wait,
-                                //elevators.getVerticalAction(Elevators.VerticalState.VERTICAL_MIN), // lowers the elevators
-                                sample3 // goes to the third sample
-                                ),
-                        //claws.clawTakeInAction(), // takes in the sample
-                        new ParallelAction( // starts a parallel action
-                                wait,
-                                //elevators.getVerticalAction(Elevators.VerticalState.VERTICAL_LOW), // raises the elevators
-                                unload3 // goes to the third sample
-                                ),
-
-                        //claws.clawSpitAction(),  //release sample
-                        new ParallelAction(  // starts a parallel action
-                                wait,
-                                //elevators.getVerticalAction(Elevators.VerticalState.VERTICAL_MIN), // lowers the elevator
-                                sample4 // goes in for the pit
-                                ),
-                        //claws.clawTakeInAction(), // takes in the sample
-                        new ParallelAction( // starts a parallel action
-                                wait,
-                                //elevators.getVerticalAction(Elevators.VerticalState.VERTICAL_LOW), // raises the elevator
-                                unload4 // goes to the basket
-                                ),
-                        claws.clawSpitAction()  //release sample
-
-
-                )
-        );
+                );
     }
 }

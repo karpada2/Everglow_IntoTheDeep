@@ -11,7 +11,7 @@ import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
 public class MeepMeepTesting {
     public static void main(String[] args) {
         System.setProperty("sun.java2d.opengl", "true");
-        MeepMeep meepMeep = new MeepMeep(800);
+        MeepMeep meepMeep = new MeepMeep(600);
 
 
 
@@ -23,31 +23,31 @@ public class MeepMeepTesting {
         Pose2d beginPose = new Pose2d(-20, -63,   (1./2)*Math.PI);
         TrajectoryActionBuilder left_start_path = myBot.getDrive().actionBuilder(beginPose)
                 .waitSeconds(2)
-                .strafeToSplineHeading(new Vector2d(-36,-34),0.75*Math.PI)
+                .strafeToSplineHeading(new Vector2d(-28,-37),0.75*Math.PI)
                 // goes to right sample on the left
                 .waitSeconds(1) //grabs sample remove
                 //elevator
-                .strafeToSplineHeading(new Vector2d(-56,-56),1.25*Math.PI)
+                .strafeToSplineHeading(new Vector2d(-53,-53),1.25*Math.PI)
                 // goes to basket
-                .strafeToSplineHeading(new Vector2d(-48, -34),0.75*Math.PI)
+                .strafeToSplineHeading(new Vector2d(-45, -37),0.75*Math.PI)
                 // goes to middle sample on the left
                 .waitSeconds(1) //grabs sample
                 //elevator
-                .strafeToSplineHeading(new Vector2d(-56,-56),1.25*Math.PI)
+                .strafeToSplineHeading(new Vector2d(-53,-53),1.25*Math.PI)
                 // goes to basket
-                .strafeToSplineHeading(new Vector2d(-57, -34),0.75*Math.PI)
+                .strafeToSplineHeading(new Vector2d(-54, -37),0.75*Math.PI)
                 // goes to left sample on the left
                 .waitSeconds(1) //grabs sample
                 //elevator
                 // goes to basket
-                .strafeToSplineHeading(new Vector2d(-56,-56),1.25*Math.PI)
+                .strafeToSplineHeading(new Vector2d(-53,-53),1.25*Math.PI)
                 // goes to sample pool
                 .setTangent(Math.PI * 0.5)
-                .splineToSplineHeading(new Pose2d(-26,0, 0),0)
+                .splineToSplineHeading(new Pose2d(-29,0, 0),0)
                 .waitSeconds(1) //grabs sample
                 //elevator
                 .setTangent(-(0.75)*Math.PI)
-                .splineToSplineHeading(new Pose2d(-56,-56,1.25*Math.PI),1.25*Math.PI)
+                .splineToSplineHeading(new Pose2d(-53,-53,1.25*Math.PI),1.25*Math.PI)
                 ;
 
 
