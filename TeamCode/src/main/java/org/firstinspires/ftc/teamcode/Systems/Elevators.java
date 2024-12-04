@@ -96,6 +96,7 @@ public class Elevators{
     // sets the vertical elevator to the specified position
     public class VerticalElevatorAction implements Action {
         private final int destination;
+        private boolean isInitialized = false;
 
         public VerticalElevatorAction(int destination) {
             this.destination = destination;
@@ -108,17 +109,36 @@ public class Elevators{
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            setVerticalDestination(destination);
-            return true;
+            if (leftVert.getPower() == 0.0) {
+                setVerticalPower(0.8);
+            }
+            if (!isInitialized) {
+                setVerticalDestination(this.destination);
+                isInitialized = true;
+            }
+
+            return !isElevatorInDestination();
         }
     }
 
-    // sets the horizontal elevator to the specified position
+
+    /*
+    -------------------------------------------------------------------
+    | stepSize and tolerance need to be tuned so it feels good to use |
+    -------------------------------------------------------------------
+     */
+    // moves the horizontal elevators to destination, and is considered finished when they reach the destination
     public class HorizontalElevatorAction implements Action {
         private final double destination;
+        private double position;
+        private final double stepSize = 0.0003;
+        private final double directionToMove;
+        private final double tolerance = 0.01;
 
         public HorizontalElevatorAction(double destination) {
             this.destination = destination;
+            this.position = leftHor.getPosition();
+            directionToMove = this.destination > this.position ? 1 : -1;
         }
 
         @Override
@@ -128,8 +148,10 @@ public class Elevators{
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            setHorizontalPosition(destination);
-            return true;
+            this.position += stepSize * directionToMove;
+            setHorizontalPosition(this.position);
+
+            return Math.abs(this.position - this.destination) >= tolerance;
         }
     }
 
@@ -236,6 +258,14 @@ public class Elevators{
         leftVert.setPower(power);
     }
 
+    public double getLeftHorPos() {
+        return leftHor.getPosition();
+    }
+
+    public double getRightHorPos() {
+        return rightHor.getPosition();
+    }
+
     public Executor getVerticalExecutor(VerticalState verticalState){
         return new VerticalExecutor(verticalState);
     }
@@ -250,5 +280,13 @@ public class Elevators{
 
     public Action getVerticalAction(VerticalState state){
         return new VerticalElevatorAction(state.state);
+
+    }
+    public VerticalElevatorAction setVerticalElevatorAction(VerticalState targetState) {
+        return new VerticalElevatorAction(targetState.state);
+    }
+
+    public HorizontalElevatorAction setHorizontalElevatorAction(double horizontalTarget) {
+        return new HorizontalElevatorAction(horizontalTarget);
     }
 }

@@ -13,51 +13,32 @@ public class Claws {
 
     CRServo claw;
 
-    // takes in a boolean, and takes in a sample if it is true, turns off otherwise
-    private class ClawTakeInAction implements Action {
-        boolean turnOn;
+    // sets the claw's power to the targetState, and considers the action finished after timeToFinish miliseconds
+    public class ClawAction implements Action {
+        private final ClawState targetState;
+        private final double startTime;
+        private final double stopTime;
+        private boolean isInitialized = false;
 
-        public ClawTakeInAction(boolean turnOn) {
-            this.turnOn = turnOn;
-        }
-
-        @Override
-        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            if (turnOn) {
-                setState(ClawState.TAKE_IN);
-            } else {
-                setState(ClawState.OFF);
-            }
-            return true;
+        private ClawAction(ClawState targetState, double timeToFinish) {
+            this.targetState = targetState;
+            this.startTime = System.currentTimeMillis();
+            this.stopTime = timeToFinish;
         }
 
         @Override
         public void preview(@NonNull Canvas fieldOverlay) {
             Action.super.preview(fieldOverlay);
         }
-    }
-
-    // takes in a boolean, and spits out the sample if it is true, turns off otherwise
-    private class ClawSpitAction implements Action {
-        boolean turnOn;
-
-        public ClawSpitAction(boolean turnOn) {
-            this.turnOn = turnOn;
-        }
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            if (turnOn) {
-                setState(ClawState.SPIT);
-            } else {
-                setState(ClawState.OFF);
+            if (!isInitialized) {
+                setState(targetState);
+                isInitialized = true;
             }
-            return true;
-        }
 
-        @Override
-        public void preview(@NonNull Canvas fieldOverlay) {
-            Action.super.preview(fieldOverlay);
+            return System.currentTimeMillis() - startTime < stopTime;
         }
     }
 
@@ -93,5 +74,15 @@ public class Claws {
     // sets the servo to the needed power level in the enum
     public void setState(ClawState state) {
         claw.setPower(state.state);
+    }
+
+    // receives what to set the claw to and the time in milliseconds until the action is considered finished
+    public ClawAction setClawAction(ClawState targetState, double timeUntilFinished) {
+        return new ClawAction(targetState, timeUntilFinished);
+    }
+
+    // receives what to set the claw to and considers the action to be immediately finished
+    public ClawAction setClawAction(ClawState targetState) {
+        return new ClawAction(targetState, 0);
     }
 }
