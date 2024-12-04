@@ -131,7 +131,7 @@ public class Elevators{
     public class HorizontalElevatorAction implements Action {
         private final double destination;
         private double position;
-        private final double stepSize = 0.0001;
+        private final double stepSize = 0.0003;
         private final double directionToMove;
         private final double tolerance = 0.01;
 
