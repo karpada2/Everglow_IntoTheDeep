@@ -53,6 +53,10 @@ public class LeftPath extends LinearOpMode {
                 .setTangent(-(0.75)*Math.PI)
                 .splineToSplineHeading(new Pose2d(-56,-56,1.25*Math.PI),1.25*Math.PI);
 
+        Action wait = drive.actionBuilder(new Pose2d(0,0,0))
+                .waitSeconds(3)
+                .build();
+
         // Turning action builders into actions
         Action sample1 = B_sample1.build();
         Action unload1 = B_unload1.build();
@@ -74,55 +78,64 @@ public class LeftPath extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
                         new ParallelAction(
-                                elevators.getHorizontalAction(Elevators.HorizontalState.HORIZONTAL_HALFWAY), // extends horizontal elevator
+                                wait,
+                                //elevators.getHorizontalAction(Elevators.HorizontalState.HORIZONTAL_HALFWAY), // extends horizontal elevator
                                  sample1  // goes to the first sample
                         ),
                         //claws.clawTakeInAction(),
                         new ParallelAction(
-                                //lower elevator
-                                sample2,
-                        claws.clawTakeInAction(),   // takes in the sample
+                                wait,
+                                //lowers elevator
+                                sample2
+                        ),
+                        //claws.clawTakeInAction(),   // takes in the sample
                         new ParallelAction(    // starts a parallel action
-                                elevators.getVerticalAction(Elevators.VerticalState.VERTICAL_LOW), // raises the elevators
+                                wait,
+                                //elevators.getVerticalAction(Elevators.VerticalState.VERTICAL_LOW), // raises the elevators
                                 unload1   // goes to the basket for the first time
                         ),
-                        claws.clawSpitAction(),   // spit out the sample at the low basket
+                        //claws.clawSpitAction(),   // spit out the sample at the low basket
                         new ParallelAction( // starts a parallel action
-                                elevators.getVerticalAction(Elevators.VerticalState.VERTICAL_MIN), // lowers the elevator
+                                wait,
+                                //elevators.getVerticalAction(Elevators.VerticalState.VERTICAL_MIN), // lowers the elevator
                                 sample2 // goes to the second sample
                         ),
-                        claws.clawTakeInAction(), // takes in the second sample
+                        //claws.clawTakeInAction(), // takes in the second sample
                         new ParallelAction( // starts a parallel action
-                                elevators.getVerticalAction(Elevators.VerticalState.VERTICAL_LOW), // raises the elevators
+                                wait,
+                                //elevators.getVerticalAction(Elevators.VerticalState.VERTICAL_LOW), // raises the elevators
                                 unload2 // goes to the basket for the second time
                         ),
 
-                        claws.clawSpitAction(),  //release sample
+                        //claws.clawSpitAction(),  //release sample
                         new ParallelAction(   // starts parallel action
-                                elevators.getVerticalAction(Elevators.VerticalState.VERTICAL_MIN), // lowers the elevators
+                                wait,
+                                //elevators.getVerticalAction(Elevators.VerticalState.VERTICAL_MIN), // lowers the elevators
                                 sample3 // goes to the third sample
                                 ),
-                        claws.clawTakeInAction(), // takes in the sample
+                        //claws.clawTakeInAction(), // takes in the sample
                         new ParallelAction( // starts a parallel action
-                                elevators.getVerticalAction(Elevators.VerticalState.VERTICAL_LOW), // raises the elevators
-                                unload3 // goes for the third sample
+                                wait,
+                                //elevators.getVerticalAction(Elevators.VerticalState.VERTICAL_LOW), // raises the elevators
+                                unload3 // goes to the third sample
                                 ),
 
-                        claws.clawSpitAction(),  //release sample
+                        //claws.clawSpitAction(),  //release sample
                         new ParallelAction(  // starts a parallel action
-                                elevators.getVerticalAction(Elevators.VerticalState.VERTICAL_MIN), // lowers the elevator
-                                sample4 // goes in for the pitt
+                                wait,
+                                //elevators.getVerticalAction(Elevators.VerticalState.VERTICAL_MIN), // lowers the elevator
+                                sample4 // goes in for the pit
                                 ),
-                        claws.clawTakeInAction(), // takes in the sample
+                        //claws.clawTakeInAction(), // takes in the sample
                         new ParallelAction( // starts a parallel action
-                                elevators.getVerticalAction(Elevators.VerticalState.VERTICAL_LOW), // raises the elevator
+                                wait,
+                                //elevators.getVerticalAction(Elevators.VerticalState.VERTICAL_LOW), // raises the elevator
                                 unload4 // goes to the basket
                                 ),
                         claws.clawSpitAction()  //release sample
 
 
                 )
-        ));
-
+        );
     }
 }
