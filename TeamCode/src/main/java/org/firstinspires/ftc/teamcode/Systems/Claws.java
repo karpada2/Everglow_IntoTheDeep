@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Systems;
 
 import androidx.annotation.NonNull;
 
+import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -12,6 +13,7 @@ public class Claws {
 
     CRServo claw;
 
+    // sets the claw's power to the targetState, and considers the action finished after timeToFinish miliseconds
     public class ClawAction implements Action {
         private final ClawState targetState;
         private final double startTime;
@@ -25,13 +27,18 @@ public class Claws {
         }
 
         @Override
+        public void preview(@NonNull Canvas fieldOverlay) {
+            Action.super.preview(fieldOverlay);
+        }
+
+        @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             if (!isInitialized) {
                 setState(targetState);
                 isInitialized = true;
             }
 
-            return System.currentTimeMillis() - startTime >= stopTime;
+            return System.currentTimeMillis() - startTime < stopTime;
         }
     }
 

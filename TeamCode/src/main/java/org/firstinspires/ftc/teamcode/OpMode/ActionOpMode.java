@@ -89,7 +89,7 @@ public class ActionOpMode extends LinearOpMode {
 
             if (builtAction == null) {
                 builtAction = clawAction;
-            } else {
+            } else if (clawAction != null) {
                 builtAction = new SequentialAction(builtAction, clawAction);
             }
 
@@ -114,7 +114,7 @@ public class ActionOpMode extends LinearOpMode {
 
             if (builtAction == null) {
                 builtAction = verticalAction;
-            } else {
+            } else if (verticalAction != null) {
                 builtAction = new SequentialAction(builtAction, verticalAction);
             }
 
@@ -138,7 +138,7 @@ public class ActionOpMode extends LinearOpMode {
 
             if (builtAction == null) {
                 builtAction = horizontalAction;
-            } else {
+            } else if (horizontalAction != null) {
                 builtAction = new SequentialAction(builtAction, horizontalAction);
             }
 
@@ -146,21 +146,17 @@ public class ActionOpMode extends LinearOpMode {
             flagDpadUp = !gamepad2.dpad_up;
             flagDpadDown = !gamepad2.dpad_down;
 
-            if (gamepad2.right_trigger < triggerThreshold) {
+            if (gamepad2.right_trigger > triggerThreshold) {
                 if (builtAction != null) {
                     Actions.runBlocking(builtAction);
                     builtAction = null;
                 }
             }
 
-            /*
-            right bumper - claw takeIn
-            left bumper - claw spit
-            triangle - action to get ready for pickup (clear hurdle and that)
-            circle - action to clear hurdle in the opposite way
-            dpad up - action to move to low basket and put the sample in
-            dpad left - action to move to high basket and put the sample in
-             */
+            telemetry.addData("left hor pos: ", elevators.getLeftHorPos());
+            telemetry.addData("right hor pos: ", elevators.getRightHorPos());
+
+            telemetry.update();
         }
     }
 }
