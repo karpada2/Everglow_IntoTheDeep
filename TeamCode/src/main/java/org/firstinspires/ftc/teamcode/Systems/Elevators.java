@@ -18,12 +18,10 @@ public class Elevators{
     DcMotorEx leftVert;
     Servo rightHor;
     Servo leftHor;
+    DcMotorEx horMotor;
 
     int verticalDestination;
-
-
-
-    boolean isVert = false;
+    int motorHorizontalDestination;
 
     // sets the vertical elevator to the specified position
     public class VerticalElevatorAction implements Action {
@@ -87,6 +85,36 @@ public class Elevators{
         }
     }
 
+    public class MotorHorizontalElevatorAction implements Action {
+        private final int destination;
+        private boolean isInitialized = false;
+
+        public MotorHorizontalElevatorAction(MotorHorizontalState state) {
+            motorSetHorizontalDestination(state);
+            this.destination = state.state;
+        }
+
+        @Override
+        public void preview(@NonNull Canvas fieldOverlay) {
+            Action.super.preview(fieldOverlay);
+        }
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            if (horMotor.getPower() == 0) {
+                motorSetHorizontalPower(0.8);
+            }
+            if (!isInitialized) {
+                setVerticalDestination(this.destination);
+                isInitialized = true;
+            }
+
+            return !motorIsHorizontalInDestination();
+        }
+    }
+
+
+
     // Vertical min is lowest possible, max is highest possible, low and high are terms for the baskets
     public enum VerticalState {
         VERTICAL_MIN(0),
@@ -118,6 +146,18 @@ public class Elevators{
         }
     }
 
+    public enum MotorHorizontalState{
+        HORIZONTAL_RETRACTED(0),
+        HORIZONTAL_HALFWAY(100),
+        HORIZONTAL_EXTENDED(200);
+
+        public final int state;
+
+        MotorHorizontalState(int state) {
+            this.state = state;
+        }
+    }
+
     public Elevators(OpMode opMode) {
         rightVert = opMode.hardwareMap.get(DcMotorEx.class, "rightVert");
         leftVert = opMode.hardwareMap.get(DcMotorEx.class, "leftVert");
@@ -138,7 +178,15 @@ public class Elevators{
         leftHor.setDirection(Servo.Direction.REVERSE);
         rightHor.setDirection(Servo.Direction.FORWARD);
 
+        horMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+
+        motorSetHorizontalDestination(MotorHorizontalState.HORIZONTAL_RETRACTED);
+        horMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        horMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        horMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
         setHorizontalPosition(HorizontalState.HORIZONTAL_RETRACTED.state);
+
 
     }
 
@@ -198,11 +246,36 @@ public class Elevators{
         return rightHor.getPosition();
     }
 
+    public int motorGetHorizontalPosition() {
+        return horMotor.getCurrentPosition();
+    }
+
+    public int motorGetHorizontalDestination() {
+        return motorHorizontalDestination;
+    }
+
+    public boolean motorIsHorizontalInDestination() {
+        return Math.abs(motorGetHorizontalPosition() - motorGetHorizontalDestination()) < epsilon;
+    }
+
+    public void motorSetHorizontalDestination(MotorHorizontalState state) {
+        this.motorHorizontalDestination = state.state;
+        horMotor.setTargetPosition(state.state);
+    }
+
+    public void motorSetHorizontalPower(double power) {
+        horMotor.setPower(power);
+    }
+
     public VerticalElevatorAction setVerticalElevatorAction(VerticalState targetState) {
         return new VerticalElevatorAction(targetState.state);
     }
 
     public HorizontalElevatorAction setHorizontalElevatorAction(double horizontalTarget) {
         return new HorizontalElevatorAction(horizontalTarget);
+    }
+
+    public MotorHorizontalElevatorAction setMotorHorizontalElevatorAction(MotorHorizontalState destinationState) {
+        return new MotorHorizontalElevatorAction(destinationState);
     }
 }
