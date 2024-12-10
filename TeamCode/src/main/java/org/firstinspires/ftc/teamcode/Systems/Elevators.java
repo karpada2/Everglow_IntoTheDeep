@@ -163,6 +163,7 @@ public class Elevators{
         leftVert = opMode.hardwareMap.get(DcMotorEx.class, "leftVert");
         rightHor = opMode.hardwareMap.get(Servo.class, "rightHor");
         leftHor = opMode.hardwareMap.get(Servo.class, "leftHor");
+        horMotor = opMode.hardwareMap.get(DcMotorEx.class, "motorHor");
 
         rightVert.setDirection(DcMotorSimple.Direction.REVERSE);
         leftVert.setDirection(DcMotorSimple.Direction.FORWARD);
