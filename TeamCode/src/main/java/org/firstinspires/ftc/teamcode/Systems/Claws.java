@@ -16,13 +16,12 @@ public class Claws {
     // sets the claw's power to the targetState, and considers the action finished after timeToFinish miliseconds
     public class ClawAction implements Action {
         private final ClawState targetState;
-        private final double startTime;
+        private double startTime;
         private final double stopTime;
         private boolean isInitialized = false;
 
         private ClawAction(ClawState targetState, double timeToFinish) {
             this.targetState = targetState;
-            this.startTime = System.currentTimeMillis();
             this.stopTime = timeToFinish;
         }
 
@@ -34,6 +33,7 @@ public class Claws {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             if (!isInitialized) {
+                startTime = System.currentTimeMillis();
                 setState(targetState);
                 isInitialized = true;
             }
