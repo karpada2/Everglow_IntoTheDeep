@@ -2,26 +2,26 @@ package org.firstinspires.ftc.teamcode.tuning;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
+
+import org.firstinspires.ftc.teamcode.Systems.Elevators;
 
 @TeleOp(name = "Motor test")
 public class MotorTester extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
-        DcMotorEx motor = hardwareMap.get(DcMotorEx.class, "motor");
-        motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        Elevators elevators = new Elevators(this);
 
         waitForStart();
 
         while (opModeIsActive()) {
-            telemetry.addData("is x pressed?", gamepad1.x);
+            double power = gamepad2.right_stick_y / 2;
+
+            telemetry.addData("current power: ", power);
+            telemetry.addData("motor's position: ", elevators.motorGetHorizontalPosition());
+
+            elevators.motorSetHorizontalPower(power);
+
             telemetry.update();
-            if (gamepad1.x){
-                motor.setPower(0.8);
-            } else {
-                motor.setPower(0);
-            }
         }
     }
 }

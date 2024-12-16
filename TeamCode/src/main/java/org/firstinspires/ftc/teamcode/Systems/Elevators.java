@@ -176,17 +176,17 @@ public class Elevators{
         rightVert.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         leftVert.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        leftHor.setDirection(Servo.Direction.REVERSE);
-        rightHor.setDirection(Servo.Direction.FORWARD);
+//        leftHor.setDirection(Servo.Direction.REVERSE);
+//        rightHor.setDirection(Servo.Direction.FORWARD);
 
         horMotor.setDirection(DcMotorSimple.Direction.FORWARD);
 
         motorSetHorizontalDestination(MotorHorizontalState.HORIZONTAL_RETRACTED);
         horMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         horMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        horMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        horMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//TODO: Run to position
 
-        setHorizontalPosition(HorizontalState.HORIZONTAL_RETRACTED.state);
+//        setHorizontalPosition(HorizontalState.HORIZONTAL_RETRACTED.state);
 
 
     }
