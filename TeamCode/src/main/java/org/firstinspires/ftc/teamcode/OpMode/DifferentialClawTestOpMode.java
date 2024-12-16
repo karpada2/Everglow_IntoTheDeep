@@ -2,21 +2,24 @@ package org.firstinspires.ftc.teamcode.OpMode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.CRServo;
+
+import org.firstinspires.ftc.teamcode.Systems.DifferentialClaws;
 
 @TeleOp(name="DifferentialClawTestOpMode")
 public class DifferentialClawTestOpMode extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        CRServo servo1 = hardwareMap.get(CRServo.class, "testClawServo1");
-        CRServo servo2 = hardwareMap.get(CRServo.class, "testClawServo2");
+        DifferentialClaws claws = new DifferentialClaws(this);
 
         waitForStart();
-
+        double powerLeft;
+        double powerRight;
         while (opModeIsActive()) {
-            servo1.setPower(gamepad1.left_stick_y/2);
-            servo2.setPower(gamepad1.right_stick_y/2);
+            powerLeft = -gamepad2.left_stick_y/5;
+            powerRight = -gamepad2.right_stick_y/5;
+            //claws.rotateArm(power);
+            //claws.rotateWheels();
         }
     }
 }

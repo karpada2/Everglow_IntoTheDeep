@@ -29,15 +29,29 @@ public class DifferentialClaws {
     AnalogInput clawInput1;
     AnalogInput clawInput2;
 
-    // in case the servos act weird
-    final double offset1;
-    final double offset2;
-
     // tracks from -∞ - ∞ the rotation of each motor.
     double servo1Rotation = 0;
     double servo2Rotation = 0;
 
     public class ClawMovementAction implements Action {
+        private final double destination; // in degrees, where 0 is the starting degrees
+
+        private final int direction;
+        private boolean isInit = false;
+
+        private final double power = 0.5;
+        private final double tolerance = 0.1; //in degrees, how much error can be accepted
+
+        public ClawMovementAction(double destination) {
+            this.destination = destination;
+            if (getClawRotation() < destination) {
+                direction = 1;
+            }
+            else {
+                direction = -1;
+            }
+        }
+
         @Override
         public void preview(@NonNull Canvas fieldOverlay) {
             Action.super.preview(fieldOverlay);
@@ -45,7 +59,16 @@ public class DifferentialClaws {
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            if (!isInit) {
+                rotateArm(power * direction);
+                isInit = true;
+            }
 
+            if (Math.abs(getClawRotation() - destination) < tolerance) {
+                rotateArm(0);
+                return false;
+            }
+            return true;
         }
     }
 
@@ -69,7 +92,7 @@ public class DifferentialClaws {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             if (!isInitialized) {
-                setPower(wantedPower);
+                rotateWheels(wantedPower);
                 startTime = System.currentTimeMillis();
                 isInitialized = true;
             }
@@ -83,9 +106,6 @@ public class DifferentialClaws {
         servo2 = opMode.hardwareMap.get(CRServo.class, "clawServo2");
         clawInput1 = opMode.hardwareMap.get(AnalogInput.class, "clawAnalogInput1");
         clawInput2 = opMode.hardwareMap.get(AnalogInput.class, "clawAnalogInput2");
-
-        offset1 = getRotationOfInput(clawInput1);
-        offset2 = getRotationOfInput(clawInput2);
 
         servo1.setDirection(DcMotorSimple.Direction.FORWARD);
         servo2.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -101,9 +121,36 @@ public class DifferentialClaws {
         ClawPowerState(double state) {this.state = state;}
     }
 
-    private void setPower(double power) {
+    public void rotateArm(double power){
+        power /= 2;
+        servo1.setPower(power);
+        servo2.setPower(-power);
+    }
+
+    public void rotateWheels(double power) {
         servo1.setPower(power);
         servo2.setPower(power);
+    }
+
+    public void setPower(double p1, double p2){
+        double sum = p1+p2;
+        p1 /= sum;
+        p2 /= sum;
+
+        servo1.setPower(p1);
+        servo2.setPower(p2);
+    }
+
+    public double getServo1Rotation() {
+        return getRotationOfInput(clawInput1);
+    }
+
+    public double getServo2Rotation() {
+        return getRotationOfInput(clawInput2);
+    }
+
+    public double getClawRotation() {
+        return (getServo1Rotation() + getServo2Rotation())/2.0;
     }
 
 

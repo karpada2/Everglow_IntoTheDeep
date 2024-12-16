@@ -18,7 +18,7 @@ public class MotorTester extends LinearOpMode {
             telemetry.addData("is x pressed?", gamepad1.x);
             telemetry.update();
             if (gamepad1.x){
-                motor.setPower(0.8);
+                motor.setPower(0.);
             } else {
                 motor.setPower(0);
             }
