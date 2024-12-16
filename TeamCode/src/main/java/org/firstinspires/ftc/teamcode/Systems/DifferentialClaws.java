@@ -29,27 +29,34 @@ public class DifferentialClaws {
     AnalogInput clawInput1;
     AnalogInput clawInput2;
 
+    double armPosition = 0;
+
     // tracks from -∞ - ∞ the rotation of each motor.
     double servo1Rotation = 0;
     double servo2Rotation = 0;
 
-    public class ClawMovementAction implements Action {
-        private final double destination; // in degrees, where 0 is the starting degrees
+    private ClawPowerState wheelRotationState;
 
-        private final int direction;
-        private boolean isInit = false;
+    public class ClawMovementAction implements Action {
+        private double servo1Destination;// in degrees, where 0 is the starting degrees
+        private double servo2Destination;
+
+        private final int directionServo1;
+        private final int directionServo2;
+        private boolean isInitialized = false;
 
         private final double power = 0.5;
         private final double tolerance = 0.1; //in degrees, how much error can be accepted
 
         public ClawMovementAction(double destination) {
-            this.destination = destination;
-            if (getClawRotation() < destination) {
-                direction = 1;
-            }
-            else {
-                direction = -1;
-            }
+            this.servo1Destination = (getServo1Rotation() + destination);
+            this.servo2Destination = (getServo2Rotation() + destination);
+
+            directionServo1 = getServo1Rotation() < servo1Destination ? 1 : -1;
+            directionServo2 = getServo2Rotation() < servo2Destination ? 1 : -1;
+
+            servo1Destination = servo1Destination % 360;
+            servo2Destination = servo2Destination % 360;
         }
 
         @Override
@@ -59,13 +66,15 @@ public class DifferentialClaws {
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            if (!isInit) {
-                rotateArm(power * direction);
-                isInit = true;
+            if (!isInitialized) {
+                servo1.setPower(power * directionServo1);
+                servo2.setPower(-power * directionServo2);
+                isInitialized = true;
             }
 
-            if (Math.abs(getClawRotation() - destination) < tolerance) {
-                rotateArm(0);
+            if (Math.abs(getServo1Rotation() - servo1Destination) < tolerance || Math.abs(getServo2Rotation() - servo2Destination) < tolerance) {
+                servo1.setPower(0);
+                servo2.setPower(0);
                 return false;
             }
             return true;
@@ -74,13 +83,13 @@ public class DifferentialClaws {
 
     // receives the time in milliseconds until the action is considered finished
     public class ClawSampleInteractionAction implements Action {
-        private final double wantedPower;
+        private final ClawPowerState wantedPower;
         private final double timeUntilFinished;
         private double startTime;
         private boolean isInitialized = false;
 
         public ClawSampleInteractionAction(ClawPowerState state, double timeToStop) {
-            this.wantedPower = state.state;
+            this.wantedPower = state;
             this.timeUntilFinished = timeToStop;
         }
 
@@ -111,7 +120,7 @@ public class DifferentialClaws {
         servo2.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
-    enum ClawPowerState {
+    public enum ClawPowerState {
         TAKE_IN(0.5),
         OFF(0),
         SPIT(-0.5);
@@ -127,9 +136,10 @@ public class DifferentialClaws {
         servo2.setPower(-power);
     }
 
-    public void rotateWheels(double power) {
-        servo1.setPower(power);
-        servo2.setPower(power);
+    public void rotateWheels(ClawPowerState state) {
+        wheelRotationState = state;
+        servo1.setPower(state.state);
+        servo2.setPower(state.state);
     }
 
     public void setPower(double p1, double p2){
@@ -150,7 +160,11 @@ public class DifferentialClaws {
     }
 
     public double getClawRotation() {
-        return (getServo1Rotation() + getServo2Rotation())/2.0;
+        return armPosition;
+    }
+
+    public ClawPowerState getRotationState() {
+        return wheelRotationState;
     }
 
 
@@ -160,5 +174,10 @@ public class DifferentialClaws {
 
     public ClawSampleInteractionAction setClawSampleInteractionAction(ClawPowerState state) {
         return new ClawSampleInteractionAction(state, 0);
+    }
+
+    // gets in degrees
+    public ClawMovementAction setClawMovementAction(double armPosition) {
+        return new ClawMovementAction(armPosition);
     }
 }
