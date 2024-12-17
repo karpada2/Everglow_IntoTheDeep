@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
-@TeleOp(name="very simple op mode for the differential claws")
+@TeleOp(name="base Differential test op mode")
 public class DifferentialClawBaseTestOpMode extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
