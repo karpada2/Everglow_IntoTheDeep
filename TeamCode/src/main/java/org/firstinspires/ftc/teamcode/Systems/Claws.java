@@ -8,89 +8,37 @@ import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 
-import org.firstinspires.ftc.teamcode.EverglowLibrary.Systems.Executor;
-import org.firstinspires.ftc.teamcode.EverglowLibrary.Systems.ISequenceable;
 
-
-public class Claws extends Executor {
+public class Claws {
 
     CRServo claw;
 
-    @Override
-    public boolean isFinished() {
-        return false;
-    }
-
-    @Override
-    public void stop() {
-
-    }
-
-    @Override
-    public void run() {
-
-    }
-
+    // sets the claw's power to the targetState, and considers the action finished after timeToFinish miliseconds
     public class ClawAction implements Action {
+        private final ClawState targetState;
+        private double startTime;
+        private final double stopTime;
+        private boolean isInitialized = false;
 
-        ClawState state;
-
-        public ClawAction(ClawState state) {
-            this.state = state;
-        }
-
-        @Override
-        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            setState(this.state);
-            return true;
-        }
-    }
-
-    // takes in a boolean, and takes in a sample if it is true, turns off otherwise
-    public class ClawTakeInAction implements Action {
-        boolean turnOn;
-
-        public ClawTakeInAction(boolean turnOn) {
-            this.turnOn = turnOn;
-        }
-
-        @Override
-        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            if (turnOn) {
-                setState(ClawState.TAKE_IN);
-            } else {
-                setState(ClawState.OFF);
-            }
-            return true;
+        private ClawAction(ClawState targetState, double timeToFinish) {
+            this.targetState = targetState;
+            this.stopTime = timeToFinish;
         }
 
         @Override
         public void preview(@NonNull Canvas fieldOverlay) {
             Action.super.preview(fieldOverlay);
         }
-    }
-
-    // takes in a boolean, and spits out the sample if it is true, turns off otherwise
-    public class ClawSpitAction implements Action {
-        boolean turnOn;
-
-        public ClawSpitAction(boolean turnOn) {
-            this.turnOn = turnOn;
-        }
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            if (turnOn) {
-                setState(ClawState.SPIT);
-            } else {
-                setState(ClawState.OFF);
+            if (!isInitialized) {
+                startTime = System.currentTimeMillis();
+                setState(targetState);
+                isInitialized = true;
             }
-            return true;
-        }
 
-        @Override
-        public void preview(@NonNull Canvas fieldOverlay) {
-            Action.super.preview(fieldOverlay);
+            return System.currentTimeMillis() - startTime < stopTime;
         }
     }
 
@@ -128,16 +76,13 @@ public class Claws extends Executor {
         claw.setPower(state.state);
     }
 
-    public Action takeIn() {
-        return new ClawTakeInAction(true);
+    // receives what to set the claw to and the time in milliseconds until the action is considered finished
+    public ClawAction setClawAction(ClawState targetState, double timeUntilFinished) {
+        return new ClawAction(targetState, timeUntilFinished);
     }
-    public Action turnOff() {
-        return new ClawTakeInAction(false);
-    }
-    public Action clawSpit() {
-        return new ClawSpitAction(true);
-    }
-    public Action setClawAction(ClawState state) {
-        return new ClawAction(state);
+
+    // receives what to set the claw to and considers the action to be immediately finished
+    public ClawAction setClawAction(ClawState targetState) {
+        return new ClawAction(targetState, 0);
     }
 }
