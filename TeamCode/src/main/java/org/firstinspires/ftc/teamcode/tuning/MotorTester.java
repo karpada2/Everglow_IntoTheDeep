@@ -14,7 +14,7 @@ public class MotorTester extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-            double power = gamepad2.right_stick_y / 2;
+            double power = -gamepad2.right_stick_y / 2; //this cause gamepad sticks give -1 when they are up >:(
 
             telemetry.addData("current power: ", power);
             telemetry.addData("motor's position: ", elevators.motorGetHorizontalPosition());
