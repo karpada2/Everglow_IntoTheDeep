@@ -113,8 +113,8 @@ public class DifferentialClaws {
     public DifferentialClaws(OpMode opMode) {
         servo1 = opMode.hardwareMap.get(CRServo.class, "clawServo1");
         servo2 = opMode.hardwareMap.get(CRServo.class, "clawServo2");
-        clawInput1 = opMode.hardwareMap.get(AnalogInput.class, "clawAnalogInput1");
-        clawInput2 = opMode.hardwareMap.get(AnalogInput.class, "clawAnalogInput2");
+        clawInput1 = opMode.hardwareMap.get(AnalogInput.class, "clawInput1");
+        clawInput2 = opMode.hardwareMap.get(AnalogInput.class, "clawInput2");
 
         servo1.setDirection(DcMotorSimple.Direction.FORWARD);
         servo2.setDirection(DcMotorSimple.Direction.REVERSE);
