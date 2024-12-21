@@ -204,6 +204,9 @@ public class Elevators{
         if (destination == 0) {
             setVerticalPower(0);
         }
+        else {
+            setVerticalPower(0.8);
+        }
         rightVert.setTargetPosition(destination);
         leftVert.setTargetPosition(destination);
         verticalDestination = destination;
