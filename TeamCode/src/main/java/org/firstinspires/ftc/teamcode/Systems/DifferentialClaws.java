@@ -19,7 +19,6 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 public class DifferentialClaws {
-public class DifferentialClaws {
 
     public static double getRotationOfInput(AnalogInput input) {
         return (input.getVoltage() / input.getMaxVoltage()) * 360;

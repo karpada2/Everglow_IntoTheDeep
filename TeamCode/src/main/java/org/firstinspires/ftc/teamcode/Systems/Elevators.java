@@ -161,8 +161,8 @@ public class Elevators{
     public Elevators(OpMode opMode) {
         rightVert = opMode.hardwareMap.get(DcMotorEx.class, "rightVert");
         leftVert = opMode.hardwareMap.get(DcMotorEx.class, "leftVert");
-        rightHor = opMode.hardwareMap.get(Servo.class, "rightHor");
-        leftHor = opMode.hardwareMap.get(Servo.class, "leftHor");
+//        rightHor = opMode.hardwareMap.get(Servo.class, "rightHor");
+//        leftHor = opMode.hardwareMap.get(Servo.class, "leftHor");
         horMotor = opMode.hardwareMap.get(DcMotorEx.class, "motorHor");
 
         rightVert.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -201,6 +201,9 @@ public class Elevators{
 
     // sets the destination of the vertical motors to the specified number of ticks
     public void setVerticalDestination(int destination) {
+        if (destination == 0) {
+            setVerticalPower(0);
+        }
         rightVert.setTargetPosition(destination);
         leftVert.setTargetPosition(destination);
         verticalDestination = destination;
