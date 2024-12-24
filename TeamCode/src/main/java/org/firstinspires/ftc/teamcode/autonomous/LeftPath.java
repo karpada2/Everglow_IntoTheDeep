@@ -24,43 +24,53 @@ import org.firstinspires.ftc.teamcode.Systems.Elevators;
 public class LeftPath extends LinearOpMode {
     @Override
     public void runOpMode()  throws InterruptedException{
-        Pose2d beginPose = new Pose2d(-20, -63,   (1./2)*Math.PI);
+        Pose2d beginPose = new Pose2d(-31.1, -61,   (1./2)*Math.PI);
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
         //Claws claws  = new Claws(this);
         //Elevators elevators  = new Elevators(this);
 
-        TrajectoryActionBuilder B_sample1 = drive.actionBuilder(beginPose)
-                .strafeToSplineHeading(new Vector2d(-28,-37),0.75*Math.PI)
+        TrajectoryActionBuilder B_unload0 = drive.actionBuilder(beginPose)
+                .strafeToSplineHeading(new Vector2d(-51,-51),1.25*Math.PI);
+
+        TrajectoryActionBuilder B_sample1 = B_unload0.endTrajectory().fresh()
+                .strafeToSplineHeading(new Vector2d(-48,-38),0.5*Math.PI)
                 .waitSeconds(1);
 
         TrajectoryActionBuilder B_unload1 = B_sample1.endTrajectory().fresh()
-                .strafeToSplineHeading(new Vector2d(-53,-53),1.25*Math.PI);
+                .strafeToSplineHeading(new Vector2d(-51,-51),1.25*Math.PI);
 
         TrajectoryActionBuilder B_sample2 = B_unload1.endTrajectory().fresh()
-                .strafeToSplineHeading(new Vector2d(-45, -37),0.75*Math.PI);
+                .strafeToSplineHeading(new Vector2d(-58, -38),0.5*Math.PI)
+                .waitSeconds(1);
 
         TrajectoryActionBuilder B_unload2 = B_sample2.endTrajectory().fresh()
-                .strafeToSplineHeading(new Vector2d(-53,-53),1.25*Math.PI);
+                .strafeToSplineHeading(new Vector2d(-51,-51),1.25*Math.PI);
 
         TrajectoryActionBuilder B_sample3 = B_unload2.endTrajectory().fresh()
-                .strafeToSplineHeading(new Vector2d(-54, -37),0.75*Math.PI);
+                .strafeToSplineHeading(new Vector2d(-57, -26),Math.PI)
+                .waitSeconds(1);
 
         TrajectoryActionBuilder B_unload3 = B_sample3.endTrajectory().fresh()
-                .strafeToSplineHeading(new Vector2d(-53,-53),1.25*Math.PI);
+                .strafeToSplineHeading(new Vector2d(-51,-51),1.25*Math.PI);
 
         TrajectoryActionBuilder B_sample4 = B_unload3.endTrajectory().fresh()
                 .setTangent(Math.PI * 0.5)
-                .splineToSplineHeading(new Pose2d(-29,0, 0),0);
+                .splineToSplineHeading(new Pose2d(-34,0, 0),0)
+                .waitSeconds(1);;
 
         TrajectoryActionBuilder B_unload4 = B_sample4.endTrajectory().fresh()
                 .setTangent(-(0.75)*Math.PI)
-                .splineToSplineHeading(new Pose2d(-53,-53,1.25*Math.PI),1.25*Math.PI);
+                .splineToSplineHeading(new Pose2d(-51,-51,1.25*Math.PI),1.25*Math.PI);
+
+        TrajectoryActionBuilder B_Park = B_unload4.endTrajectory().fresh()
+                .strafeToLinearHeading(new Vector2d(-31.1, -61),Math.PI/2);
 
         Action wait = drive.actionBuilder(new Pose2d(0,0,0))
                 .waitSeconds(3)
                 .build();
 
         // Turning action builders into actions
+        Action unload0 = B_unload0.build();
         Action sample1 = B_sample1.build();
         Action unload1 = B_unload1.build();
 
@@ -73,6 +83,8 @@ public class LeftPath extends LinearOpMode {
         Action sample4 = B_sample4.build();
         Action unload4 = B_unload4.build();
 
+        Action Park = B_Park.build();
+
 //        Actions.runBlocking(v_e to 0 and h_e to 0)
 //        Actions.runBlocking(set elevator power to 0.8)
 
@@ -80,18 +92,15 @@ public class LeftPath extends LinearOpMode {
 
         Actions.runBlocking(
                 new SequentialAction(
-                        new ParallelAction(
-                                sample1//,
-                                //claws.setClawAction(ClawState.SPIT)
-                        ),
+                        unload0,
                         unload1,
                         sample2,
                         unload2,
                         sample3,
                         unload3,
                         sample4,
-                        unload4)
-
+                        unload4,
+                        Park)
                 );
     }
 }
