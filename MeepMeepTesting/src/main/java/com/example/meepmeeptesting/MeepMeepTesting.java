@@ -18,9 +18,10 @@ public class MeepMeepTesting {
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
+                .setDimensions(14,18.1)
                 .build();
 
-        Pose2d left_beginPose = new Pose2d(-31.1, -61,   (1./2)*Math.PI);
+        Pose2d left_beginPose = new Pose2d(-31.1, -63,   Math.PI);
         TrajectoryActionBuilder left_path = myBot.getDrive().actionBuilder(left_beginPose)
                 .waitSeconds(2)
                 .strafeToSplineHeading(new Vector2d(-51,-51),1.25*Math.PI)
@@ -56,8 +57,17 @@ public class MeepMeepTesting {
                 .strafeToLinearHeading(new Vector2d(-31.1, -61),Math.PI/2)
                 ;
 
+        TrajectoryActionBuilder preload_left_path = myBot.getDrive().actionBuilder(left_beginPose)
+                .waitSeconds(2)
+                .strafeToSplineHeading(new Vector2d(-51,-51),1.25*Math.PI)
+                // goes to sample pool
+                .setTangent(Math.PI * 0.25)
+                .splineToSplineHeading(new Pose2d(-35,-23, -Math.PI/2),Math.PI/2)
+                .splineToSplineHeading(new Pose2d(-30,10, 0),0)
+                .waitSeconds(1) //grabs sample
+                ;
 
-        myBot.runAction(left_path.build());
+        myBot.runAction(preload_left_path.build());
 
         Pose2d right_beginPose = new Pose2d(31.1, -61,   (1./2)*Math.PI);
         TrajectoryActionBuilder right_path = myBot.getDrive().actionBuilder(right_beginPose)
@@ -66,7 +76,7 @@ public class MeepMeepTesting {
                 ;
 
 
-        myBot.runAction(left_path.build());
+//        myBot.runAction(left_path.build());
 //        Pose2d beginPose2 = new Pose2d(20, -63,   (1./2)*Math.PI);
 //        TrajectoryActionBuilder right_start_path = myBot.getDrive().actionBuilder(beginPose2)
 //                .waitSeconds(2)

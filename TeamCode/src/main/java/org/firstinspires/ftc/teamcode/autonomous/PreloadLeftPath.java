@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.autonomous;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
@@ -14,11 +13,11 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
 @Config
-@Autonomous(name="TruncatedLeftPath", group="Autonomous")
-public class TruncatedLeftPath extends LinearOpMode {
+@Autonomous(name="PreloadLeftPath", group="Autonomous")
+public class PreloadLeftPath extends LinearOpMode {
     @Override
     public void runOpMode()  throws InterruptedException{
-        Pose2d beginPose = new Pose2d(-31.1, -61,   (1./2)*Math.PI);
+        Pose2d beginPose = new Pose2d(-31.1, -63,   Math.PI);
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
         //Claws claws  = new Claws(this);
         //Elevators elevators  = new Elevators(this);
@@ -27,7 +26,9 @@ public class TruncatedLeftPath extends LinearOpMode {
                 .strafeToSplineHeading(new Vector2d(-51,-51),1.25*Math.PI);
 
         TrajectoryActionBuilder B_Park = B_unload0.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(-31.1, -61),Math.PI/2);
+                .setTangent(Math.PI * 0.25)
+                .splineToSplineHeading(new Pose2d(-35,-23, -Math.PI/2),Math.PI/2)
+                .splineToSplineHeading(new Pose2d(-30,10, 0),0);
 
         Action wait = drive.actionBuilder(new Pose2d(0,0,0))
                 .waitSeconds(3)
