@@ -60,6 +60,24 @@ public class MeepMeepTesting {
         TrajectoryActionBuilder preload_left_path = myBot.getDrive().actionBuilder(left_beginPose)
                 .waitSeconds(2)
                 .strafeToSplineHeading(new Vector2d(-51,-51),1.25*Math.PI)
+                //spins to right sample
+                .turnTo(Math.PI/2.2)
+                .waitSeconds(1)
+                //spins to basket
+                .turnTo(Math.PI*1.25)
+                .waitSeconds(1)
+                //spins to middle sample
+                .turnTo(Math.PI/1.75)
+                .waitSeconds(1)
+                //spins to basket
+                .turnTo(Math.PI*1.25)
+                .waitSeconds(1)
+                //spins to left sample
+                .turnTo(Math.PI/1.4)
+                .waitSeconds(1)
+                //spins to basket
+                .turnTo(Math.PI*1.25)
+                .waitSeconds(1)
                 // goes to sample pool
                 .setTangent(Math.PI * 0.25)
                 .splineToSplineHeading(new Pose2d(-35,-23, -Math.PI/2),Math.PI/2)
