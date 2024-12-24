@@ -59,10 +59,10 @@ public class ActionOpMode extends LinearOpMode {
             // driving
             drive.setDrivePowers(new PoseVelocity2d(
                     new Vector2d(
-                            linearInputToExponential(-gamepad1.left_stick_y),
-                            linearInputToExponential(-gamepad1.left_stick_x)
+                            linearInputToExponential(gamepad1.left_stick_y),
+                            linearInputToExponential(gamepad1.left_stick_x)
                     ),
-                    linearInputToExponential(-gamepad1.right_stick_x)
+                    linearInputToExponential(gamepad1.right_stick_x)
             ));
 
             drive.updatePoseEstimate();
