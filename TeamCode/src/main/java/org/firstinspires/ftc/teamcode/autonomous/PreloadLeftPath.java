@@ -1,7 +1,10 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
+import static org.firstinspires.ftc.teamcode.Systems.Elevators.VerticalState.VERTICAL_HIGH;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
@@ -11,6 +14,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.teamcode.Systems.DifferentialClaws;
+import org.firstinspires.ftc.teamcode.Systems.Elevators;
 
 @Config
 @Autonomous(name="PreloadLeftPath", group="Autonomous")
@@ -19,8 +24,8 @@ public class PreloadLeftPath extends LinearOpMode {
     public void runOpMode()  throws InterruptedException{
         Pose2d beginPose = new Pose2d(-31.1, -63,   Math.PI);
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
-        //Claws claws  = new Claws(this);
-        //Elevators elevators  = new Elevators(this);
+        DifferentialClaws claws  = new DifferentialClaws(this);
+        Elevators elevators  = new Elevators(this);
 
         TrajectoryActionBuilder B_unload0 = drive.actionBuilder(beginPose)
                 .strafeToSplineHeading(new Vector2d(-51,-51),1.25*Math.PI);
@@ -46,8 +51,16 @@ public class PreloadLeftPath extends LinearOpMode {
 
         Actions.runBlocking(
                 new SequentialAction(
-                        unload0,
-                        Park)
+                        new ParallelAction(
+                                unload0,
+                                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HIGH)// elevators up
+                        ),
+                        claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT),
+                        //claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.OFF),// unload
+                        new ParallelAction(
+                                Park,
+                                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN)// elevators down
+                        ))
                 );
     }
 }
