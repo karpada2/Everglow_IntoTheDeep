@@ -14,7 +14,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
-import org.firstinspires.ftc.teamcode.Systems.DifferentialClaws;
+//import org.firstinspires.ftc.teamcode.Systems.DifferentialClaws;
 import org.firstinspires.ftc.teamcode.Systems.Elevators;
 
 @Config
@@ -24,7 +24,7 @@ public class PreloadLeftPath extends LinearOpMode {
     public void runOpMode()  throws InterruptedException{
         Pose2d beginPose = new Pose2d(-31.1, -63,   Math.PI);
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
-        DifferentialClaws claws  = new DifferentialClaws(this);
+        //DifferentialClaws claws  = new DifferentialClaws(this);
         Elevators elevators  = new Elevators(this);
 
         TrajectoryActionBuilder B_unload0 = drive.actionBuilder(beginPose)
@@ -55,7 +55,7 @@ public class PreloadLeftPath extends LinearOpMode {
                                 unload0,
                                 elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HIGH)// elevators up
                         ),
-                        claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT),
+                        //claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT),
                         //claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.OFF),// unload
                         new ParallelAction(
                                 Park,
