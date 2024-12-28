@@ -68,7 +68,7 @@ public class DifferentialClaws {
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             if (!isInitialized) {
                 leftClawServo.setPower(power * directionleftClawServo);
-                rightClawServo.setPower(-power * directionrightClawServo);
+                rightClawServo.setPower(power * directionrightClawServo);
                 isInitialized = true;
             }
 
@@ -110,6 +110,47 @@ public class DifferentialClaws {
         }
     }
 
+    public class HoldClawAndDropSampleAction implements Action {
+        private final double holdingPower = -0.25;
+        private final double timeToHold; // time to hold the arm in place until dropping the sample in ms
+        private final double timeUntilDropDone; // time until the drop is considered done in ms
+        private boolean isHoldInit = false;
+        private boolean isDropInit = false;
+        private double startTime = 0;
+
+
+        public HoldClawAndDropSampleAction(double timeToHold, double timeUntilDropDone) {
+            this.timeToHold = timeToHold;
+            this.timeUntilDropDone = timeUntilDropDone;
+        }
+
+        @Override
+        public void preview(@NonNull Canvas fieldOverlay) {
+            Action.super.preview(fieldOverlay);
+        }
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            if (!isHoldInit) {
+                startTime = System.currentTimeMillis();
+                rightClawServo.setPower(holdingPower);
+                leftClawServo.setPower(holdingPower);
+                isHoldInit = true;
+            }
+
+            if (!isDropInit && isHoldInit && System.currentTimeMillis() - startTime > timeToHold) {
+                leftClawServo.setPower(holdingPower*1.25);
+                isDropInit = true;
+            }
+
+            if (isDropInit && isHoldInit && System.currentTimeMillis() - startTime > timeUntilDropDone) {
+                rotateWheels(0);
+                return false;
+            }
+            return true;
+        }
+    }
+
     public DifferentialClaws(OpMode opMode) {
         leftClawServo = opMode.hardwareMap.get(CRServo.class, "leftClawServo");
         rightClawServo = opMode.hardwareMap.get(CRServo.class, "rightClawServo");
@@ -121,9 +162,9 @@ public class DifferentialClaws {
     }
 
     public enum ClawPowerState {
-        TAKE_IN(0.5),
+        TAKE_IN(1),
         OFF(0),
-        SPIT(-0.5);
+        SPIT(-1);
 
         public final double state;
 
@@ -133,13 +174,18 @@ public class DifferentialClaws {
     public void rotateArm(double power){
         power /= 2;
         leftClawServo.setPower(power);
-        rightClawServo.setPower(-power);
+        rightClawServo.setPower(power);
+    }
+
+    public void rotateWheels(double state) {
+        leftClawServo.setPower(state);
+        rightClawServo.setPower(-state);
     }
 
     public void rotateWheels(ClawPowerState state) {
         wheelRotationState = state;
         leftClawServo.setPower(state.state);
-        rightClawServo.setPower(state.state);
+        rightClawServo.setPower(-state.state);
     }
 
     public void setPower(double p1, double p2){
@@ -179,5 +225,9 @@ public class DifferentialClaws {
     // gets in degrees
     public ClawMovementAction setClawMovementAction(double armPosition) {
         return new ClawMovementAction(armPosition);
+    }
+
+    public HoldClawAndDropSampleAction test(double timeToHold, double timeToDrop) {
+        return new HoldClawAndDropSampleAction(timeToHold, timeToDrop);
     }
 }

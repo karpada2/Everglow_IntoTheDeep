@@ -127,13 +127,13 @@ public class ActionOpMode extends LinearOpMode {
 
             if (gamepad2.dpad_up && flagDpadUp) {
                 // most extended
-                horizontalAction = elevators.setHorizontalElevatorAction(Elevators.HorizontalState.HORIZONTAL_EXTENDED.state);
+                horizontalAction = elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_EXTENDED);
             } else if (gamepad2.dpad_left && flagDpadLeft) {
                 // halfway extended
-                horizontalAction = elevators.setHorizontalElevatorAction(Elevators.HorizontalState.HORIZONTAL_HALFWAY.state);
+                horizontalAction = elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_HALFWAY);
             } else if (gamepad2.dpad_down && flagDpadDown) {
                 // most retracted
-                horizontalAction = elevators.setHorizontalElevatorAction(Elevators.HorizontalState.HORIZONTAL_RETRACTED.state);
+                horizontalAction = elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_RETRACTED);
             }
 
             if (builtAction == null) {
@@ -152,9 +152,6 @@ public class ActionOpMode extends LinearOpMode {
                     builtAction = null;
                 }
             }
-
-            telemetry.addData("left hor pos: ", elevators.getLeftHorPos());
-            telemetry.addData("right hor pos: ", elevators.getRightHorPos());
 
             telemetry.update();
         }

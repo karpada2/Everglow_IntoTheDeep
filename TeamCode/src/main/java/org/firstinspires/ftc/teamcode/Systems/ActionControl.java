@@ -19,7 +19,7 @@ public class ActionControl {
         getReadyHalfwayPickUp = new SequentialAction(
                 elevators.setVerticalElevatorAction(VerticalState.VERTICAL_HURDLE),
                 new SequentialAction(
-                        elevators.setHorizontalElevatorAction(MotorHorizontalState.HORIZONTAL_HALFWAY.state),
+                        elevators.setMotorHorizontalElevatorAction(MotorHorizontalState.HORIZONTAL_HALFWAY),
                         elevators.setVerticalElevatorAction(VerticalState.VERTICAL_PICKUP)
                 )
         );
@@ -27,7 +27,7 @@ public class ActionControl {
         getReadyExtendedPickUp =  new SequentialAction(
                 elevators.setVerticalElevatorAction(VerticalState.VERTICAL_HURDLE),
                 new SequentialAction(
-                        elevators.setHorizontalElevatorAction(MotorHorizontalState.HORIZONTAL_EXTENDED.state),
+                        elevators.setMotorHorizontalElevatorAction(MotorHorizontalState.HORIZONTAL_EXTENDED),
                         elevators.setVerticalElevatorAction(VerticalState.VERTICAL_PICKUP)
                 )
         );
@@ -35,23 +35,23 @@ public class ActionControl {
         returnFromPickUp = new SequentialAction(
                 elevators.setVerticalElevatorAction(VerticalState.VERTICAL_HURDLE),
                 new SequentialAction(
-                        elevators.setHorizontalElevatorAction(MotorHorizontalState.HORIZONTAL_RETRACTED.state),
+                        elevators.setMotorHorizontalElevatorAction(MotorHorizontalState.HORIZONTAL_RETRACTED),
                         elevators.setVerticalElevatorAction(VerticalState.VERTICAL_PICKUP)
                 )
         );
 
         getReadyDropLow = new SequentialAction(
                 elevators.setVerticalElevatorAction(VerticalState.VERTICAL_LOW),
-                elevators.setHorizontalElevatorAction(MotorHorizontalState.HORIZONTAL_HALFWAY.state)
+                elevators.setMotorHorizontalElevatorAction(MotorHorizontalState.HORIZONTAL_HALFWAY)
         );
 
         getReadyDropHigh = new SequentialAction(
                 elevators.setVerticalElevatorAction(VerticalState.VERTICAL_HIGH),
-                elevators.setHorizontalElevatorAction(MotorHorizontalState.HORIZONTAL_HALFWAY.state)
+                elevators.setMotorHorizontalElevatorAction(MotorHorizontalState.HORIZONTAL_HALFWAY)
         );
 
         reutrnFromDrop = new SequentialAction(
-                elevators.setHorizontalElevatorAction(MotorHorizontalState.HORIZONTAL_RETRACTED.state),
+                elevators.setMotorHorizontalElevatorAction(MotorHorizontalState.HORIZONTAL_RETRACTED),
                 elevators.setVerticalElevatorAction(VerticalState.VERTICAL_MIN)
         );
         //TODO: ADD CLAW MOVEMENTS TO THESE
