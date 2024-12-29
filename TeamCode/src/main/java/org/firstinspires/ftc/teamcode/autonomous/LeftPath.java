@@ -15,7 +15,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Systems.Claws;
 import org.firstinspires.ftc.teamcode.Systems.Claws.ClawState;
-import org.firstinspires.ftc.teamcode.Systems.Elevators.HorizontalState;
 import org.firstinspires.ftc.teamcode.Systems.Elevators.VerticalState;
 import org.firstinspires.ftc.teamcode.Systems.Elevators;
 

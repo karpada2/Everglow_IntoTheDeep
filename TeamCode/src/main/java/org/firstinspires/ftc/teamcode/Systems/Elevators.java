@@ -234,8 +234,8 @@ public class Elevators{
         horMotor.setPower(power);
     }
 
-    public Action getHorizontalAction(HorizontalState state){
-        return new HorizontalElevatorAction(state.state);
+    public Action getHorizontalAction(MotorHorizontalState state){
+        return new MotorHorizontalElevatorAction(state);
     }
 
     public Action getVerticalAction(VerticalState state){
