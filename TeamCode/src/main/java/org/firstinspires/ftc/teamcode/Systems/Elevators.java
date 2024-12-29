@@ -117,8 +117,6 @@ public class Elevators{
     public Elevators(OpMode opMode) {
         rightVert = opMode.hardwareMap.get(DcMotorEx.class, "rightVert");
         leftVert = opMode.hardwareMap.get(DcMotorEx.class, "leftVert");
-//        rightHor = opMode.hardwareMap.get(Servo.class, "rightHor");
-//        leftHor = opMode.hardwareMap.get(Servo.class, "leftHor");
         horMotor = opMode.hardwareMap.get(DcMotorEx.class, "motorHor");
 
         rightVert.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -236,6 +234,14 @@ public class Elevators{
         horMotor.setPower(power);
     }
 
+    public Action getHorizontalAction(HorizontalState state){
+        return new HorizontalElevatorAction(state.state);
+    }
+
+    public Action getVerticalAction(VerticalState state){
+        return new VerticalElevatorAction(state.state);
+
+    }
     public VerticalElevatorAction setVerticalElevatorAction(VerticalState targetState) {
         return new VerticalElevatorAction(targetState.state);
     }
