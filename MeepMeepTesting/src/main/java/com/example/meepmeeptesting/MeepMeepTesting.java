@@ -21,7 +21,7 @@ public class MeepMeepTesting {
                 .setDimensions(14,18.1)
                 .build();
 
-        Pose2d left_beginPose = new Pose2d(-31.1, -63,   Math.PI);
+        Pose2d left_beginPose = new Pose2d(31.1, -63,   Math.PI);
         TrajectoryActionBuilder left_path = myBot.getDrive().actionBuilder(left_beginPose)
                 .waitSeconds(2)
                 .strafeToSplineHeading(new Vector2d(-51,-51),1.25*Math.PI)
@@ -59,29 +59,31 @@ public class MeepMeepTesting {
 
         TrajectoryActionBuilder preload_left_path = myBot.getDrive().actionBuilder(left_beginPose)
                 .waitSeconds(2)
-                .strafeToSplineHeading(new Vector2d(-51,-51),1.25*Math.PI)
-                //spins to right sample
-                .turnTo(Math.PI/2.2)
-                .waitSeconds(1)
-                //spins to basket
-                .turnTo(Math.PI*1.25)
-                .waitSeconds(1)
-                //spins to middle sample
-                .turnTo(Math.PI/1.75)
-                .waitSeconds(1)
-                //spins to basket
-                .turnTo(Math.PI*1.25)
-                .waitSeconds(1)
-                //spins to left sample
-                .turnTo(Math.PI/1.4)
-                .waitSeconds(1)
-                //spins to basket
-                .turnTo(Math.PI*1.25)
+                .setTangent((0.5)*Math.PI)
+                .splineToConstantHeading(new Vector2d(0,-34),Math.PI)
+                .splineToSplineHeading(new Pose2d(-55,-55,1.25*Math.PI),1.25*Math.PI)
+//                //spins to right sample
+//                .turnTo(Math.PI/2.2)
+//                .waitSeconds(1)
+//                //spins to basket
+//                .turnTo(Math.PI*1.25)
+//                .waitSeconds(1)
+//                //spins to middle sample
+//                .turnTo(Math.PI/1.75)
+//                .waitSeconds(1)
+//                //spins to basket
+//                .turnTo(Math.PI*1.25)
+//                .waitSeconds(1)
+//                //spins to left sample
+//                .turnTo(Math.PI/1.4)
+//                .waitSeconds(1)
+//                //spins to basket
+//                .turnTo(Math.PI*1.25)
                 .waitSeconds(1)
                 // goes to sample pool
                 .setTangent(Math.PI * 0.25)
                 .splineToSplineHeading(new Pose2d(-35,-23, -Math.PI/2),Math.PI/2)
-                .splineToSplineHeading(new Pose2d(-30,10, 0),0)
+                .splineToSplineHeading(new Pose2d(-25,10, 0),0)
                 .waitSeconds(1) //grabs sample
                 ;
 

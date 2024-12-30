@@ -16,7 +16,7 @@ public class ArmHoldAndDropOpMode extends LinearOpMode {
 
         waitForStart();
 
-        Actions.runBlocking(claws.test(2000, 1000));
+        Actions.runBlocking(claws.test(2000, 4000));
 
         while (opModeIsActive()){
 

@@ -105,7 +105,7 @@ public class Elevators{
     public enum MotorHorizontalState{
         HORIZONTAL_RETRACTED(0),
         HORIZONTAL_HALFWAY(2360),
-        HORIZONTAL_EXTENDED(3677);
+        HORIZONTAL_EXTENDED(3700);
 
         public final int state;
 
@@ -220,7 +220,7 @@ public class Elevators{
 
     public void motorSetHorizontalDestination(int destination) {
         double eps = 12;
-        if(destination>MotorHorizontalState.HORIZONTAL_RETRACTED.state || destination<MotorHorizontalState.HORIZONTAL_EXTENDED.state) {
+        if(destination>MotorHorizontalState.HORIZONTAL_RETRACTED.state && destination<MotorHorizontalState.HORIZONTAL_EXTENDED.state) {
             if (Math.abs(destination - motorGetHorizontalPosition()) < eps) {
                 motorSetHorizontalPower(0);
             } else {

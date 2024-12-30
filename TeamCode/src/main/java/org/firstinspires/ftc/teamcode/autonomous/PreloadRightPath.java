@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
-import static org.firstinspires.ftc.teamcode.Systems.Elevators.VerticalState.VERTICAL_HIGH;
-
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
@@ -18,8 +16,8 @@ import org.firstinspires.ftc.teamcode.Systems.DifferentialClaws;
 import org.firstinspires.ftc.teamcode.Systems.Elevators;
 
 @Config
-@Autonomous(name="PreloadLeftPath", group="Autonomous")
-public class PreloadLeftPath extends LinearOpMode {
+@Autonomous(name="PreloadRightPath", group="Autonomous")
+public class PreloadRightPath extends LinearOpMode {
     @Override
     public void runOpMode()  throws InterruptedException{
         Pose2d beginPose = new Pose2d(-31.1, -63,   Math.PI);
@@ -28,8 +26,10 @@ public class PreloadLeftPath extends LinearOpMode {
         Elevators elevators  = new Elevators(this);
 
         TrajectoryActionBuilder B_unload0 = drive.actionBuilder(beginPose)
-                .waitSeconds(1)
-                .strafeToSplineHeading(new Vector2d(-56,-56),1.25*Math.PI);
+                .waitSeconds(10)
+                .setTangent((0.5)*Math.PI)
+                .splineToConstantHeading(new Vector2d(0,-34),Math.PI)
+                .splineToSplineHeading(new Pose2d(-55,-55,1.25*Math.PI),1.25*Math.PI);
 
         TrajectoryActionBuilder B_Park = B_unload0.endTrajectory().fresh()
                 .setTangent(Math.PI * 0.25)
@@ -52,7 +52,7 @@ public class PreloadLeftPath extends LinearOpMode {
 
         Actions.runBlocking(
                 new ParallelAction(
-                        claws.test(3000, 4000),
+                        claws.test(15000, 16000),
                 new SequentialAction(
                         new ParallelAction(
                                 unload0,

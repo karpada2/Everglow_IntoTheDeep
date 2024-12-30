@@ -111,7 +111,7 @@ public class DifferentialClaws {
     }
 
     public class HoldClawAndDropSampleAction implements Action {
-        private final double holdingPower = -0.25;
+        private final double holdingPower = -0.15;
         private final double timeToHold; // time to hold the arm in place until dropping the sample in ms
         private final double timeUntilDropDone; // time until the drop is considered done in ms
         private boolean isHoldInit = false;
@@ -139,7 +139,8 @@ public class DifferentialClaws {
             }
 
             if (!isDropInit && isHoldInit && System.currentTimeMillis() - startTime > timeToHold) {
-                leftClawServo.setPower(holdingPower*1.25);
+                rightClawServo.setPower(holdingPower -0.15);
+                leftClawServo.setPower(holdingPower +0.15);
                 isDropInit = true;
             }
 
