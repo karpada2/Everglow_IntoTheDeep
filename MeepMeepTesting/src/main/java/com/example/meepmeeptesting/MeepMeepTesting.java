@@ -59,8 +59,8 @@ public class MeepMeepTesting {
 
         TrajectoryActionBuilder preload_left_path = myBot.getDrive().actionBuilder(left_beginPose)
                 .waitSeconds(2)
-                .setTangent((0.5)*Math.PI)
-                .splineToConstantHeading(new Vector2d(0,-34),Math.PI)
+                .setTangent((1)*Math.PI)
+                .splineToConstantHeading(new Vector2d(0,-60),Math.PI)
                 .splineToSplineHeading(new Pose2d(-55,-55,1.25*Math.PI),1.25*Math.PI)
 //                //spins to right sample
 //                .turnTo(Math.PI/2.2)

@@ -20,23 +20,25 @@ import org.firstinspires.ftc.teamcode.Systems.Elevators;
 public class PreloadRightPath extends LinearOpMode {
     @Override
     public void runOpMode()  throws InterruptedException{
-        Pose2d beginPose = new Pose2d(-31.1, -63,   Math.PI);
+        Pose2d beginPose = new Pose2d(32, -63,   Math.PI);
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
         DifferentialClaws claws  = new DifferentialClaws(this);
         Elevators elevators  = new Elevators(this);
 
         TrajectoryActionBuilder B_unload0 = drive.actionBuilder(beginPose)
-                .waitSeconds(10)
                 .setTangent((0.5)*Math.PI)
-                .splineToConstantHeading(new Vector2d(0,-34),Math.PI)
-                .splineToSplineHeading(new Pose2d(-55,-55,1.25*Math.PI),1.25*Math.PI);
+                .splineToConstantHeading(new Vector2d(0,-60),Math.PI)
+                .splineToSplineHeading(new Pose2d(-56,-56,1.25*Math.PI),1.25*Math.PI);
 
         TrajectoryActionBuilder B_Park = B_unload0.endTrajectory().fresh()
                 .setTangent(Math.PI * 0.25)
                 .splineToSplineHeading(new Pose2d(-35,-23, -Math.PI/2),Math.PI/2)
                 .splineToSplineHeading(new Pose2d(-24,10, 0),0);
 
-        Action wait = drive.actionBuilder(new Pose2d(0,0,0))
+        Action wait1 = drive.actionBuilder(new Pose2d(0,0,0))
+                .waitSeconds(10)
+                .build();
+        Action wait2 = drive.actionBuilder(new Pose2d(0,0,0))
                 .waitSeconds(0.5)
                 .build();
 
@@ -50,18 +52,20 @@ public class PreloadRightPath extends LinearOpMode {
 
         waitForStart();
 
+        sleep(10000);
+
         Actions.runBlocking(
                 new ParallelAction(
-                        claws.test(15000, 16000),
-                new SequentialAction(
-                        new ParallelAction(
-                                unload0,
-                                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HIGH)// elevators up
-                        ),
-                        wait,
-                        new ParallelAction(
-                                Park,
-                                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN)// elevators down
+                        claws.test(3000, 4000),
+                        new SequentialAction(
+                                new ParallelAction(
+                                        unload0,
+                                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HIGH)// elevators up
+                                        ),
+                                wait2,
+                                new ParallelAction(
+                                        Park,
+                                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN)// elevators down
                         )))
                 );
     }

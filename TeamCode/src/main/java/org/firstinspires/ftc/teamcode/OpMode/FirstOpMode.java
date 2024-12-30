@@ -77,7 +77,7 @@ public class FirstOpMode extends LinearOpMode {
             }
 
             if (Math.abs(gamepad2.right_stick_y) > joystickTolerance) {
-                horElevatorPosition += -gamepad2.right_stick_y*20;
+                horElevatorPosition += -gamepad2.right_stick_y*40;
                 elevators.motorSetHorizontalDestination((int)(horElevatorPosition));
             }
             telemetry.addData("Right Stick y: ", gamepad2.right_stick_y);
