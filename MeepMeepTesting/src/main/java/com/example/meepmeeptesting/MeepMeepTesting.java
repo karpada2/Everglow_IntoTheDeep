@@ -1,6 +1,5 @@
 package com.example.meepmeeptesting;
 
-import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
@@ -21,7 +20,7 @@ public class MeepMeepTesting {
                 .setDimensions(14,18.1)
                 .build();
 
-        Pose2d left_beginPose = new Pose2d(31.1, -63,   Math.PI);
+        Pose2d left_beginPose = new Pose2d(23, -63,   Math.PI);
         TrajectoryActionBuilder left_path = myBot.getDrive().actionBuilder(left_beginPose)
                 .waitSeconds(2)
                 .strafeToSplineHeading(new Vector2d(-51,-51),1.25*Math.PI)
@@ -61,7 +60,7 @@ public class MeepMeepTesting {
                 .waitSeconds(2)
                 .setTangent((1)*Math.PI)
                 .splineToConstantHeading(new Vector2d(0,-60),Math.PI)
-                .splineToSplineHeading(new Pose2d(-55,-55,1.25*Math.PI),1.25*Math.PI)
+                .splineToSplineHeading(new Pose2d(-57,-57,1.25*Math.PI),1.25*Math.PI)
 //                //spins to right sample
 //                .turnTo(Math.PI/2.2)
 //                .waitSeconds(1)
@@ -82,8 +81,9 @@ public class MeepMeepTesting {
                 .waitSeconds(1)
                 // goes to sample pool
                 .setTangent(Math.PI * 0.25)
-                .splineToSplineHeading(new Pose2d(-35,-23, -Math.PI/2),Math.PI/2)
-                .splineToSplineHeading(new Pose2d(-25,10, 0),0)
+                .splineToSplineHeading(new Pose2d(-35,-23, -Math.PI * 0.5),Math.PI/2).waitSeconds(1)
+                .setTangent(Math.PI/2)
+                .splineToSplineHeading(new Pose2d(-25,-10, Math.PI),0)
                 .waitSeconds(1) //grabs sample
                 ;
 

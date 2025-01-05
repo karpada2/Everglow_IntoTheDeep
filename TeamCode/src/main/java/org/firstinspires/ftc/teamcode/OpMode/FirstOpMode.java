@@ -73,11 +73,16 @@ public class FirstOpMode extends LinearOpMode {
             }
             else {
                 Actions.runBlocking(claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.OFF));
-                claws.rotateArm(-gamepad2.left_stick_y);
+                claws.rotateArm(gamepad2.left_stick_y);
             }
 
             if (Math.abs(gamepad2.right_stick_y) > joystickTolerance) {
-                horElevatorPosition += -gamepad2.right_stick_y*40;
+                if(horElevatorPosition < 0){
+                    horElevatorPosition = 0;
+                }else if(horElevatorPosition > 3700){
+                    horElevatorPosition =  3700;
+                }
+                horElevatorPosition += -gamepad2.right_stick_y*40*1.5;
                 elevators.motorSetHorizontalDestination((int)(horElevatorPosition));
             }
             telemetry.addData("Right Stick y: ", gamepad2.right_stick_y);
@@ -141,6 +146,10 @@ public class FirstOpMode extends LinearOpMode {
             }
             flagElevatorHorizontalCircle = !gamepad2.circle;
             elevators.updateVert();
+
+            if(elevators.getVertDestination() == 0 && gamepad2.square){
+                elevators.resetVert();
+            }
 
 //
 //            Currently Broken, might cause damage to robot

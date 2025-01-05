@@ -172,6 +172,10 @@ public class Elevators{
         verticalDestination = destination;
     }
 
+    public int getVertDestination(){
+        return verticalDestination;
+    }
+
     public void updateVert(){
         if (Math.abs(verticalDestination-getVerticalCurrentPosition())<=120 && verticalDestination == 0) {
             setVerticalPower(0);
@@ -244,6 +248,16 @@ public class Elevators{
     }
     public VerticalElevatorAction setVerticalElevatorAction(VerticalState targetState) {
         return new VerticalElevatorAction(targetState.state);
+    }
+
+    public void resetVert(){
+        rightVert.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightVert.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightVert.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        leftVert.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftVert.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftVert.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
     }
 
     public MotorHorizontalElevatorAction setMotorHorizontalElevatorAction(MotorHorizontalState destinationState) {

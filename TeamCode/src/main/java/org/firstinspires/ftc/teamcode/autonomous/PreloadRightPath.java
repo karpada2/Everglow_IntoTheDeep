@@ -20,7 +20,7 @@ import org.firstinspires.ftc.teamcode.Systems.Elevators;
 public class PreloadRightPath extends LinearOpMode {
     @Override
     public void runOpMode()  throws InterruptedException{
-        Pose2d beginPose = new Pose2d(32, -63,   Math.PI);
+        Pose2d beginPose = new Pose2d(23, -63,   Math.PI);
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
         DifferentialClaws claws  = new DifferentialClaws(this);
         Elevators elevators  = new Elevators(this);
@@ -28,18 +28,16 @@ public class PreloadRightPath extends LinearOpMode {
         TrajectoryActionBuilder B_unload0 = drive.actionBuilder(beginPose)
                 .setTangent((0.5)*Math.PI)
                 .splineToConstantHeading(new Vector2d(0,-60),Math.PI)
-                .splineToSplineHeading(new Pose2d(-56,-56,1.25*Math.PI),1.25*Math.PI);
+                .splineToSplineHeading(new Pose2d(-59,-59,1.25*Math.PI),1.25*Math.PI);
 
         TrajectoryActionBuilder B_Park = B_unload0.endTrajectory().fresh()
                 .setTangent(Math.PI * 0.25)
-                .splineToSplineHeading(new Pose2d(-35,-23, -Math.PI/2),Math.PI/2)
-                .splineToSplineHeading(new Pose2d(-24,10, 0),0);
+                .splineToSplineHeading(new Pose2d(-35,-23, -Math.PI * 0.5),Math.PI/2).waitSeconds(1)
+                .setTangent(Math.PI/2)
+                .splineToSplineHeading(new Pose2d(-25,-10, Math.PI),0);
 
-        Action wait1 = drive.actionBuilder(new Pose2d(0,0,0))
-                .waitSeconds(10)
-                .build();
         Action wait2 = drive.actionBuilder(new Pose2d(0,0,0))
-                .waitSeconds(0.5)
+                .waitSeconds(1)
                 .build();
 
         // Turning action builders into actions
@@ -52,7 +50,7 @@ public class PreloadRightPath extends LinearOpMode {
 
         waitForStart();
 
-        sleep(10000);
+        //sleep(10000);
 
         Actions.runBlocking(
                 new ParallelAction(

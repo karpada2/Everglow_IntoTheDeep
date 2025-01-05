@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
-import static org.firstinspires.ftc.teamcode.Systems.Elevators.VerticalState.VERTICAL_HIGH;
-
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
@@ -29,15 +27,16 @@ public class PreloadLeftPath extends LinearOpMode {
 
         TrajectoryActionBuilder B_unload0 = drive.actionBuilder(beginPose)
                 .waitSeconds(1)
-                .strafeToSplineHeading(new Vector2d(-56,-56),1.25*Math.PI);
+                .strafeToSplineHeading(new Vector2d(-57,-57),1.25*Math.PI);
 
         TrajectoryActionBuilder B_Park = B_unload0.endTrajectory().fresh()
                 .setTangent(Math.PI * 0.25)
-                .splineToSplineHeading(new Pose2d(-35,-23, -Math.PI/2),Math.PI/2)
-                .splineToSplineHeading(new Pose2d(-24,10, 0),0);
+                .splineToSplineHeading(new Pose2d(-35,-23, -Math.PI * 0.5),Math.PI/2).waitSeconds(1)
+                .setTangent(Math.PI/2)
+                .splineToSplineHeading(new Pose2d(-25,-10, Math.PI),0);
 
         Action wait = drive.actionBuilder(new Pose2d(0,0,0))
-                .waitSeconds(0.5)
+                .waitSeconds(1 )
                 .build();
 
         // Turning action builders into actions
