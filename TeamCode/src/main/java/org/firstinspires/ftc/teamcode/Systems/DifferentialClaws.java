@@ -57,8 +57,8 @@ public class DifferentialClaws {
         private final double tolerance = 5; //in degrees, how much error can be accepted
         private final int goUp;
         public ClawMovementAction(double destination) {
-            this.leftClawServoDestination = (getleftClawServoRotation() + destination);
-            this.rightClawServoDestination = (getrightClawServoRotation() + destination);
+            this.leftClawServoDestination = (getleftClawServoRotation() - destination);
+            this.rightClawServoDestination = (getrightClawServoRotation() - destination);
 
             goUp =  destination > 0? 1 : -1;
 
@@ -120,10 +120,14 @@ public class DifferentialClaws {
         private final double timeUntilFinished;
         private double startTime;
         private boolean isInitialized = false;
+        private final double bonusRight, bonusLeft;
 
         public ClawSampleInteractionAction(ClawPowerState state, double timeToStop) {
             this.wantedPower = state.state;
             this.timeUntilFinished = timeToStop;
+
+            bonusLeft = state == ClawPowerState.SPIT? 0 : 2.5*holdingPower;
+            bonusRight = state == ClawPowerState.SPIT? 2.5*holdingPower : 0;
         }
 
         @Override
@@ -134,8 +138,8 @@ public class DifferentialClaws {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             if (!isInitialized) {
-                leftClawServo.setPower(wantedPower + holdingPower);
-                rightClawServo.setPower(-wantedPower + holdingPower);
+                leftClawServo.setPower(wantedPower + 4*holdingPower);
+                rightClawServo.setPower(-wantedPower);
                 startTime = System.currentTimeMillis();
                 isInitialized = true;
             }
@@ -194,6 +198,8 @@ public class DifferentialClaws {
 
         leftClawServo.setDirection(DcMotorSimple.Direction.FORWARD);
         rightClawServo.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        rotateWheels(0);
     }
 
     public enum ClawPowerState {
