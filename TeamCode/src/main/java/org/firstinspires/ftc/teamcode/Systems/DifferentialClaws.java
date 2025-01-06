@@ -263,14 +263,23 @@ public class DifferentialClaws {
         return new ClawSampleInteractionAction(state, 0);
     }
 
-    // gets in degrees
-    public ClawMovementAction setClawMovementAction(double armPosition, Telemetry telemetry) {
+    // gets in degrees, adds the recieved position to the current position
+    public ClawMovementAction addClawMovementAction(double armPosition, Telemetry telemetry) {
+        this.armPosition += armPosition;
         return new ClawMovementAction(armPosition, telemetry);
     }
 
-    // gets in degrees
-    public ClawMovementAction setClawMovementAction(double armPosition) {
+    // gets in degrees, adds the recieved position to the current position
+    public ClawMovementAction addClawMovementAction(double armPosition) {
+        this.armPosition += armPosition;
         return new ClawMovementAction(armPosition);
+    }
+
+    // sets the claw position to the given position
+    public ClawMovementAction setClawMovementAction(double armPosition) {
+        ClawMovementAction result = setClawMovementAction(armPosition - this.armPosition);
+        this.armPosition = armPosition;
+        return result;
     }
 
     public HoldClawAndDropSampleAction test(double timeToHold, double timeToDrop) {
