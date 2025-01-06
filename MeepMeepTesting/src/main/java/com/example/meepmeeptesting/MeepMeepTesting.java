@@ -1,6 +1,5 @@
 package com.example.meepmeeptesting;
 
-import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
@@ -20,10 +19,11 @@ public class MeepMeepTesting {
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .setDimensions(14,18.1)
                 .build();
-
+        
         Pose2d left_beginPose = new Pose2d(-31.1, -63,   Math.PI);
 
         Pose2d basket_pose = new Pose2d(-57,-57,1.25*Math.PI);
+        Pose2d right_beginPose = new Pose2d(23, -63,   Math.PI);
         TrajectoryActionBuilder left_path = myBot.getDrive().actionBuilder(left_beginPose)
                 .waitSeconds(2)
                 .strafeToSplineHeading(basket_pose.position,basket_pose.heading)
@@ -59,18 +59,38 @@ public class MeepMeepTesting {
 
         TrajectoryActionBuilder preload_left_path = myBot.getDrive().actionBuilder(left_beginPose)
                 .waitSeconds(2)
-                .strafeToSplineHeading(new Vector2d(-51,-51),1.25*Math.PI)
+                //.strafeToSplineHeading(new Vector2d(-51,-51),1.25*Math.PI) //just for right
+                .setTangent((1)*Math.PI)
+                .splineToConstantHeading(new Vector2d(0,-60),Math.PI)
+                .splineToSplineHeading(new Pose2d(-57,-57,1.25*Math.PI),1.25*Math.PI)
+//                //spins to right sample
+//                .turnTo(Math.PI/2.2)
+//                .waitSeconds(1)
+//                //spins to basket
+//                .turnTo(Math.PI*1.25)
+//                .waitSeconds(1)
+//                //spins to middle sample
+//                .turnTo(Math.PI/1.75)
+//                .waitSeconds(1)
+//                //spins to basket
+//                .turnTo(Math.PI*1.25)
+//                .waitSeconds(1)
+//                //spins to left sample
+//                .turnTo(Math.PI/1.4)
+//                .waitSeconds(1)
+//                //spins to basket
+//                .turnTo(Math.PI*1.25)
                 .waitSeconds(1)
                 // goes to sample pool
                 .setTangent(Math.PI * 0.25)
-                .splineToSplineHeading(new Pose2d(-35,-23, -Math.PI/2),Math.PI/2)
-                .splineToSplineHeading(new Pose2d(-30,10, 0),0)
+                .splineToSplineHeading(new Pose2d(-35,-23, -Math.PI * 0.5),Math.PI/2).waitSeconds(1)
+                .setTangent(Math.PI/2)
+                .splineToSplineHeading(new Pose2d(-25,-10, Math.PI),0)
                 .waitSeconds(1) //grabs sample
                 ;
 
         myBot.runAction(left_path.build());
 
-        Pose2d right_beginPose = new Pose2d(31.1, -61,   (1./2)*Math.PI);
         TrajectoryActionBuilder right_path = myBot.getDrive().actionBuilder(right_beginPose)
                 .waitSeconds(10)
                 .strafeToSplineHeading(new Vector2d(31.11,-61),0.5*Math.PI)

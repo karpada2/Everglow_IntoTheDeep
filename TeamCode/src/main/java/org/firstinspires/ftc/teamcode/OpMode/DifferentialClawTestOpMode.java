@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.OpMode;
 
 import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -13,6 +12,8 @@ public class DifferentialClawTestOpMode extends LinearOpMode {
 
     boolean flagCross = false;
     boolean flagCircle = false;
+    boolean flagSquare = false;
+    boolean flagTriangle = false;
     boolean flagRightBumper = false;
     boolean flagLeftBumper = false;
 
@@ -26,54 +27,26 @@ public class DifferentialClawTestOpMode extends LinearOpMode {
 
         Action sampleAction = null;
         while (opModeIsActive()) {
-            if (gamepad2.right_bumper && !flagRightBumper) {
-                if (claws.getRotationState() == DifferentialClaws.ClawPowerState.TAKE_IN) {
-                    sampleAction = claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.OFF, 100);
-                }
-                else {
-                    sampleAction = claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, 100);
-                }
+            if (gamepad2.circle && !flagCircle) {
+                Actions.runBlocking(claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN));
             }
-            else if (gamepad2.left_bumper && !flagLeftBumper) {
-                if (claws.getRotationState() == DifferentialClaws.ClawPowerState.SPIT) {
-                    sampleAction = claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.OFF, 100);
-                }
-                else {
-                    sampleAction = claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT, 100);
-                }
+            else if (gamepad2.square && !flagSquare) {
+                Actions.runBlocking(claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.OFF));
             }
+            else if (gamepad2.triangle && !flagTriangle) {
+                Actions.runBlocking(claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT));
+            }
+            else if (gamepad2.cross && !flagCross) {
+                Actions.runBlocking(claws.setClawMovementAction(10));
+            }
+            flagCross = gamepad2.cross;
+            flagSquare = gamepad2.square;
+            flagCircle = gamepad2.circle;
+            flagTriangle = gamepad2.triangle;
 
-            if (builtAction == null) {
-                builtAction = sampleAction;
-            }
-            else if (sampleAction != null) {
-                builtAction = new SequentialAction(builtAction, sampleAction);
-            }
-
-            flagLeftBumper = gamepad2.left_bumper;
-            flagRightBumper = gamepad2.right_bumper;
-
-
-            Action clawMovementAction = null;
-
-            if (gamepad2.cross && !flagCross) {
-                clawMovementAction = claws.setClawMovementAction(10);
-            }
-            else if (gamepad2.circle && !flagCircle) {
-                clawMovementAction = claws.setClawMovementAction(0);
-            }
-
-            if (builtAction == null) {
-                builtAction = clawMovementAction;
-            }
-            else if (clawMovementAction != null) {
-                builtAction = new SequentialAction(builtAction, clawMovementAction);
-            }
-
-            if (gamepad2.dpad_down && builtAction != null) {
-                Actions.runBlocking(builtAction);
-                builtAction = null;
-            }
+            telemetry.addData("left servo rotation: ", claws.getleftClawServoRotation());
+            telemetry.addData("right servo rotation: ", claws.getrightClawServoRotation());
+            telemetry.update();
         }
     }
 }

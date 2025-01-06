@@ -8,8 +8,6 @@
 
 package org.firstinspires.ftc.teamcode.Systems;
 
-import static java.lang.Math.abs;
-
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.canvas.Canvas;
@@ -19,8 +17,6 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class DifferentialClaws {
 
@@ -51,38 +47,18 @@ public class DifferentialClaws {
         private final int directionrightClawServo;
         private boolean isInitialized = false;
 
-        private Telemetry telemetry;
+        private final double power = 0.5;
+        private final double tolerance = 2.5; //in degrees, how much error can be accepted
 
-        private final double power = 0.16;
-        private final double tolerance = 5; //in degrees, how much error can be accepted
-        private final int goUp;
         public ClawMovementAction(double destination) {
-            this.leftClawServoDestination = (getleftClawServoRotation() + destination);
-            this.rightClawServoDestination = (getrightClawServoRotation() + destination);
-
-            goUp =  destination > 0? 1 : -1;
-
-            directionleftClawServo = getleftClawServoRotation() < leftClawServoDestination ? -1 : 1;
-            directionrightClawServo = getrightClawServoRotation() < rightClawServoDestination ? -1 : 1;
-
-            leftClawServoDestination = leftClawServoDestination % 360;
-            rightClawServoDestination = rightClawServoDestination % 360;
-
-        }
-
-        public ClawMovementAction(double destination, Telemetry telemetry) {
             this.leftClawServoDestination = (getleftClawServoRotation() - destination);
             this.rightClawServoDestination = (getrightClawServoRotation() - destination);
 
-            goUp =  destination > 0? 1 : -1;
-
             directionleftClawServo = getleftClawServoRotation() < leftClawServoDestination ? -1 : 1;
             directionrightClawServo = getrightClawServoRotation() < rightClawServoDestination ? -1 : 1;
 
             leftClawServoDestination = leftClawServoDestination % 360;
             rightClawServoDestination = rightClawServoDestination % 360;
-
-            this.telemetry = telemetry;
         }
 
         @Override
@@ -92,20 +68,13 @@ public class DifferentialClaws {
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            telemetry.addData("in action left servo rotation: ", getleftClawServoRotation());
-            telemetry.addData("in action right servo rotation: ", getrightClawServoRotation());
-            telemetry.addData("left claw condition: ", abs(getleftClawServoRotation() - leftClawServoDestination) < tolerance);
-            telemetry.addData("right claw condition: ", abs(getleftClawServoRotation() - leftClawServoDestination) < tolerance);
-
-            telemetry.update();
-
             if (!isInitialized) {
                 leftClawServo.setPower(power * directionleftClawServo);
                 rightClawServo.setPower(power * directionrightClawServo);
                 isInitialized = true;
             }
 
-            if (abs(getleftClawServoRotation() - leftClawServoDestination) < tolerance || abs(getleftClawServoRotation() - leftClawServoDestination) < tolerance) {
+            if (Math.abs(getleftClawServoRotation() - leftClawServoDestination) < tolerance || Math.abs(getrightClawServoRotation() - rightClawServoDestination) < tolerance) {
                 leftClawServo.setPower(holdingPower);
                 rightClawServo.setPower(holdingPower);
                 return false;
@@ -116,13 +85,13 @@ public class DifferentialClaws {
 
     // receives the time in milliseconds until the action is considered finished
     public class ClawSampleInteractionAction implements Action {
-        private final double wantedPower;
+        private final ClawPowerState wantedPower;
         private final double timeUntilFinished;
         private double startTime;
         private boolean isInitialized = false;
 
         public ClawSampleInteractionAction(ClawPowerState state, double timeToStop) {
-            this.wantedPower = state.state;
+            this.wantedPower = state;
             this.timeUntilFinished = timeToStop;
         }
 
@@ -134,8 +103,7 @@ public class DifferentialClaws {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             if (!isInitialized) {
-                leftClawServo.setPower(wantedPower + holdingPower);
-                rightClawServo.setPower(-wantedPower + holdingPower);
+                rotateWheels(wantedPower);
                 startTime = System.currentTimeMillis();
                 isInitialized = true;
             }
@@ -197,9 +165,9 @@ public class DifferentialClaws {
     }
 
     public enum ClawPowerState {
-        TAKE_IN(0.75),
+        TAKE_IN(1),
         OFF(0),
-        SPIT(-0.75);
+        SPIT(-1);
 
         public final double state;
 
@@ -255,11 +223,6 @@ public class DifferentialClaws {
 
     public ClawSampleInteractionAction setClawSampleInteractionAction(ClawPowerState state) {
         return new ClawSampleInteractionAction(state, 0);
-    }
-
-    // gets in degrees
-    public ClawMovementAction setClawMovementAction(double armPosition, Telemetry telemetry) {
-        return new ClawMovementAction(armPosition, telemetry);
     }
 
     // gets in degrees
