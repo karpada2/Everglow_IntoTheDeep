@@ -15,6 +15,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Systems.Claws;
 import org.firstinspires.ftc.teamcode.Systems.Claws.ClawState;
+import org.firstinspires.ftc.teamcode.Systems.DifferentialClaws;
 import org.firstinspires.ftc.teamcode.Systems.Elevators.HorizontalState;
 import org.firstinspires.ftc.teamcode.Systems.Elevators.VerticalState;
 import org.firstinspires.ftc.teamcode.Systems.Elevators;
@@ -24,66 +25,49 @@ import org.firstinspires.ftc.teamcode.Systems.Elevators;
 public class LeftPath extends LinearOpMode {
     @Override
     public void runOpMode()  throws InterruptedException{
-        Pose2d beginPose = new Pose2d(-31.1, -61,   (1./2)*Math.PI);
+        // Init Poses
+        Pose2d beginPose = new Pose2d(-31.1, -63,   Math.PI);
+        Pose2d basket_pose = new Pose2d(-57,-57,1.25*Math.PI);
+
+        // Init Systems
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
-        //Claws claws  = new Claws(this);
-        //Elevators elevators  = new Elevators(this);
+        DifferentialClaws claws  = new DifferentialClaws(this);
+        Elevators elevators  = new Elevators(this);
 
-        TrajectoryActionBuilder B_unload0 = drive.actionBuilder(beginPose)
-                .strafeToSplineHeading(new Vector2d(-51,-51),1.25*Math.PI);
+        //Init Trajectories
+        TrajectoryActionBuilder B_preload = drive.actionBuilder(beginPose)
+                .strafeToSplineHeading(basket_pose.position,basket_pose.heading);
 
-        TrajectoryActionBuilder B_sample1 = B_unload0.endTrajectory().fresh()
-                .strafeToSplineHeading(new Vector2d(-48,-38),0.5*Math.PI)
-                .waitSeconds(1);
+        TrajectoryActionBuilder B_sample1pickup = B_preload.endTrajectory().fresh()
+                .strafeToSplineHeading(new Vector2d(-48,-40),0.5*Math.PI);
 
-        TrajectoryActionBuilder B_unload1 = B_sample1.endTrajectory().fresh()
-                .strafeToSplineHeading(new Vector2d(-51,-51),1.25*Math.PI);
+        TrajectoryActionBuilder B_sample1unload = B_sample1pickup.endTrajectory().fresh()
+                .strafeToSplineHeading(basket_pose.position,basket_pose.heading);
 
-        TrajectoryActionBuilder B_sample2 = B_unload1.endTrajectory().fresh()
-                .strafeToSplineHeading(new Vector2d(-58, -38),0.5*Math.PI)
-                .waitSeconds(1);
+        TrajectoryActionBuilder B_sample2pickup = B_sample1unload.endTrajectory().fresh()
+                .strafeToSplineHeading(new Vector2d(-58, -40),0.5*Math.PI);
 
-        TrajectoryActionBuilder B_unload2 = B_sample2.endTrajectory().fresh()
-                .strafeToSplineHeading(new Vector2d(-51,-51),1.25*Math.PI);
+        TrajectoryActionBuilder B_sample2unload = B_sample2pickup.endTrajectory().fresh()
+                .strafeToSplineHeading(basket_pose.position,basket_pose.heading);
 
-        TrajectoryActionBuilder B_sample3 = B_unload2.endTrajectory().fresh()
-                .strafeToSplineHeading(new Vector2d(-57, -26),Math.PI)
-                .waitSeconds(1);
-
-        TrajectoryActionBuilder B_unload3 = B_sample3.endTrajectory().fresh()
-                .strafeToSplineHeading(new Vector2d(-51,-51),1.25*Math.PI);
-
-        TrajectoryActionBuilder B_sample4 = B_unload3.endTrajectory().fresh()
+        TrajectoryActionBuilder B_park = B_sample2unload.endTrajectory().fresh()
                 .setTangent(Math.PI * 0.5)
-                .splineToSplineHeading(new Pose2d(-34,0, 0),0)
-                .waitSeconds(1);;
-
-        TrajectoryActionBuilder B_unload4 = B_sample4.endTrajectory().fresh()
-                .setTangent(-(0.75)*Math.PI)
-                .splineToSplineHeading(new Pose2d(-51,-51,1.25*Math.PI),1.25*Math.PI);
-
-        TrajectoryActionBuilder B_Park = B_unload4.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(-31.1, -61),Math.PI/2);
+                .splineToLinearHeading(new Pose2d(-24,-10, 0),0);
 
         Action wait = drive.actionBuilder(new Pose2d(0,0,0))
                 .waitSeconds(3)
                 .build();
 
         // Turning action builders into actions
-        Action unload0 = B_unload0.build();
-        Action sample1 = B_sample1.build();
-        Action unload1 = B_unload1.build();
+        Action preload = B_preload.build();
 
-        Action sample2 = B_sample2.build();
-        Action unload2 = B_unload2.build();
+        Action sample1pickup = B_sample1pickup.build();
+        Action sample1unload = B_sample1unload.build();
 
-        Action sample3 = B_sample3.build();
-        Action unload3 = B_unload3.build();
+        Action sample2pickup = B_sample2pickup.build();
+        Action sample2unload = B_sample2unload.build();
 
-        Action sample4 = B_sample4.build();
-        Action unload4 = B_unload4.build();
-
-        Action Park = B_Park.build();
+        Action Park = B_park.build();
 
 //        Actions.runBlocking(v_e to 0 and h_e to 0)
 //        Actions.runBlocking(set elevator power to 0.8)
@@ -92,14 +76,11 @@ public class LeftPath extends LinearOpMode {
 
         Actions.runBlocking(
                 new SequentialAction(
-                        unload0,
-                        unload1,
-                        sample2,
-                        unload2,
-                        sample3,
-                        unload3,
-                        sample4,
-                        unload4,
+                        preload,
+                        sample1pickup,
+                        sample1unload,
+                        sample2pickup,
+                        sample2unload,
                         Park)
                 );
     }
