@@ -20,6 +20,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 public class DifferentialClaws {
 
+    public static final double holdingPower = 0.1;
+
     public static double getRotationOfInput(AnalogInput input) {
         return (input.getVoltage() / input.getMaxVoltage()) * 360;
     }
@@ -46,14 +48,14 @@ public class DifferentialClaws {
         private boolean isInitialized = false;
 
         private final double power = 0.5;
-        private final double tolerance = 0.1; //in degrees, how much error can be accepted
+        private final double tolerance = 2.5; //in degrees, how much error can be accepted
 
         public ClawMovementAction(double destination) {
-            this.leftClawServoDestination = (getleftClawServoRotation() + destination);
-            this.rightClawServoDestination = (getrightClawServoRotation() + destination);
+            this.leftClawServoDestination = (getleftClawServoRotation() - destination);
+            this.rightClawServoDestination = (getrightClawServoRotation() - destination);
 
-            directionleftClawServo = getleftClawServoRotation() < leftClawServoDestination ? 1 : -1;
-            directionrightClawServo = getrightClawServoRotation() < rightClawServoDestination ? 1 : -1;
+            directionleftClawServo = getleftClawServoRotation() < leftClawServoDestination ? -1 : 1;
+            directionrightClawServo = getrightClawServoRotation() < rightClawServoDestination ? -1 : 1;
 
             leftClawServoDestination = leftClawServoDestination % 360;
             rightClawServoDestination = rightClawServoDestination % 360;
@@ -73,8 +75,8 @@ public class DifferentialClaws {
             }
 
             if (Math.abs(getleftClawServoRotation() - leftClawServoDestination) < tolerance || Math.abs(getrightClawServoRotation() - rightClawServoDestination) < tolerance) {
-                leftClawServo.setPower(0);
-                rightClawServo.setPower(0);
+                leftClawServo.setPower(holdingPower);
+                rightClawServo.setPower(holdingPower);
                 return false;
             }
             return true;
