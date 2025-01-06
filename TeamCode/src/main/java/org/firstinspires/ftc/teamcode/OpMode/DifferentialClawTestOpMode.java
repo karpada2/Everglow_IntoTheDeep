@@ -37,7 +37,7 @@ public class DifferentialClawTestOpMode extends LinearOpMode {
                 Actions.runBlocking(claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT));
             }
             else if (gamepad2.cross && !flagCross) {
-                Actions.runBlocking(claws.setClawMovementAction(10));
+                Actions.runBlocking(claws.setClawMovementAction(17, telemetry));
             }
             flagCross = gamepad2.cross;
             flagSquare = gamepad2.square;
