@@ -75,7 +75,7 @@ public class Elevators{
                 motorSetHorizontalPower(0.8);
             }
             if (!isInitialized) {
-                setVerticalDestination(this.destination);
+                motorSetHorizontalDestination(this.destination);
                 isInitialized = true;
             }
 
