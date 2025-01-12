@@ -110,7 +110,7 @@ public class ActionSequenceOpMode extends LinearOpMode {
         flagDpadUp = !gamepad2.dpad_up;
 
         if(gamepad2.dpad_right && flagElevatorVerticalDpadRight){
-            Actions.runBlocking();
+            Actions.runBlocking(control.getReadyExtendedPickUp);
         }
         flagElevatorVerticalDpadRight = !gamepad2.dpad_right;
 

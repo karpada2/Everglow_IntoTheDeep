@@ -13,46 +13,46 @@ public class ActionControl {
     public final Action returnFromPickUp;
     public final Action getReadyDropLow;
     public final Action getReadyDropHigh;
-    public final Action reutrnFromDrop;
+    public final Action returnFromDrop;
 
     public ActionControl(Elevators elevators, DifferentialClaws claws) {
         getReadyHalfwayPickUp = new SequentialAction(
-                elevators.setVerticalElevatorAction(VerticalState.VERTICAL_HURDLE),
-                new SequentialAction(
-                        elevators.setMotorHorizontalElevatorAction(MotorHorizontalState.HORIZONTAL_HALFWAY),
-                        elevators.setVerticalElevatorAction(VerticalState.VERTICAL_PICKUP)
-                )
+                claws.setClawMovementAction(90), //up
+                elevators.setMotorHorizontalElevatorAction(MotorHorizontalState.HORIZONTAL_HALFWAY),
+                claws.setClawMovementAction(0) // down
         );
 
         getReadyExtendedPickUp =  new SequentialAction(
-                elevators.setVerticalElevatorAction(VerticalState.VERTICAL_HURDLE),
-                new SequentialAction(
-                        elevators.setMotorHorizontalElevatorAction(MotorHorizontalState.HORIZONTAL_EXTENDED),
-                        elevators.setVerticalElevatorAction(VerticalState.VERTICAL_PICKUP)
-                )
+                claws.setClawMovementAction(90), //up
+                elevators.setMotorHorizontalElevatorAction(MotorHorizontalState.HORIZONTAL_EXTENDED),
+                claws.setClawMovementAction(0) // down
         );
 
         returnFromPickUp = new SequentialAction(
-                elevators.setVerticalElevatorAction(VerticalState.VERTICAL_HURDLE),
-                new SequentialAction(
-                        elevators.setMotorHorizontalElevatorAction(MotorHorizontalState.HORIZONTAL_RETRACTED),
-                        elevators.setVerticalElevatorAction(VerticalState.VERTICAL_PICKUP)
-                )
+                claws.setClawMovementAction(90), //up
+                elevators.setMotorHorizontalElevatorAction(MotorHorizontalState.HORIZONTAL_RETRACTED),
+                claws.setClawMovementAction(0) // down
         );
 
         getReadyDropLow = new SequentialAction(
+                claws.setClawMovementAction(90), //up
                 elevators.setVerticalElevatorAction(VerticalState.VERTICAL_LOW),
-                elevators.setMotorHorizontalElevatorAction(MotorHorizontalState.HORIZONTAL_HALFWAY)
+                elevators.setMotorHorizontalElevatorAction(MotorHorizontalState.HORIZONTAL_HALFWAY),
+                claws.setClawMovementAction(0) // down
         );
 
         getReadyDropHigh = new SequentialAction(
+                claws.setClawMovementAction(90), // up
                 elevators.setVerticalElevatorAction(VerticalState.VERTICAL_HIGH),
-                elevators.setMotorHorizontalElevatorAction(MotorHorizontalState.HORIZONTAL_HALFWAY)
+                elevators.setMotorHorizontalElevatorAction(MotorHorizontalState.HORIZONTAL_HALFWAY),
+                claws.setClawMovementAction(0) // down
         );
 
-        reutrnFromDrop = new SequentialAction(
+        returnFromDrop = new SequentialAction(
+                claws.setClawMovementAction(90), // up
                 elevators.setMotorHorizontalElevatorAction(MotorHorizontalState.HORIZONTAL_RETRACTED),
-                elevators.setVerticalElevatorAction(VerticalState.VERTICAL_MIN)
+                elevators.setVerticalElevatorAction(VerticalState.VERTICAL_MIN),
+                claws.setClawMovementAction(0) // down
         );
         //TODO: ADD CLAW MOVEMENTS TO THESE
     }
