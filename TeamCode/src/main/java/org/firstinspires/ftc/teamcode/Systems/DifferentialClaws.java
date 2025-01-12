@@ -22,7 +22,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 public class DifferentialClaws {
 
-    public static final double holdingPower = 0.1;
+    public static final double holdingPower = 0.15;
 
     public static double getRotationOfInput(AnalogInput input) {
         return (input.getVoltage() / input.getMaxVoltage()) * 360;
@@ -128,7 +128,7 @@ public class DifferentialClaws {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             if (!isInitialized) {
-                leftClawServo.setPower(wantedPower + 4*holdingPower);
+                leftClawServo.setPower(wantedPower + 2.5*holdingPower);
                 rightClawServo.setPower(-wantedPower);
                 startTime = System.currentTimeMillis();
                 isInitialized = true;
@@ -203,7 +203,6 @@ public class DifferentialClaws {
     }
 
     public void rotateArm(double power){
-        power /= 2;
         leftClawServo.setPower(power);
         rightClawServo.setPower(power);
     }
@@ -260,7 +259,8 @@ public class DifferentialClaws {
 
     // gets in degrees, adds the given to the current position
     public ClawMovementAction addClawMovementAction(double armPosition) {
-        return new ClawMovementAction(armPosition);
+        double out_val = this.armPosition + armPosition;
+        return setClawMovementAction(out_val);
     }
 
     //gets in degrees, sets the claw's position to the given position
