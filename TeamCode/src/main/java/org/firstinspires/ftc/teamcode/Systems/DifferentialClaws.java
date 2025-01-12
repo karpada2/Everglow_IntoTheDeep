@@ -97,8 +97,7 @@ public class DifferentialClaws {
             }
 
             if (abs(getleftClawServoRotation() - leftClawServoDestination) < tolerance || abs(getleftClawServoRotation() - leftClawServoDestination) < tolerance) {
-                leftClawServo.setPower(holdingPower);
-                rightClawServo.setPower(holdingPower);
+                rotateArm(holdingPower);
                 return false;
             }
             return true;
