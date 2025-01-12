@@ -40,11 +40,11 @@ public class ActionSequenceOpMode extends LinearOpMode {
         boolean flagDpadDown = true;
         boolean flagElevatorVerticalDpadLeft = true;
         boolean flagDpadUp = true;
-        boolean flagElevatorVerticalDpadRight = true;
+        boolean flagDpadRight = true;
 
-        boolean flagElevatorHorizontalX = true;
-        boolean flagElevatorHorizontalTriangle = true;
-        boolean flagElevatorHorizontalCircle = true;
+        boolean flagX = true;
+        boolean flagTriangle = true;
+        boolean flagCircle = true;
         boolean flagElevatorHorizontalSquare = true;
 
         boolean flagClawTakeIn = true;
@@ -100,7 +100,7 @@ public class ActionSequenceOpMode extends LinearOpMode {
         }
 
         if(gamepad2.dpad_down && flagDpadDown) {
-            Actions.runBlocking(control.returnFromPickUp);
+            Actions.runBlocking(control.returnFromDrop);
         }
         flagDpadDown = !gamepad2.dpad_down;
 
@@ -109,11 +109,25 @@ public class ActionSequenceOpMode extends LinearOpMode {
         }
         flagDpadUp = !gamepad2.dpad_up;
 
-        if(gamepad2.dpad_right && flagElevatorVerticalDpadRight){
+        if(gamepad2.dpad_right && flagDpadRight){
+            Actions.runBlocking(control.getReadyDropLow);
+        }
+        flagDpadRight = !gamepad2.dpad_right;
+
+        if(gamepad2.cross && flagX) {
+            Actions.runBlocking(control.returnFromPickUp);
+        }
+        flagX = !gamepad2.cross;
+
+        if(gamepad2.triangle && flagTriangle){
             Actions.runBlocking(control.getReadyExtendedPickUp);
         }
-        flagElevatorVerticalDpadRight = !gamepad2.dpad_right;
+        flagTriangle = !gamepad2.triangle;
 
+        if(gamepad2.circle && flagCircle){
+            Actions.runBlocking(control.getReadyHalfwayPickUp);
+        }
+        flagCircle = !gamepad2.circle;
 
         telemetry.addData("Right Stick y: ", gamepad2.right_stick_y);
         telemetry.addData("precieved hor position: ", horElevatorPosition);
