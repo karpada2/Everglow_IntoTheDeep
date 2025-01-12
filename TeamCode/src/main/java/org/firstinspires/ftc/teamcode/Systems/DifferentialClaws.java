@@ -53,6 +53,7 @@ public class DifferentialClaws {
         private final double power = 0.2;
         private final double tolerance = 5; //in degrees, how much error can be accepted
         public ClawMovementAction(double destination) {
+            destination *= 0.714285;
             double pos = lastPosRequest;
             lastPosRequest = destination;
             destination -= pos;
@@ -254,13 +255,21 @@ public class DifferentialClaws {
     }
 
     // gets in degrees
-//    public ClawMovementAction setClawMovementAction(double armPosition, Telemetry telemetry) {
+//    public ClawMovementAction addClawMovementAction(double armPosition, Telemetry telemetry) {
 //        return new ClawMovementAction(armPosition, telemetry);
 //    }
 
-    // gets in degrees
-    public ClawMovementAction setClawMovementAction(double armPosition) {
+    // gets in degrees, adds the given to the current position
+    public ClawMovementAction addClawMovementAction(double armPosition) {
         return new ClawMovementAction(armPosition);
+    }
+
+    //gets in degrees, sets the claw's position to the given position
+    public ClawMovementAction setClawMovementAction(double armPosition) {
+        double diff = armPosition - this.armPosition;
+        ClawMovementAction action = new ClawMovementAction(diff);
+        this.armPosition = armPosition;
+        return action;
     }
 
     public HoldClawAndDropSampleAction test(double timeToHold, double timeToDrop) {

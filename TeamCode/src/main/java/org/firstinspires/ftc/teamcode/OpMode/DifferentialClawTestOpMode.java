@@ -57,10 +57,10 @@ public class DifferentialClawTestOpMode extends LinearOpMode {
             Action clawMovementAction = null;
 
             if (gamepad2.cross && !flagCross) {
-                clawMovementAction = claws.setClawMovementAction(10);
+                clawMovementAction = claws.addClawMovementAction(10);
             }
             else if (gamepad2.circle && !flagCircle) {
-                clawMovementAction = claws.setClawMovementAction(0);
+                clawMovementAction = claws.addClawMovementAction(0);
             }
 
             if (builtAction == null) {
