@@ -263,4 +263,11 @@ public class Elevators{
     public MotorHorizontalElevatorAction setMotorHorizontalElevatorAction(MotorHorizontalState destinationState) {
         return new MotorHorizontalElevatorAction(destinationState);
     }
+
+    public void setVertDest(int dest){
+        rightVert.setTargetPosition(dest);
+        leftVert.setTargetPosition(dest);
+        rightVert.setPower(0.65);
+        leftVert.setPower(0.65);
+    }
 }

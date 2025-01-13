@@ -4,6 +4,7 @@ import static org.firstinspires.ftc.teamcode.MecanumDrive.linearInputToExponenti
 
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import com.acmerobotics.roadrunner.Pose2d;
@@ -12,6 +13,7 @@ import org.firstinspires.ftc.teamcode.Systems.ActionControl;
 import org.firstinspires.ftc.teamcode.Systems.DifferentialClaws;
 import org.firstinspires.ftc.teamcode.Systems.Elevators;
 
+@Disabled
 public class ActionSequenceOpMode extends LinearOpMode {
 
     double joystickTolerance = 0.5;
