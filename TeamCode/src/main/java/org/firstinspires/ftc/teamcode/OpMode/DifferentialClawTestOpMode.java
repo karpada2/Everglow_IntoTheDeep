@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.OpMode;
 
 import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -11,10 +10,15 @@ import org.firstinspires.ftc.teamcode.Systems.DifferentialClaws;
 @TeleOp(name="DifferentialClawTestOpMode")
 public class DifferentialClawTestOpMode extends LinearOpMode {
 
-    boolean flagCross = false;
     boolean flagCircle = false;
-    boolean flagRightBumper = false;
-    boolean flagLeftBumper = false;
+    boolean flagSquare = false;
+    boolean flagTriangle = false;
+
+    boolean flagDpadUp = false;
+    boolean flagDpadDown = false;
+
+
+    double expected_arm_position = 0;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -26,54 +30,35 @@ public class DifferentialClawTestOpMode extends LinearOpMode {
 
         Action sampleAction = null;
         while (opModeIsActive()) {
-            if (gamepad2.right_bumper && !flagRightBumper) {
-                if (claws.getRotationState() == DifferentialClaws.ClawPowerState.TAKE_IN) {
-                    sampleAction = claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.OFF, 100);
-                }
-                else {
-                    sampleAction = claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, 100);
-                }
+            if (gamepad2.circle && !flagCircle) {
+                Actions.runBlocking(claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN));
             }
-            else if (gamepad2.left_bumper && !flagLeftBumper) {
-                if (claws.getRotationState() == DifferentialClaws.ClawPowerState.SPIT) {
-                    sampleAction = claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.OFF, 100);
-                }
-                else {
-                    sampleAction = claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT, 100);
-                }
+            else if (gamepad2.square && !flagSquare) {
+                Actions.runBlocking(claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.OFF));
             }
+            else if (gamepad2.triangle && !flagTriangle) {
+                Actions.runBlocking(claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT));
+            }
+            else if (gamepad2.dpad_up && !flagDpadUp) {
+                Actions.runBlocking(claws.addClawMovementAction(10));
+                expected_arm_position += 10;
+            }
+            else if (gamepad2.dpad_down && !flagDpadDown) {
+                Actions.runBlocking(claws.addClawMovementAction(-10));
+                expected_arm_position += -10;
+            }
+            flagSquare = gamepad2.square;
+            flagCircle = gamepad2.circle;
+            flagTriangle = gamepad2.triangle;
 
-            if (builtAction == null) {
-                builtAction = sampleAction;
-            }
-            else if (sampleAction != null) {
-                builtAction = new SequentialAction(builtAction, sampleAction);
-            }
+            flagDpadUp = gamepad2.dpad_up;
+            flagDpadDown = gamepad2.dpad_down;
 
-            flagLeftBumper = gamepad2.left_bumper;
-            flagRightBumper = gamepad2.right_bumper;
-
-
-            Action clawMovementAction = null;
-
-            if (gamepad2.cross && !flagCross) {
-                clawMovementAction = claws.setClawMovementAction(10);
-            }
-            else if (gamepad2.circle && !flagCircle) {
-                clawMovementAction = claws.setClawMovementAction(0);
-            }
-
-            if (builtAction == null) {
-                builtAction = clawMovementAction;
-            }
-            else if (clawMovementAction != null) {
-                builtAction = new SequentialAction(builtAction, clawMovementAction);
-            }
-
-            if (gamepad2.dpad_down && builtAction != null) {
-                Actions.runBlocking(builtAction);
-                builtAction = null;
-            }
+            telemetry.addData("left servo rotation: ", claws.getleftClawServoRotation());
+            telemetry.addData("right servo rotation: ", claws.getrightClawServoRotation());
+            telemetry.addData("artificial arm position: ", claws.getClawRotation());
+            telemetry.addData("expected arm position: ", expected_arm_position);
+            telemetry.update();
         }
     }
 }
