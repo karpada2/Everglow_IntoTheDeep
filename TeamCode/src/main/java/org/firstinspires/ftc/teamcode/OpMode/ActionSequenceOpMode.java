@@ -152,8 +152,11 @@ public class ActionSequenceOpMode extends LinearOpMode {
 
 
             //double power = pid + ff;
-
+            if(!control.isOnRun()){
+                elevators.updateVert();
+            }
             colorSensorSystem.updateAlert();
+
 
             //telemetry.addData("pos: ", claws.getActualArmRotation());
             //telemetry.addData("target: ", claws.getArmTargetPosition());

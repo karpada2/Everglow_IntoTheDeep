@@ -91,7 +91,7 @@ public class Elevators{
         VERTICAL_MIN(0),
         VERTICAL_PICKUP(0),
         VERTICAL_HURDLE(720),
-        VERTICAL_LOW(3070),
+        VERTICAL_LOW(2600),
         VERTICAL_HIGH(4243),
         VERTICAL_MAX(4243);
 

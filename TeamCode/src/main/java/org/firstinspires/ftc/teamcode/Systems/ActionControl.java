@@ -56,8 +56,9 @@ public class ActionControl {
         returnFromDrop = new SequentialAction(
                 claws.setClawMovementAction(100), // up
                 elevators.setMotorHorizontalElevatorAction(MotorHorizontalState.HORIZONTAL_RETRACTED),
+                claws.setClawMovementAction(40), // down
                 elevators.setVerticalElevatorAction(VerticalState.VERTICAL_MIN),
-                claws.setClawMovementAction(20) // down
+                claws.setClawMovementAction(0) // down
         );
         //TODO: ADD CLAW MOVEMENTS TO THESE
     }
