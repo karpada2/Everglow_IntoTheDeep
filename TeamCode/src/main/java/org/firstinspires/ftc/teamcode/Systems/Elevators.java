@@ -92,6 +92,7 @@ public class Elevators{
         VERTICAL_HURDLE(720),
         VERTICAL_LOW(3070),
         VERTICAL_HIGH(4243),
+        VERTICAL_HIGH_SPECIMEN(1796),
         VERTICAL_MAX(4243);
 
 

@@ -10,12 +10,15 @@ import org.firstinspires.ftc.teamcode.Systems.DifferentialClaws;
 @TeleOp(name="DifferentialClawTestOpMode")
 public class DifferentialClawTestOpMode extends LinearOpMode {
 
-    boolean flagCross = false;
     boolean flagCircle = false;
     boolean flagSquare = false;
     boolean flagTriangle = false;
-    boolean flagRightBumper = false;
-    boolean flagLeftBumper = false;
+
+    boolean flagDpadUp = false;
+    boolean flagDpadDown = false;
+
+
+    double expected_arm_position = 0;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -36,16 +39,25 @@ public class DifferentialClawTestOpMode extends LinearOpMode {
             else if (gamepad2.triangle && !flagTriangle) {
                 Actions.runBlocking(claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT));
             }
-            else if (gamepad2.cross && !flagCross) {
-                Actions.runBlocking(claws.setClawMovementAction(10));
+            else if (gamepad2.dpad_up && !flagDpadUp) {
+                Actions.runBlocking(claws.addClawMovementAction(10));
+                expected_arm_position += 10;
             }
-            flagCross = gamepad2.cross;
+            else if (gamepad2.dpad_down && !flagDpadDown) {
+                Actions.runBlocking(claws.addClawMovementAction(-10));
+                expected_arm_position += -10;
+            }
             flagSquare = gamepad2.square;
             flagCircle = gamepad2.circle;
             flagTriangle = gamepad2.triangle;
 
+            flagDpadUp = gamepad2.dpad_up;
+            flagDpadDown = gamepad2.dpad_down;
+
             telemetry.addData("left servo rotation: ", claws.getleftClawServoRotation());
             telemetry.addData("right servo rotation: ", claws.getrightClawServoRotation());
+            telemetry.addData("artificial arm position: ", claws.getClawRotation());
+            telemetry.addData("expected arm position: ", expected_arm_position);
             telemetry.update();
         }
     }
