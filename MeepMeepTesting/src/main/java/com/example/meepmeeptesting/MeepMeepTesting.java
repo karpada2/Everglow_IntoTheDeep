@@ -29,22 +29,22 @@ public class MeepMeepTesting {
                 .strafeToSplineHeading(basket_pose.position,basket_pose.heading)
                 // goes to basket
                 .waitSeconds(1) //puts sample in basket
-                .strafeToSplineHeading(new Vector2d(-48,-40),0.5*Math.PI)
+                .strafeToSplineHeading(new Vector2d(-48,-50),0.5*Math.PI)
                 .waitSeconds(1)
-                .lineToY(-30)
-                .waitSeconds(0.2)
                 .lineToY(-40)
+                .waitSeconds(0.2)
+                .lineToY(-50)
                 // goes to right sample on the left
                 .waitSeconds(1) //grabs sample remove
                 //elevator
                 .strafeToSplineHeading(basket_pose.position,basket_pose.heading)
                 .waitSeconds(1)
                 // goes to basket
-                .strafeToSplineHeading(new Vector2d(-58, -40),0.5*Math.PI)
+                .strafeToSplineHeading(new Vector2d(-58, -50),0.5*Math.PI)
                 .waitSeconds(1)
-                .lineToY(-30)
-                .waitSeconds(0.2)
                 .lineToY(-40)
+                .waitSeconds(0.2)
+                .lineToY(-50)
                 // goes to middle sample on the left
                 .waitSeconds(1) //grabs sample
                 //elevator

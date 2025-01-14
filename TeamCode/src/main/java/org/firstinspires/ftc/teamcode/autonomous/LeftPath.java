@@ -30,16 +30,17 @@ public class LeftPath extends LinearOpMode {
         Elevators elevators  = new Elevators(this);
         //Init Trajectories
         TrajectoryActionBuilder B_preload = drive.actionBuilder(beginPose)
-                .strafeToSplineHeading(basketPose.position,basketPose.heading);
+                .strafeToSplineHeading(basketPose.position,basketPose.heading)
+                .waitSeconds(1.5);
 
         TrajectoryActionBuilder B_sample1pickup = B_preload.endTrajectory().fresh()
-                .strafeToSplineHeading(new Vector2d(-48,-40),0.5*Math.PI);
+                .strafeToSplineHeading(new Vector2d(-48,-50),0.5*Math.PI);
 
         TrajectoryActionBuilder B_sample1basket = B_sample1pickup.endTrajectory().fresh()
                 .strafeToSplineHeading(basketPose.position,basketPose.heading);
 
         TrajectoryActionBuilder B_sample2pickup = B_sample1basket.endTrajectory().fresh()
-                .strafeToSplineHeading(new Vector2d(-58, -40),0.5*Math.PI);
+                .strafeToSplineHeading(new Vector2d(-58, -50),0.5*Math.PI);
 
         TrajectoryActionBuilder B_sample2basket = B_sample2pickup.endTrajectory().fresh()
                 .strafeToSplineHeading(basketPose.position,basketPose.heading);
@@ -49,24 +50,25 @@ public class LeftPath extends LinearOpMode {
                 .splineToLinearHeading(new Pose2d(-24,-10, 0),0);
 
         Action wait = drive.actionBuilder(new Pose2d(0,0,0))
-                .waitSeconds(0.5)
+                .waitSeconds(1.5)
                 .build();
 
         Action BackAndForth = B_sample1pickup.endTrajectory().fresh()
-                .lineToY(-30)
-                .waitSeconds(0.2)
+                .waitSeconds(1)
                 .lineToY(-40)
+                .waitSeconds(0.2)
+                .lineToY(-50)
                 .build();
 
         // Turning action builders into actions
-        Action armUp = claws.setClawMovementAction(20);
+        Action armUp = claws.clawMovementAction(120);
 
-        Action unload = new SequentialAction(claws.setClawMovementAction(30),
+        Action unload = new SequentialAction(claws.clawMovementAction(90),
                                              claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT),
                                              wait,
-                                             claws.setClawMovementAction(45));
+                                             claws.clawMovementAction(120));
         Action pickup = new ParallelAction(BackAndForth,
-                                            new SequentialAction(claws.setClawMovementAction(0),
+                                            new SequentialAction(claws.clawMovementAction(0),
                                                                  claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN)));
 
         Action preload = B_preload.build();
@@ -83,32 +85,45 @@ public class LeftPath extends LinearOpMode {
 
         Actions.runBlocking(
                 new SequentialAction(
+                        armUp,
+                        wait,
+                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HIGH),
+                        wait,
+                        elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_HALFWAY)
+                )
+        );
+/*        Actions.runBlocking(
+                new SequentialAction(
                         armUp,//arm up
-                        preload,
-                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HIGH),//elevators up
                         wait,
-                        elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_HALFWAY),
-                        unload,
-                        wait,
-                        elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_RETRACTED),
-                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN),//elevators down
-                        sample1pickup,
-                        pickup,
-                        claws.setClawMovementAction(45),//arm up
-                        sample1basket,
+                        preload, //movement
                         wait,
                         elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HIGH),//elevators up
                         wait,
                         elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_HALFWAY),
-                        sample2pickup,
-                        pickup,
-                        claws.setClawMovementAction(45),//arm up
-                        sample2basket,
+                        wait,
+                        claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT),//unload,
                         wait,
                         elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_RETRACTED),
-                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN)//elevators down,*/
+                        wait,
+                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN)//elevators down,
+                        sample1pickup, //movement
+                        pickup,
+                        armUp,//arm up
+                        sample1basket, //movement
+                        wait,
+                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HIGH),//elevators up
+                        wait,
+                        elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_HALFWAY),
+                        sample2pickup, //movement
+                        pickup,
+                        armUp,//arm up
+                        sample2basket, //movement
+                        wait,
+                        elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_RETRACTED),
+                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN)//elevators down
                         //Park
                         )
-                );
+                );*/
     }
 }
