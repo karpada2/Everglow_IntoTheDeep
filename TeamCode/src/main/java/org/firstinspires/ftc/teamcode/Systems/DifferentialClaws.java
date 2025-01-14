@@ -94,16 +94,15 @@ public class DifferentialClaws {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             setArmTargetPosition(destination);
+            updateLeftClawServoRotation();
+            updateRightClawServoRotation();
             rotateArm(getPIDArmPower());
 
             if(!isInitialized){
                 isInitialized = true;
                 startTime = System.currentTimeMillis();
             }
-            
-            updateLeftClawServoRotation();
-            updateRightClawServoRotation();
-            return System.currentTimeMillis() - startTime >= 1500;
+            return !(System.currentTimeMillis() - startTime >= 750);
         }
     }
 
@@ -347,18 +346,18 @@ public class DifferentialClaws {
     }
 
     //gets in degrees, sets the claw's position to the given position
-    public ClawMovementAction setClawMovementAction(double armPosition) {
-        double diff = armPosition - this.armPosition;
-        ClawMovementAction action = new ClawMovementAction(diff);
-        this.armPosition = armPosition;
-        return action;
+    public ClawMovementAction setClawMovementAction(double dest) {
+        //double diff = armPosition - this.armPosition;
+        //ClawMovementAction action =;
+        //this.armPosition = armPosition;
+        return new ClawMovementAction(dest);
     }
 
     public HoldClawAndDropSampleAction test(double timeToHold, double timeToDrop) {
         return new HoldClawAndDropSampleAction(timeToHold, timeToDrop);
     }
 
-    public ClawMovementAction clawMovementAction(double dest) {
-        return new ClawMovementAction(dest);
-    }
+//    public ClawMovementAction clawMovementAction(double dest) {
+//        return new ClawMovementAction(dest);
+//    }
 }

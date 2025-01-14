@@ -10,10 +10,13 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.navigation.VoltageUnit;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.teamcode.Systems.ColorSensorSystem;
 import org.firstinspires.ftc.teamcode.Systems.DifferentialClaws;
 import org.firstinspires.ftc.teamcode.Systems.Elevators;
 
-@TeleOp(name = "FirstOpMode")
+import fi.iki.elonen.NanoHTTPD;
+
+@TeleOp(name = "DriversOpMode")
 public class FirstOpMode extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
@@ -26,6 +29,7 @@ public class FirstOpMode extends LinearOpMode {
         waitForStart();
         LynxModule controlHub = hardwareMap.get(LynxModule.class, "Control Hub");
         LynxModule expansionHub = hardwareMap.get(LynxModule.class, "Expansion Hub 2");
+        ColorSensorSystem colorSensorSystem = new ColorSensorSystem(this, true);
 
         elevators.motorSetHorizontalPower(0.8);
 
@@ -151,7 +155,7 @@ public class FirstOpMode extends LinearOpMode {
                 elevators.resetVert();
             }
 
-//
+
 //            Currently Broken, might cause damage to robot
 //            AnalogueExtensionHorizontal = -gamepad2.right_stick_x;
 //            elevators.setHorizontalPosition(elevators.getHorizontalState() + AnalogueExtensionHorizontal * HorizontalAnalogueFactor);

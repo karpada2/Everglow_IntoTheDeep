@@ -20,7 +20,7 @@ public class ColorSensorTest extends LinearOpMode {
             telemetry.addData("Color detected:", colorSensorSystem.getSpecimenColor());
             telemetry.addData("Claw contain specimen?", colorSensorSystem.isSpecimenIn());
 
-            colorSensorSystem.updateAlert(gamepad1, gamepad2);
+            colorSensorSystem.updateAlert();
             telemetry.update();
         }
     }

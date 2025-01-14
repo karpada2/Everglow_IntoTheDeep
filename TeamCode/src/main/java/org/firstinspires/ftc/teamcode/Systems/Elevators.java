@@ -37,7 +37,7 @@ public class Elevators{
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             if (leftVert.getPower() == 0.0) {
-                setVerticalPower(0.8);
+                setVerticalPower(0.5);
             }
             if (!isInitialized) {
                 setVerticalDestination(this.destination);
@@ -60,7 +60,7 @@ public class Elevators{
         private boolean isInitialized = false;
 
         public MotorHorizontalElevatorAction(MotorHorizontalState state) {
-            motorSetHorizontalDestination(state);
+            //motorSetHorizontalDestination(state);
             this.destination = state.state;
         }
 
@@ -75,9 +75,10 @@ public class Elevators{
                 motorSetHorizontalPower(0.8);
             }
             if (!isInitialized) {
-                setVerticalDestination(this.destination);
+                motorSetHorizontalDestination(this.destination);
                 isInitialized = true;
             }
+
 
             return !motorIsHorizontalInDestination();
         }
@@ -224,7 +225,7 @@ public class Elevators{
 
     public void motorSetHorizontalDestination(int destination) {
         double eps = 12;
-        if(destination>MotorHorizontalState.HORIZONTAL_RETRACTED.state && destination<MotorHorizontalState.HORIZONTAL_EXTENDED.state) {
+        if(destination>=MotorHorizontalState.HORIZONTAL_RETRACTED.state && destination<=MotorHorizontalState.HORIZONTAL_EXTENDED.state) {
             if (Math.abs(destination - motorGetHorizontalPosition()) < eps) {
                 motorSetHorizontalPower(0);
             } else {

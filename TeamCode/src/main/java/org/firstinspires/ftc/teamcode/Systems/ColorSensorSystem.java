@@ -16,6 +16,10 @@ public class ColorSensorSystem {
     LynxI2cColorRangeSensor colorSensor;
     boolean isTeamBlue;
 
+    Gamepad gamepad1;
+
+    Gamepad gamepad2;
+
     private SpecimenColor lastSpecimenColor = SpecimenColor.NO_COLOR_DETECTED;
 
     public enum SpecimenColor{
@@ -38,6 +42,8 @@ public class ColorSensorSystem {
     public ColorSensorSystem(OpMode opMode, boolean isBlueTeam){
         colorSensor = opMode.hardwareMap.get(LynxI2cColorRangeSensor.class, "clawSensor");
         isTeamBlue = isBlueTeam;
+        gamepad1 = opMode.gamepad1;
+        gamepad2 = opMode.gamepad2;
         colorSensor.enableLed(true);
     }
 
@@ -82,7 +88,7 @@ public class ColorSensorSystem {
         return (specimenColor == SpecimenColor.BLUE && isTeamBlue) || (specimenColor == SpecimenColor.RED && !isTeamBlue)
                 || (specimenColor == SpecimenColor.YELLOW);
     }
-    public void alertToGamePads(Gamepad gamepad1, Gamepad gamepad2){
+    public void alertToGamePads(){
         final int rightColorFreq = 210, badColorFreq = 750; //milliseconds
         Gamepad.RumbleEffect rumbleEffect;
         SpecimenColor specimenColor = getSpecimenColor();
@@ -121,9 +127,9 @@ public class ColorSensorSystem {
         }
     }
 
-    public void updateAlert(Gamepad gamepad1, Gamepad gamepad2){
+    public void updateAlert(){
         if(lastSpecimenColor != getSpecimenColor() || !myTeamSpecimen(getSpecimenColor())){
-            alertToGamePads(gamepad1, gamepad2);
+            alertToGamePads();
         }
 
         lastSpecimenColor = getSpecimenColor();
