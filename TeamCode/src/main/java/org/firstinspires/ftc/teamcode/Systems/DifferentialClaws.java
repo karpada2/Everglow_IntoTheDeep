@@ -347,17 +347,10 @@ public class DifferentialClaws {
 
     //gets in degrees, sets the claw's position to the given position
     public ClawMovementAction setClawMovementAction(double dest) {
-        //double diff = armPosition - this.armPosition;
-        //ClawMovementAction action =;
-        //this.armPosition = armPosition;
         return new ClawMovementAction(dest);
     }
 
     public HoldClawAndDropSampleAction test(double timeToHold, double timeToDrop) {
         return new HoldClawAndDropSampleAction(timeToHold, timeToDrop);
     }
-
-//    public ClawMovementAction clawMovementAction(double dest) {
-//        return new ClawMovementAction(dest);
-//    }
 }
