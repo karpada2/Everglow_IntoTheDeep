@@ -20,11 +20,11 @@ import fi.iki.elonen.NanoHTTPD;
 public class FirstOpMode extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
+        DifferentialClaws claws = new DifferentialClaws(this);
         MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
 
         Elevators elevators = new Elevators(this);
         elevators.setVerticalPower(0.0);
-        DifferentialClaws claws = new DifferentialClaws(this);
 
         waitForStart();
         LynxModule controlHub = hardwareMap.get(LynxModule.class, "Control Hub");

@@ -78,10 +78,10 @@ public class ActionSequenceOpMode extends LinearOpMode {
 
             drive.setDrivePowers(new PoseVelocity2d(
                     new Vector2d(
-                            -gamepad1.left_stick_y,//linearInputToExponential(gamepad1.left_stick_y),
-                            -gamepad1.left_stick_x//-linearInputToExponential(gamepad1.left_stick_x)
+                            -linearInputToExponential(gamepad1.left_stick_y),
+                            -linearInputToExponential(gamepad1.left_stick_x)
                     ),
-                    -gamepad1.right_stick_x//linearInputToExponential(gamepad1.right_stick_x)
+                    -linearInputToExponential(gamepad1.right_stick_x)
             ));
 
             if (gamepad2.right_trigger >= 0.35) { //split

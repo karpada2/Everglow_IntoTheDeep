@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
+import androidx.annotation.NonNull;
+
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
@@ -11,6 +14,7 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Systems.DifferentialClaws;
 import org.firstinspires.ftc.teamcode.Systems.Elevators;
@@ -18,6 +22,26 @@ import org.firstinspires.ftc.teamcode.Systems.Elevators;
 @Config
 @Autonomous(name="LeftPath", group="Autonomous")
 public class LeftPath extends LinearOpMode {
+
+    public class AddToTelemetryAction implements Action {
+        private final Telemetry telemetry;
+        private final String title;
+        private final double value;
+
+        public AddToTelemetryAction(Telemetry telemetry, String title, double value) {
+            this.telemetry = telemetry;
+            this.title = title;
+            this.value = value;
+        }
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            telemetry.addData(title,value);
+            telemetry.update();
+            return false;
+        }
+    }
+
     @Override
     public void runOpMode()  throws InterruptedException{
         // Init Poses
@@ -25,13 +49,12 @@ public class LeftPath extends LinearOpMode {
         Pose2d basketPose = new Pose2d(-53,-53,1.25*Math.PI);
 
         // Init Systems
-        MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
         DifferentialClaws claws  = new DifferentialClaws(this);
+        MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
         Elevators elevators  = new Elevators(this);
         //Init Trajectories
         TrajectoryActionBuilder B_preload = drive.actionBuilder(beginPose)
-                .strafeToSplineHeading(basketPose.position,basketPose.heading)
-                .waitSeconds(1.5);
+                .strafeToSplineHeading(basketPose.position,basketPose.heading);
 
         TrajectoryActionBuilder B_sample1pickup = B_preload.endTrajectory().fresh()
                 .strafeToSplineHeading(new Vector2d(-48,-50),0.5*Math.PI);
@@ -50,26 +73,44 @@ public class LeftPath extends LinearOpMode {
                 .splineToLinearHeading(new Pose2d(-24,-10, 0),0);
 
         Action wait = drive.actionBuilder(new Pose2d(0,0,0))
-                .waitSeconds(1.5)
+                .waitSeconds(3)
                 .build();
 
-        Action BackAndForth = B_sample1pickup.endTrajectory().fresh()
+        Action BackAndForth = drive.actionBuilder(new Pose2d(-48,-50,0.5*Math.PI))
                 .waitSeconds(1)
                 .lineToY(-40)
-                .waitSeconds(0.2)
-                .lineToY(-50)
+                .waitSeconds(1)
+                //.lineToY(-50)
                 .build();
 
         // Turning action builders into actions
-        Action armUp = claws.clawMovementAction(120);
+        Action armUp = claws.clawMovementAction(100);
 
-        Action unload = new SequentialAction(claws.clawMovementAction(90),
-                                             claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT),
-                                             wait,
-                                             claws.clawMovementAction(120));
+        Action unload = new SequentialAction(elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HIGH),
+                                             claws.clawMovementAction(80),
+                                             new AddToTelemetryAction(telemetry, "arm pos:", claws.getArmPosition()),
+                                             claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,1000),
+                                            new AddToTelemetryAction(telemetry, "arm pos:", claws.getArmPosition()),
+                                             armUp,
+                                             new AddToTelemetryAction(telemetry, "Claw curr position", claws.getArmPosition()),
+                                             elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN),
+                                             new AddToTelemetryAction(telemetry, "Vert curr position", elevators.getVerticalCurrentPosition())
+                                             //elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN),
+                                             //new AddToTelemetryAction(telemetry, "Vert curr position", elevators.getVerticalCurrentPosition()
+                                             );
         Action pickup = new ParallelAction(BackAndForth,
-                                            new SequentialAction(claws.clawMovementAction(0),
-                                                                 claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN)));
+                                            new SequentialAction(elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_HALFWAY),
+                                                                 claws.clawMovementAction(0),
+                                                                 claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, 1000),
+                                                    new AddToTelemetryAction(telemetry, "arm pos:", claws.getArmPosition()),
+                                                                 claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.OFF, 50),
+                                                                 armUp,
+                                                    new AddToTelemetryAction(telemetry, "arm pos:", claws.getArmPosition()),
+                                                                    wait,
+                                                    new AddToTelemetryAction(telemetry, "arm pos:", claws.getArmPosition()),
+                                                                    wait//,
+                                                                 //elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_RETRACTED)
+                                                    ));
 
         Action preload = B_preload.build();
 
@@ -85,45 +126,23 @@ public class LeftPath extends LinearOpMode {
 
         Actions.runBlocking(
                 new SequentialAction(
-                        armUp,
-                        wait,
-                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HIGH),
-                        wait,
-                        elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_HALFWAY)
-                )
-        );
-/*        Actions.runBlocking(
-                new SequentialAction(
                         armUp,//arm up
-                        wait,
                         preload, //movement
-                        wait,
-                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HIGH),//elevators up
-                        wait,
-                        elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_HALFWAY),
-                        wait,
-                        claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT),//unload,
-                        wait,
-                        elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_RETRACTED),
-                        wait,
-                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN)//elevators down,
+                        unload,
                         sample1pickup, //movement
-                        pickup,
-                        armUp,//arm up
+                        pickup/*,
                         sample1basket, //movement
                         wait,
-                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HIGH),//elevators up
+                        unload,
                         wait,
-                        elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_HALFWAY),
                         sample2pickup, //movement
                         pickup,
-                        armUp,//arm up
                         sample2basket, //movement
                         wait,
-                        elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_RETRACTED),
-                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN)//elevators down
+                        unload,
+                        wait*/
                         //Park
                         )
-                );*/
+                );
     }
 }

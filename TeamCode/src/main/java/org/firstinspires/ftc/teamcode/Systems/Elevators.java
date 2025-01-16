@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 public class Elevators{
-    final int epsilon = 5;
+    final int epsilon = 40;
 
     DcMotorEx rightVert;
     DcMotorEx leftVert;
@@ -43,7 +43,7 @@ public class Elevators{
                 setVerticalDestination(this.destination);
                 isInitialized = true;
             }
-
+            updateVert();
             return !isElevatorInDestination();
         }
     }
@@ -80,7 +80,7 @@ public class Elevators{
             }
 
 
-            return !motorIsHorizontalInDestination();
+            return motorIsHorizontalInDestination();
         }
     }
 
@@ -147,10 +147,6 @@ public class Elevators{
 
     }
 
-    public int getVerticalDestination() {
-        return verticalDestination;
-    }
-
     public int getVerticalCurrentPosition() {
         return rightVert.getCurrentPosition();
     }
@@ -179,7 +175,7 @@ public class Elevators{
     }
 
     public void updateVert(){
-        if (Math.abs(verticalDestination-getVerticalCurrentPosition())<=120 && verticalDestination == 0) {
+        if (Math.abs(verticalDestination-getVerticalCurrentPosition())<=100 && verticalDestination == 0) {
             setVerticalPower(0);
             double innerEps = 10;
             if(Math.abs(verticalDestination-getVerticalCurrentPosition())>= innerEps) {
@@ -196,10 +192,7 @@ public class Elevators{
 
     // checks whether the elevator is close enough (+- epsilon) to it's destination
     public boolean isElevatorInDestination() {
-        if (getVerticalCurrentPosition() < getVerticalDestination()) {
-            return getVerticalCurrentPosition() >= getVerticalDestination() - epsilon;
-        }
-        return getVerticalCurrentPosition() <= getVerticalDestination() + epsilon;
+        return Math.abs(getVertDestination() - getVerticalCurrentPosition()) <= epsilon;
     }
 
     public void setVerticalPower(double power){

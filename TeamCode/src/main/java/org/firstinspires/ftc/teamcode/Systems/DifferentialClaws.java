@@ -342,11 +342,11 @@ public class DifferentialClaws {
     // gets in degrees, adds the given to the current position
     public ClawMovementAction addClawMovementAction(double armPosition) {
         double out_val = this.armPosition + armPosition;
-        return setClawMovementAction(out_val);
+        return clawMovementAction(out_val);
     }
 
     //gets in degrees, sets the claw's position to the given position
-    public ClawMovementAction setClawMovementAction(double dest) {
+    public ClawMovementAction clawMovementAction(double dest) {
         //double diff = armPosition - this.armPosition;
         //ClawMovementAction action =;
         //this.armPosition = armPosition;

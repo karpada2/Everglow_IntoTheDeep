@@ -174,7 +174,7 @@ public class ClawPIDFTuning extends LinearOpMode {
                 claws.setArmTargetPosition(0);
             }
             else if (gamepad1.triangle) {
-                Actions.runBlocking(claws.setClawMovementAction(40));
+                Actions.runBlocking(claws.clawMovementAction(40));
             }
         }
     }
