@@ -3,14 +3,17 @@ package org.firstinspires.ftc.teamcode.tuning;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.arcrobotics.ftclib.controller.PIDController;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
+import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Systems.DifferentialClaws;
 
 @Config
@@ -109,6 +112,7 @@ public class ClawPIDFTuning extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         DifferentialClaws claws = new DifferentialClaws(this);
+        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0,0,0));
 
 //        controller = new PIDController(p, i, d);
 //        leftClawServo = this.hardwareMap.get(CRServo.class, "leftClawServo");
@@ -170,7 +174,7 @@ public class ClawPIDFTuning extends LinearOpMode {
                 claws.setArmTargetPosition(0);
             }
             else if (gamepad1.triangle) {
-                Actions.runBlocking(claws.clawMovementAction(40));
+                Actions.runBlocking(claws.setClawMovementAction(40));
             }
         }
     }

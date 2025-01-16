@@ -29,11 +29,15 @@
 
 package org.firstinspires.ftc.robotcontroller.external.samples;
 
+import com.qualcomm.hardware.lynx.LynxI2cColorRangeSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.opencv.core.Mat;
+
+import java.util.Dictionary;
 
 /*
  * This OpMode illustrates how to use the Modern Robotics Range Sensor.
@@ -46,24 +50,68 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
  * @see <a href="http://modernroboticsinc.com/range-sensor">MR Range Sensor</a>
  */
 @TeleOp(name = "Sensor: MR range sensor", group = "Sensor")
-@Disabled   // comment out or remove this line to enable this OpMode
+//@Disabled   // comment out or remove this line to enable this OpMode
 public class SensorMRRangeSensor extends LinearOpMode {
 
-    ModernRoboticsI2cRangeSensor rangeSensor;
-
+    LynxI2cColorRangeSensor rangeSensor;
+    enum SpecimenColor{
+        RED, BLUE, YELLOW, NO_COLOR_DETECTED;
+        public static SpecimenColor GetColor (double hue){
+            int red = 0, yellow = 40, blue = 200;
+            final double epsilon = 19;
+            if (hue < red+epsilon) {
+                return SpecimenColor.RED;
+            }
+            else if (blue-epsilon < hue && hue < blue+epsilon) {
+                return SpecimenColor.BLUE;
+            }
+            else if (yellow-epsilon < hue && hue < yellow+epsilon) {
+                return SpecimenColor.YELLOW;
+            }
+            else return NO_COLOR_DETECTED;
+        }
+    }
     @Override public void runOpMode() {
 
         // get a reference to our compass
-        rangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "sensor_range");
+        rangeSensor = hardwareMap.get(LynxI2cColorRangeSensor.class, "sensor_range");
 
         // wait for the start button to be pressed
         waitForStart();
-
+        double hue = 0;
+        double maxColor;
+        double minColor;
+        double red;
+        double green;
+        double blue;
         while (opModeIsActive()) {
-            telemetry.addData("raw ultrasonic", rangeSensor.rawUltrasonic());
+            red = rangeSensor.getNormalizedColors().red;
+            green = rangeSensor.getNormalizedColors().green;
+            blue = rangeSensor.getNormalizedColors().blue;
+
+            telemetry.addData("green", green);
+            telemetry.addData("red", red);
+            telemetry.addData("blue", blue);
+            telemetry.addData("alpha", rangeSensor.alpha());
             telemetry.addData("raw optical", rangeSensor.rawOptical());
-            telemetry.addData("cm optical", "%.2f cm", rangeSensor.cmOptical());
             telemetry.addData("cm", "%.2f cm", rangeSensor.getDistance(DistanceUnit.CM));
+            telemetry.addData("argb", rangeSensor.argb());
+
+            maxColor = Math.max(Math.max(red, green), blue);
+            minColor = Math.min(Math.min(red, green), blue);
+            if (maxColor == red){
+                    hue = (green-blue)/(maxColor-minColor);
+            }
+            else if (maxColor == green) {
+                hue = 2.0 + (blue - green) / (maxColor - minColor);
+            }
+                else if (maxColor == blue){
+                    hue = 4.0 + (red-green)/(maxColor-minColor);
+            }
+            hue *= 60;
+            if (hue < 0) hue+=360;
+            telemetry.addData("hue", hue);
+            telemetry.addData("Color", SpecimenColor.GetColor(hue));
             telemetry.update();
         }
     }

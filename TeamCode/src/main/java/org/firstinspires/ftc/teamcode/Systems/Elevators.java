@@ -37,7 +37,7 @@ public class Elevators{
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             if (leftVert.getPower() == 0.0) {
-                setVerticalPower(0.8);
+                setVerticalPower(0.5);
             }
             if (!isInitialized) {
                 setVerticalDestination(this.destination);
@@ -60,7 +60,7 @@ public class Elevators{
         private boolean isInitialized = false;
 
         public MotorHorizontalElevatorAction(MotorHorizontalState state) {
-            motorSetHorizontalDestination(state);
+            //motorSetHorizontalDestination(state);
             this.destination = state.state;
         }
 
@@ -79,6 +79,7 @@ public class Elevators{
                 isInitialized = true;
             }
 
+
             return !motorIsHorizontalInDestination();
         }
     }
@@ -90,7 +91,7 @@ public class Elevators{
         VERTICAL_MIN(0),
         VERTICAL_PICKUP(0),
         VERTICAL_HURDLE(720),
-        VERTICAL_LOW(3070),
+        VERTICAL_LOW(2600),
         VERTICAL_HIGH(4243),
         VERTICAL_HIGH_SPECIMEN(1796),
         VERTICAL_MAX(4243);
@@ -225,7 +226,7 @@ public class Elevators{
 
     public void motorSetHorizontalDestination(int destination) {
         double eps = 12;
-        if(destination>MotorHorizontalState.HORIZONTAL_RETRACTED.state && destination<MotorHorizontalState.HORIZONTAL_EXTENDED.state) {
+        if(destination>=MotorHorizontalState.HORIZONTAL_RETRACTED.state && destination<=MotorHorizontalState.HORIZONTAL_EXTENDED.state) {
             if (Math.abs(destination - motorGetHorizontalPosition()) < eps) {
                 motorSetHorizontalPower(0);
             } else {
@@ -263,5 +264,12 @@ public class Elevators{
 
     public MotorHorizontalElevatorAction setMotorHorizontalElevatorAction(MotorHorizontalState destinationState) {
         return new MotorHorizontalElevatorAction(destinationState);
+    }
+
+    public void setVertDest(int dest){
+        rightVert.setTargetPosition(dest);
+        leftVert.setTargetPosition(dest);
+        rightVert.setPower(0.65);
+        leftVert.setPower(0.65);
     }
 }
