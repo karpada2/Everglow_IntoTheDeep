@@ -104,8 +104,8 @@ public class ClawPIDFTuning extends LinearOpMode {
 //
 //    private double armStartingPosition;
 //
-    public static double p = 0, i = 0, d = 0;
-    public static double f = 0;
+    public static double p = 0.0075, i = 0.001, d = 0.00015;
+    public static double f = 0.1;
     public static double x = 0;
     public static double startTime;
 //
@@ -140,6 +140,7 @@ public class ClawPIDFTuning extends LinearOpMode {
 //        rightClawOldPos = rightClawStart;
 //        armStartingPosition = getArmPosition();
         startTime = System.currentTimeMillis();
+        double lastPIDPower = 0;
         while (opModeIsActive()) {
             claws.controller.setPID(p, i, d);
             claws.setF(f);
@@ -147,11 +148,6 @@ public class ClawPIDFTuning extends LinearOpMode {
 //            double pid = controller.calculate(armPos, target);
 //            double ff = Math.cos(Math.toRadians(target)) * f;
 
-            claws.updateRightClawServoRotation();
-            claws.updateLeftClawServoRotation();
-            //double power = pid + ff;
-
-            claws.rotateArm(claws.getPIDArmPower());
             telemetry.addData("pos: ", claws.getActualArmRotation());
             //telemetry.addData("pid", pid);
             //telemetry.addData("ff", ff);
@@ -167,17 +163,24 @@ public class ClawPIDFTuning extends LinearOpMode {
             //telemetry.addData("right claw old", rightClawOldPos);
             //telemetry.addData("left claw old", leftClawOldPos);
            // telemetry.addData("real left pos", getRotationOfInput(clawInput1));
-
+            claws.updateRightClawServoRotation();
+            claws.updateLeftClawServoRotation();
             telemetry.update();
             if (gamepad2.circle) {
+                //double power = pid + ff;
+                lastPIDPower = claws.getPIDArmPower();
+                claws.rotateArm(lastPIDPower);
                 x = System.currentTimeMillis() - startTime;
                 x = x % 8000;
 
                 if (x <= 4000) {
                     claws.setArmTargetPosition(40);
                 } else {
-                    claws.setArmTargetPosition(90);
+                    claws.setArmTargetPosition(60);
                 }
+            }
+            else{
+                claws.rotateWheelsAndHoldSetPower(lastPIDPower,gamepad2.right_trigger/10);
             }
 
 

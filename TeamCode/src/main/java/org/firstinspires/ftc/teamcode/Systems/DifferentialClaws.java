@@ -277,6 +277,11 @@ public class DifferentialClaws {
         rightClawServo.setPower(power);
     }
 
+    public void rotateWheelsAndHoldSetPower(double holdingPower, double rotatePower){
+        leftClawServo.setPower(holdingPower - rotatePower);
+        rightClawServo.setPower(holdingPower + rotatePower);
+    }
+
     public void rotateWheels(double state) {
         leftClawServo.setPower(state);
         rightClawServo.setPower(-state);
