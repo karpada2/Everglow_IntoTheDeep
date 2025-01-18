@@ -143,12 +143,13 @@ public class ClawPIDFTuning extends LinearOpMode {
 //            int armPos = (int)(getActualArmRotation(armStartingPosition, getArmPosition()));
 //            double pid = controller.calculate(armPos, target);
 //            double ff = Math.cos(Math.toRadians(target)) * f;
+            if(gamepad1.square) {
+                claws.updateRightClawServoRotation();
+                claws.updateLeftClawServoRotation();
+                //double power = pid + ff;
 
-            claws.updateRightClawServoRotation();
-            claws.updateLeftClawServoRotation();
-            //double power = pid + ff;
-
-            claws.rotateArm(claws.getPIDArmPower());
+                claws.rotateArm(claws.getPIDArmPower());
+            }
             telemetry.addData("pos: ", claws.getActualArmRotation());
             //telemetry.addData("pid", pid);
             //telemetry.addData("ff", ff);

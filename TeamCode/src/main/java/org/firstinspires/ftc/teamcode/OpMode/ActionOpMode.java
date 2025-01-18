@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.teamcode.Systems.DifferentialClaws;
 import org.firstinspires.ftc.teamcode.Systems.Elevators;
 
 @TeleOp(name="ActionOpMode")
@@ -22,7 +23,7 @@ public class ActionOpMode extends LinearOpMode {
     double triggerThreshold = 0.5;
 
     Elevators elevators;
-    Claws claw;
+    DifferentialClaws claw;
     MecanumDrive drive;
 
     @Override
@@ -35,7 +36,7 @@ public class ActionOpMode extends LinearOpMode {
 //        );
 
         drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
-        claw = new Claws(this);
+        claw = new DifferentialClaws(this);
         elevators = new Elevators(this);
 
         boolean flagRightBumper = true;
@@ -53,8 +54,7 @@ public class ActionOpMode extends LinearOpMode {
         Action builtAction = null;
 
         waitForStart();
-
-        Claws.ClawState currentClawState = Claws.ClawState.OFF;
+        DifferentialClaws.ClawPowerState currentClawPowerState = DifferentialClaws.ClawPowerState.OFF;
 
         while (opModeIsActive()) {
             // driving
@@ -71,20 +71,20 @@ public class ActionOpMode extends LinearOpMode {
             Action clawAction = null;
 
             if (gamepad2.right_bumper && flagRightBumper) {
-                if (currentClawState == Claws.ClawState.OFF || currentClawState == Claws.ClawState.SPIT) {
-                    currentClawState = Claws.ClawState.TAKE_IN;
-                    clawAction = claw.setClawAction(Claws.ClawState.TAKE_IN);
+                if (currentClawPowerState == DifferentialClaws.ClawPowerState.OFF || currentClawPowerState == DifferentialClaws.ClawPowerState.SPIT) {
+                    currentClawPowerState = DifferentialClaws.ClawPowerState.TAKE_IN;
+                    clawAction = claw.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN);
                 } else {
-                    currentClawState = Claws.ClawState.OFF;
-                    clawAction = claw.setClawAction(Claws.ClawState.OFF);
+                    currentClawPowerState = DifferentialClaws.ClawPowerState.OFF;
+                    clawAction = claw.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.OFF);
                 }
             } else if (gamepad2.left_bumper && flagLeftBumper) {
-                if (currentClawState == Claws.ClawState.OFF || currentClawState == Claws.ClawState.TAKE_IN) {
-                    currentClawState = Claws.ClawState.SPIT;
-                    clawAction = claw.setClawAction(Claws.ClawState.SPIT);
+                if (currentClawPowerState == DifferentialClaws.ClawPowerState.OFF || currentClawPowerState == DifferentialClaws.ClawPowerState.TAKE_IN) {
+                    currentClawPowerState = DifferentialClaws.ClawPowerState.SPIT;
+                    clawAction = claw.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT);
                 } else {
-                    currentClawState = Claws.ClawState.OFF;
-                    clawAction = claw.setClawAction(Claws.ClawState.OFF);
+                    currentClawPowerState = DifferentialClaws.ClawPowerState.OFF;
+                    clawAction = claw.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.OFF);
                 }
             }
 

@@ -35,6 +35,7 @@ public class ActionControl {
         returnFromPickUp = new SequentialAction(
                 claws.setClawMovementAction(50), //mid
                 elevators.setMotorHorizontalElevatorAction(MotorHorizontalState.HORIZONTAL_RETRACTED),
+                claws.setClawMovementAction(30),
                 claws.setClawMovementAction(0) // down
         );
 
