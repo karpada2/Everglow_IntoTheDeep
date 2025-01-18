@@ -51,7 +51,7 @@ public class DifferentialClaws {
     public PIDController controller;
 
     public final double p = 0.01, i = 0.01, d = 0.0001;
-    public final double f = 0.1;
+    public double f = 0.1;
 
     private double target = 0;
 
@@ -261,6 +261,9 @@ public class DifferentialClaws {
     }
     public double getActualArmRotation() {
         return Math.max(getArmPosition() - armStartingPosition, armStartingPosition - getArmPosition());
+    }
+    public void setF(double f){
+        this.f = f;
     }
     public double getPIDArmPower(){
         int armPos = (int)(getActualArmRotation());

@@ -104,8 +104,10 @@ public class ClawPIDFTuning extends LinearOpMode {
 //
 //    private double armStartingPosition;
 //
-//    public static double p = 0.02, i = 0.01, d = 0.0001;
-//    public static double f = 0.1;
+    public static double p = 0, i = 0, d = 0;
+    public static double f = 0;
+    public static double x = 0;
+    public static double startTime;
 //
 //    public static double target = 0;
 
@@ -137,9 +139,10 @@ public class ClawPIDFTuning extends LinearOpMode {
 //        leftClawOldPos = leftClawStart;
 //        rightClawOldPos = rightClawStart;
 //        armStartingPosition = getArmPosition();
-
+        startTime = System.currentTimeMillis();
         while (opModeIsActive()) {
-//            claws.controller.setPID(p, i, d);
+            claws.controller.setPID(p, i, d);
+            claws.setF(f);
 //            int armPos = (int)(getActualArmRotation(armStartingPosition, getArmPosition()));
 //            double pid = controller.calculate(armPos, target);
 //            double ff = Math.cos(Math.toRadians(target)) * f;
@@ -166,8 +169,19 @@ public class ClawPIDFTuning extends LinearOpMode {
            // telemetry.addData("real left pos", getRotationOfInput(clawInput1));
 
             telemetry.update();
+            if (gamepad2.circle) {
+                x = System.currentTimeMillis() - startTime;
+                x = x % 8000;
 
-            if (gamepad1.cross) {
+                if (x <= 4000) {
+                    claws.setArmTargetPosition(40);
+                } else {
+                    claws.setArmTargetPosition(90);
+                }
+            }
+
+
+/*            if (gamepad1.cross) {
                 claws.setArmTargetPosition(90);
             }
             else if (gamepad1.circle) {
@@ -175,7 +189,7 @@ public class ClawPIDFTuning extends LinearOpMode {
             }
             else if (gamepad1.triangle) {
                 Actions.runBlocking(claws.clawMovementAction(40));
-            }
+            }*/
         }
     }
 }
