@@ -22,14 +22,14 @@ public class MeepMeepTesting {
         
         Pose2d left_beginPose = new Pose2d(-31.1, -63,   Math.PI);
 
-        Pose2d basket_pose = new Pose2d(-57,-57,1.25*Math.PI);
+        Pose2d basket_pose = new Pose2d(-53,-53,1.25*Math.PI);
         Pose2d right_beginPose = new Pose2d(23, -63,   Math.PI);
         TrajectoryActionBuilder left_path = myBot.getDrive().actionBuilder(left_beginPose)
                 .waitSeconds(2)
                 .strafeToSplineHeading(basket_pose.position,basket_pose.heading)
                 // goes to basket
                 .waitSeconds(1) //puts sample in basket
-                .strafeToSplineHeading(new Vector2d(-48,-50),0.5*Math.PI)
+                .strafeToSplineHeading(new Vector2d(-50,-50),0.5*Math.PI)
                 .waitSeconds(1)
                 .lineToY(-40)
                 .waitSeconds(0.2)
@@ -40,7 +40,7 @@ public class MeepMeepTesting {
                 .strafeToSplineHeading(basket_pose.position,basket_pose.heading)
                 .waitSeconds(1)
                 // goes to basket
-                .strafeToSplineHeading(new Vector2d(-58, -50),0.5*Math.PI)
+                .strafeToSplineHeading(new Vector2d(-60, -50),0.5*Math.PI)
                 .waitSeconds(1)
                 .lineToY(-40)
                 .waitSeconds(0.2)
@@ -136,15 +136,5 @@ public class MeepMeepTesting {
                 .start();
     }
 }
-//public class MeepMeepTesting {
-//    public static void main(String[] args)
-//    {
-//        System.setProperty("sun.java2d.opengl", "true");
-//        MeepMeep meepMeep = new MeepMeep(800);
-//
-//        RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
-//                // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
-//                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
-//                .build();
-//
+
 

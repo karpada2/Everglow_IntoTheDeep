@@ -23,8 +23,6 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 public class DifferentialClaws {
 
-    public static final double holdingPower = 0.15;
-
     CRServo leftClawServo;
     CRServo rightClawServo;
     AnalogInput clawInput1;
@@ -50,7 +48,7 @@ public class DifferentialClaws {
 
     public PIDController controller;
 
-    public final double p = 0.01, i = 0.01, d = 0.0001;
+    public final double p = 0.0075, i = 0.001, d = 0.00015;
     public double f = 0.1;
 
     private double target = 0;
@@ -112,14 +110,10 @@ public class DifferentialClaws {
         private final double timeUntilFinished;
         private double startTime;
         private boolean isInitialized = false;
-        private final double bonusRight, bonusLeft;
 
         public ClawSampleInteractionAction(ClawPowerState state, double timeToStop) {
             this.wantedPower = state.state;
             this.timeUntilFinished = timeToStop;
-
-            bonusLeft = state == ClawPowerState.SPIT? 0 : 2.5*holdingPower;
-            bonusRight = state == ClawPowerState.SPIT? 2.5*holdingPower : 0;
         }
 
         @Override
@@ -129,8 +123,10 @@ public class DifferentialClaws {
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            updateRightClawServoRotation();
+            updateLeftClawServoRotation();
             if (!isInitialized) {
-                leftClawServo.setPower(wantedPower + 2.5*holdingPower);
+                leftClawServo.setPower(wantedPower);
                 rightClawServo.setPower(-wantedPower);
                 startTime = System.currentTimeMillis();
                 isInitialized = true;
@@ -277,10 +273,6 @@ public class DifferentialClaws {
         rightClawServo.setPower(power);
     }
 
-    public void rotateWheelsAndHoldSetPower(double holdingPower, double rotatePower){
-        leftClawServo.setPower(holdingPower - rotatePower);
-        rightClawServo.setPower(holdingPower + rotatePower);
-    }
 
     public void rotateWheels(double state) {
         leftClawServo.setPower(state);
