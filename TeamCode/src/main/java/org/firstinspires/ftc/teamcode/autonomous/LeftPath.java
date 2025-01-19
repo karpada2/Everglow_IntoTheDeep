@@ -80,7 +80,14 @@ public class LeftPath extends LinearOpMode {
                 .waitSeconds(3)
                 .build();
 
-        Action BackAndForth = drive.actionBuilder(new Pose2d(-50 + sampleOffset,collectLine,0.5*Math.PI))
+        Action BackAndForth1 = drive.actionBuilder(new Pose2d(-50 + sampleOffset,collectLine,0.5*Math.PI))
+                .waitSeconds(1)
+                .lineToY(collectLine+10, new TranslationalVelConstraint(VelConstraint))
+                .waitSeconds(0.5)
+                .lineToY(collectLine, new TranslationalVelConstraint(VelConstraint))
+                .build();
+
+        Action BackAndForth2 = drive.actionBuilder(new Pose2d(-50 + sampleOffset,collectLine,0.5*Math.PI))
                 .waitSeconds(1)
                 .lineToY(collectLine+10, new TranslationalVelConstraint(VelConstraint))
                 .waitSeconds(0.5)
@@ -93,40 +100,40 @@ public class LeftPath extends LinearOpMode {
         Action unload1 = new SequentialAction(elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HIGH),
                 claws.clawMovementAction(80),
                 claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,1000),
-                armUp,
+                claws.clawMovementAction(100),
                 elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN)
         );
         Action unload2 = new SequentialAction(elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HIGH),
                 claws.clawMovementAction(80),
                 claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,1000),
-                armUp,
+                claws.clawMovementAction(100),
                 elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN)
         );
         Action unload3 = new SequentialAction(elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HIGH),
                 claws.clawMovementAction(80),
                 claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,1000),
-                armUp,
+                claws.clawMovementAction(100),
                 elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN)
         );
-        Action pickup1 = new ParallelAction(BackAndForth,
+        Action pickup1 = new ParallelAction(BackAndForth1,
                 new SequentialAction(elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_HALFWAY),
                         claws.clawMovementAction(0),
                         claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, 1500),
-                        armUp,
+                        claws.clawMovementAction(100),
                         elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_RETRACTED)
                 ));
-        Action pickup2 = new ParallelAction(BackAndForth,
+        Action pickup2 = new ParallelAction(BackAndForth2,
                 new SequentialAction(elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_HALFWAY),
                         claws.clawMovementAction(0),
                         claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, 1500),
-                        armUp,
+                        claws.clawMovementAction(100),
                         elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_RETRACTED)
                 ));
 
         Action preload = B_preload.build();
 
         Action sample1pickup = B_sample1pickup.build();
-        Action sample1basket = B_sample2basket.build();
+        Action sample1basket = B_sample1basket.build();
 
         Action sample2pickup = B_sample2pickup.build();
         Action sample2basket = B_sample2basket.build();
@@ -137,22 +144,17 @@ public class LeftPath extends LinearOpMode {
 
         Actions.runBlocking(
                 new SequentialAction(
-                        armUp,//arm up
+                        claws.clawMovementAction(100),//arm up
                         preload, //movement
                         unload1,
                         sample1pickup, //movement
                         pickup1,
-                        wait,
                         sample1basket, //movement
-                        wait,
                         unload2,
-                        wait,
                         sample2pickup, //movement
                         pickup2,
                         sample2basket, //movement
-                        wait,
-                        unload3,
-                        wait
+                        unload3
                         //Park
                         )
                 );

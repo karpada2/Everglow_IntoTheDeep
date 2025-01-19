@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 public class Elevators{
-    final int epsilon = 40;
+    final int epsilon = 50;
 
     DcMotorEx rightVert;
     DcMotorEx leftVert;
