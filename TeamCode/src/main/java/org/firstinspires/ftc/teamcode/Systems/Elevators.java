@@ -44,6 +44,10 @@ public class Elevators{
                 isInitialized = true;
             }
 
+            if (isElevatorInDestination()) {
+                setVerticalPower(0);
+            }
+            
             return !isElevatorInDestination();
         }
     }
