@@ -63,6 +63,7 @@ public class specimins {
                 .strafeToSplineHeading(specimins_dropPose.position, specimins_dropPose.heading)
                 // Dropping the sample - Lowering the vertical elevator
                 // Dropping the sample - releasing the sample
+
                 // Waits for player to pick up the sample
                 .strafeTo(new Vector2d(specimins_dropPose.position.x + 10, specimins_dropPose.position.y))
                 .strafeTo(specimins_dropPose.position)
