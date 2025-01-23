@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 
 @Disabled
 @TeleOp(name="simple differential test op mode")
-@Disabled
+
 public class DifferentialClawsSimpleOpMode extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {

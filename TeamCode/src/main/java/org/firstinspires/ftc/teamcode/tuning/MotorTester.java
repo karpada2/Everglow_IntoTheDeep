@@ -17,8 +17,8 @@ public class MotorTester extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-            horPosition += -gamepad2.right_stick_y/50.0;
-            vertPosition += -gamepad2.left_stick_y/50.0;
+            //horPosition += -gamepad2.left_stick_x*10;
+            vertPosition += -gamepad2.left_stick_y*10;
 
             telemetry.addData("horizontal elevator's position", elevators.motorGetHorizontalPosition());
             telemetry.addData("vertical elevator's position", elevators.getVerticalCurrentPosition());

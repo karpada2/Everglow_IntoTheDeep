@@ -94,10 +94,10 @@ public class Elevators{
     public enum VerticalState {
         VERTICAL_MIN(0),
         VERTICAL_PICKUP(0),
-        VERTICAL_HURDLE(720),
-        VERTICAL_LOW(2600),
-        VERTICAL_HIGH(4243),
-        VERTICAL_MAX(4243);
+        VERTICAL_HURDLE(970),
+        VERTICAL_LOW(7643),
+        VERTICAL_HIGH(11448),
+        VERTICAL_MAX(11448);
 
 
         public final int state;
@@ -161,9 +161,9 @@ public class Elevators{
     // sets the destination of the vertical motors to the specified number of ticks
     public void setVerticalDestination(int destination) {
 
-        if(destination<VerticalState.VERTICAL_MIN.state || destination>VerticalState.VERTICAL_MAX.state){
-            return;
-        }
+//        if(destination<VerticalState.VERTICAL_MIN.state || destination>VerticalState.VERTICAL_MAX.state){
+//            return;
+//        }
 
         double eps = 60;
         if (Math.abs(destination-getVerticalCurrentPosition())<=60 && destination == 0) {
