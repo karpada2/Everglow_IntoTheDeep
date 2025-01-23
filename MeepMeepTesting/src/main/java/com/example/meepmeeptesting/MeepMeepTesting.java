@@ -49,6 +49,14 @@ public class MeepMeepTesting {
                 .waitSeconds(1) //grabs sample
                 //elevator
                 .strafeToSplineHeading(basket_pose.position,basket_pose.heading)
+                .waitSeconds(1)
+                // goes to basket
+                .strafeToSplineHeading(new Vector2d(-45, -25),1*Math.PI)
+                .waitSeconds(1)
+                .lineToX(-55)
+                .waitSeconds(0.2)
+                //.lineToY(-50)
+                .strafeToSplineHeading(basket_pose.position,basket_pose.heading)
                 // goes to basket
                 .waitSeconds(1)
                 // goes to park

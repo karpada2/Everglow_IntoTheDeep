@@ -43,6 +43,7 @@ public class LeftPath extends LinearOpMode {
         }
     }
     public static double collectLine = -50;
+    public static double collectLineSampleThree = -45;
     public static double sampleOffset = 3.5;
     public static double VelConstraint = 10;
 
@@ -69,10 +70,16 @@ public class LeftPath extends LinearOpMode {
         TrajectoryActionBuilder B_sample2pickup = B_sample1basket.endTrajectory().fresh()
                 .strafeToSplineHeading(new Vector2d(-60 + sampleOffset, collectLine),0.5*Math.PI);
 
+        TrajectoryActionBuilder B_sample3pickup = B_sample1basket.endTrajectory().fresh()
+                .strafeToSplineHeading(new Vector2d(collectLineSampleThree, -25),Math.PI);
+
         TrajectoryActionBuilder B_sample2basket = B_sample2pickup.endTrajectory().fresh()
                 .strafeToSplineHeading(basketPose.position,basketPose.heading);
 
-        TrajectoryActionBuilder B_park = B_sample2basket.endTrajectory().fresh()
+        TrajectoryActionBuilder B_sample3basket = B_sample3pickup.endTrajectory().fresh()
+                .strafeToSplineHeading(basketPose.position,basketPose.heading);
+
+        TrajectoryActionBuilder B_park = B_sample3basket.endTrajectory().fresh()
                 .setTangent(Math.PI * 0.5)
                 .splineToLinearHeading(new Pose2d(-24,-10, 0),0);
 
@@ -94,6 +101,12 @@ public class LeftPath extends LinearOpMode {
                 .lineToY(collectLine, new TranslationalVelConstraint(VelConstraint))
                 .build();
 
+        Action BackAndForth3 = drive.actionBuilder(new Pose2d(collectLineSampleThree, -25,Math.PI))
+                .waitSeconds(1)
+                .lineToX(collectLineSampleThree-10, new TranslationalVelConstraint(VelConstraint))
+                .waitSeconds(0.5)
+                .lineToY(collectLineSampleThree, new TranslationalVelConstraint(VelConstraint))
+                .build();
         // Turning action builders into actions
         Action armUp = claws.clawMovementAction(100);
 
@@ -115,6 +128,13 @@ public class LeftPath extends LinearOpMode {
                 claws.clawMovementAction(100),
                 elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN)
         );
+
+        Action unload4 = new SequentialAction(elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HIGH),
+                claws.clawMovementAction(80),
+                claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,1000),
+                claws.clawMovementAction(100),
+                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN)
+        );
         Action pickup1 = new ParallelAction(BackAndForth1,
                 new SequentialAction(elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_HALFWAY),
                         claws.clawMovementAction(0),
@@ -130,6 +150,14 @@ public class LeftPath extends LinearOpMode {
                         elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_RETRACTED)
                 ));
 
+        Action pickup3 = new ParallelAction(BackAndForth3,
+                new SequentialAction(elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_HALFWAY),
+                        claws.clawMovementAction(0),
+                        claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, 1500),
+                        claws.clawMovementAction(100),
+                        elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_RETRACTED)
+                ));
+
         Action preload = B_preload.build();
 
         Action sample1pickup = B_sample1pickup.build();
@@ -137,6 +165,9 @@ public class LeftPath extends LinearOpMode {
 
         Action sample2pickup = B_sample2pickup.build();
         Action sample2basket = B_sample2basket.build();
+
+        Action sample3pickup = B_sample3pickup.build();
+        Action sample3basket = B_sample3basket.build();
 
         Action Park = B_park.build();
 
@@ -154,7 +185,11 @@ public class LeftPath extends LinearOpMode {
                         sample2pickup, //movement
                         pickup2,
                         sample2basket, //movement
-                        unload3
+                        unload3,
+                        sample3pickup,
+                        pickup3,
+                        sample3basket,
+                        unload4
                         //Park
                         )
                 );
