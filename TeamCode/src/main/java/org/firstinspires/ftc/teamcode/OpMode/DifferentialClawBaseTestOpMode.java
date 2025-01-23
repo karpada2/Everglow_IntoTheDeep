@@ -7,8 +7,8 @@ import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-@TeleOp(name="base Differential test op mode")
 @Disabled
+@TeleOp(name="base Differential test op mode")
 public class DifferentialClawBaseTestOpMode extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {

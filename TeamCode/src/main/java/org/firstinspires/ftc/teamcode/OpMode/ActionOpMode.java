@@ -16,6 +16,7 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Systems.DifferentialClaws;
 import org.firstinspires.ftc.teamcode.Systems.Elevators;
 
+@Disabled
 @TeleOp(name="ActionOpMode")
 @Disabled
 public class ActionOpMode extends LinearOpMode {

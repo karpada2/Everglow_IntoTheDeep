@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 
+@Disabled
 @TeleOp(name="simple differential test op mode")
 @Disabled
 public class DifferentialClawsSimpleOpMode extends LinearOpMode {

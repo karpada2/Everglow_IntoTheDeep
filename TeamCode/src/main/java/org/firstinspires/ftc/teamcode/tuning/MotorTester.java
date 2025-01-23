@@ -6,8 +6,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Systems.Elevators;
 
-@TeleOp(name = "Motor test")
-@Disabled
+
+@TeleOp(name = "Motor test", group="Tests")
 public class MotorTester extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
