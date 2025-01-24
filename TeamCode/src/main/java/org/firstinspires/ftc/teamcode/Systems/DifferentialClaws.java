@@ -266,7 +266,7 @@ public class DifferentialClaws {
         double pid = controller.calculate(armPos, target);
         double ff = Math.cos(Math.toRadians(target)) * f;
 
-        return pid + ff;
+        return -(pid + ff);
     }
     public void rotateArm(double power){
         leftClawServo.setPower(power);
