@@ -89,6 +89,7 @@ public class Elevators{
     public enum VerticalState {
         VERTICAL_MIN(0),
         VERTICAL_PICKUP(0),
+        VERTICAL_SUB_HURDLE(700),
         VERTICAL_HURDLE(720),
         VERTICAL_LOW(3070),
         VERTICAL_HIGH(4243),

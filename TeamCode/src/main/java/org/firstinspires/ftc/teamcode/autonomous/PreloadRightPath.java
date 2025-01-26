@@ -1,16 +1,21 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
+import androidx.annotation.NonNull;
+
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Systems.DifferentialClaws;
 import org.firstinspires.ftc.teamcode.Systems.Elevators;
@@ -18,53 +23,119 @@ import org.firstinspires.ftc.teamcode.Systems.Elevators;
 @Config
 @Autonomous(name="PreloadRightPath", group="Autonomous")
 public class PreloadRightPath extends LinearOpMode {
+
+    public class AddToTelemetryAction implements Action {
+        private final Telemetry telemetry;
+        private final String title;
+        private final double value;
+
+        public AddToTelemetryAction(Telemetry telemetry, String title, double value) {
+            this.telemetry = telemetry;
+            this.title = title;
+            this.value = value;
+        }
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            telemetry.addData(title,value);
+            telemetry.update();
+            return false;
+        }
+    }
+    public static double BasketY = -34;
+    public static double BasketHeading = Math.PI/2;
+    public static double VelConstraint = 10;
+
     @Override
     public void runOpMode()  throws InterruptedException{
-        Pose2d beginPose = new Pose2d(23, -63,   Math.PI);
-        MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
+        // Init Poses
+
+        Pose2d beginPose = new Pose2d(31.1, -63,   Math.PI/2);
+        Pose2d dropPose = new Pose2d(31.1, -57,   0);
+        Pose2d endPose = new Pose2d(63,-60,Math.PI/2);
+
+        // Init Systems
         DifferentialClaws claws  = new DifferentialClaws(this);
+        MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
         Elevators elevators  = new Elevators(this);
+        //Init Trajectories
+        TrajectoryActionBuilder B_preload_1 = drive.actionBuilder(beginPose)
+                .strafeToSplineHeading(new Vector2d(-5,BasketY),BasketHeading);
 
-        TrajectoryActionBuilder B_unload0 = drive.actionBuilder(beginPose)
-                .setTangent((0.5)*Math.PI)
-                .splineToConstantHeading(new Vector2d(0,-60),Math.PI)
-                .splineToSplineHeading(new Pose2d(-59,-59,1.25*Math.PI),1.25*Math.PI);
+        TrajectoryActionBuilder B_preload_2 = B_preload_1.endTrajectory().fresh()
+                .lineToY(BasketY+1);
 
-        TrajectoryActionBuilder B_Park = B_unload0.endTrajectory().fresh()
-                .setTangent(Math.PI * 0.25)
-                .splineToSplineHeading(new Pose2d(-35,-23, -Math.PI * 0.5),Math.PI/2).waitSeconds(1)
-                .setTangent(Math.PI/2)
-                .splineToSplineHeading(new Pose2d(-25,-10, Math.PI),0);
+        TrajectoryActionBuilder B_sample1pickup = B_preload_2.endTrajectory().fresh()
+                .strafeToSplineHeading(dropPose.position, dropPose.heading);
 
-        Action wait2 = drive.actionBuilder(new Pose2d(0,0,0))
-                .waitSeconds(1)
+        TrajectoryActionBuilder B_sample1basket_1 = B_sample1pickup.endTrajectory().fresh()
+                .strafeToSplineHeading(new Vector2d(-5,BasketY),BasketHeading);
+
+        TrajectoryActionBuilder B_sample1basket_2 = B_sample1basket_1.endTrajectory().fresh()
+                .lineToY(BasketY+1);
+
+        TrajectoryActionBuilder B_Park = B_sample1basket_2.endTrajectory().fresh()
+                .strafeToSplineHeading(endPose.position,endPose.heading);
+
+        Action wait = drive.actionBuilder(new Pose2d(0,0,0))
+                .waitSeconds(3)
                 .build();
 
-        // Turning action builders into actions
-        Action unload0 = B_unload0.build();
+        Action release = new SequentialAction(
+                claws.clawMovementAction(100),
+                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SUB_HURDLE),
+                new ParallelAction(
+                        claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN,1000),
+                        claws.clawMovementAction(90)//
+                ),
+                new ParallelAction(
+                        claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,1000),
+                        claws.clawMovementAction(80)
+                ),
+                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HURDLE)
+        );
+
+        Action preload_1 = B_preload_1.build();
+        Action preload_2 = B_preload_2.build();
+
+        Action sample1pickup = B_sample1pickup.build();
+        Action sample1basket_1 = B_sample1basket_1.build();
+        Action sample1basket_2 = B_sample1basket_2.build();
 
         Action Park = B_Park.build();
 
-//        Actions.runBlocking(v_e to 0 and h_e to 0)
-//        Actions.runBlocking(set elevator power to 0.8)
 
+        Action unload1 = new ParallelAction(
+                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HURDLE),
+                preload_1
+        );
+        Action unload2 = new SequentialAction(
+                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HURDLE),
+                sample1basket_1
+        );
+
+        Action pickup1 = new ParallelAction(
+                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN),
+                sample1pickup
+                );
+
+        Action Park_Lower = new ParallelAction(
+                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN),
+                Park
+        );
         waitForStart();
 
-        //sleep(10000);
-
         Actions.runBlocking(
-                new ParallelAction(
-                        claws.test(3000, 4000),
-                        new SequentialAction(
-                                new ParallelAction(
-                                        unload0,
-                                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HIGH)// elevators up
-                                        ),
-                                wait2,
-                                new ParallelAction(
-                                        Park,
-                                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN)// elevators down
-                        )))
-                );
+                new SequentialAction(
+                        unload1,
+                        preload_2,
+                        release,
+                        pickup1,
+                        unload2,
+                        sample1basket_2,
+                        release,
+                        Park_Lower
+                )
+        );
     }
 }
