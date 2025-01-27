@@ -109,8 +109,8 @@ public class Elevators{
 
     public enum MotorHorizontalState{
         HORIZONTAL_RETRACTED(0),
-        HORIZONTAL_HALFWAY(2360),
-        HORIZONTAL_EXTENDED(3700);
+        HORIZONTAL_HALFWAY(944),
+        HORIZONTAL_EXTENDED(1480);
 
         public final int state;
 
