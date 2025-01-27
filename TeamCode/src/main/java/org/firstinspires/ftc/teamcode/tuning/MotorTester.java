@@ -29,6 +29,7 @@ public class MotorTester extends LinearOpMode {
             elevators.setVerticalDestination((int)vertPosition);
 
             telemetry.update();
+
         }
     }
 }

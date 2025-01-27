@@ -109,8 +109,10 @@ public class DifferentialClaws {
         //        private final double tolerance = 2.5; //in degrees, how much error can be accepted
         double power;
         long startTime;
-        public ClawPowerAction(double power) {
+        boolean isUp;
+        public ClawPowerAction(double power, boolean isUp) {
             this.power = power;
+            this.isUp = isUp;
         }
 
 
@@ -121,12 +123,20 @@ public class DifferentialClaws {
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            rotateArm(power);
-            return !(System.currentTimeMillis() - startTime >= 400);
+            if(isUp){
+                if(abs(80 - getArmPosition()) > 10)
+                    rotateArm(0.6); //up power
+            }
+            else if (abs(0 - getArmPosition()) > 10){
+                rotateArm(0);
+            }
+            else
+                rotateArm(power);
+            return !(System.currentTimeMillis() - startTime >= 1000);
         }
     }
-    public ClawPowerAction clawPowerAction(double power){
-        return new ClawPowerAction(power);
+    public ClawPowerAction clawPowerAction(double power, boolean isUp){
+        return new ClawPowerAction(power, isUp);
     }
 
     public class ClawRotatePowerAction implements Action {
@@ -249,7 +259,7 @@ public class DifferentialClaws {
         leftClawStart = trueLeftRotation;
         leftClawOldPos = leftClawStart;
         rightClawOldPos = rightClawStart;
-        armStartingPosition = getArmPosition();
+        armStartingPosition = getArmPosition() + 80;
 
     }
 

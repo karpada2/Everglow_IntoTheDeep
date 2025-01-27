@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 public class Elevators{
     final int epsilon = 5;
 
+
     DcMotorEx rightVert;
     DcMotorEx leftVert;
     DcMotorEx horMotor;
@@ -110,7 +111,7 @@ public class Elevators{
     public enum MotorHorizontalState{
         HORIZONTAL_RETRACTED(0),
         HORIZONTAL_HALFWAY(944),
-        HORIZONTAL_EXTENDED(1480);
+        HORIZONTAL_EXTENDED(1440);
 
         public final int state;
 
@@ -138,12 +139,12 @@ public class Elevators{
 //        leftHor.setDirection(Servo.Direction.REVERSE);
 //        rightHor.setDirection(Servo.Direction.FORWARD);
 
-        horMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        horMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         motorSetHorizontalDestination(MotorHorizontalState.HORIZONTAL_RETRACTED);
         horMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         horMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        horMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);//TODO: Run to position
+        horMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
 //        setHorizontalPosition(HorizontalState.HORIZONTAL_RETRACTED.state);
 
@@ -182,7 +183,7 @@ public class Elevators{
     }
 
     public void updateVert(){
-        if (Math.abs(verticalDestination-getVerticalCurrentPosition())<=120 && verticalDestination == 0) {
+        if (Math.abs(verticalDestination-getVerticalCurrentPosition())<=50 && verticalDestination == 0) {
             setVerticalPower(0);
             double innerEps = 10;
             if(Math.abs(verticalDestination-getVerticalCurrentPosition())>= innerEps) {
@@ -268,7 +269,9 @@ public class Elevators{
     public MotorHorizontalElevatorAction setMotorHorizontalElevatorAction(MotorHorizontalState destinationState) {
         return new MotorHorizontalElevatorAction(destinationState);
     }
-
+    public double getHorizontalPosition(){
+        return horMotor.getCurrentPosition();
+    }
     public void setVertDest(int dest){
         rightVert.setTargetPosition(dest);
         leftVert.setTargetPosition(dest);

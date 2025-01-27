@@ -36,8 +36,6 @@ public class ClawPIDFTuning extends LinearOpMode {
         startTime = System.currentTimeMillis();
         double lastPIDPower = 0;
         while (opModeIsActive()) {
-            claws.controller.setPID(p, i, d);
-            claws.setF(f);
 
             telemetry.addData("pos: ", claws.getActualArmRotation());
             telemetry.addData("target: ", claws.getArmTargetPosition());
@@ -46,18 +44,11 @@ public class ClawPIDFTuning extends LinearOpMode {
             telemetry.addData("left claw", claws.getServoVirtualPosition()[0]);
             telemetry.addData("power: ", lastPIDPower);
 
-
-            claws.updateRightClawServoRotation();
-            claws.updateLeftClawServoRotation();
-            telemetry.update();
-
-            lastPIDPower = claws.getPIDArmPower();
-            claws.rotateArm(lastPIDPower);
             x = System.currentTimeMillis() - startTime;
             x = x % 8000;
 
             if (x <= 4000) {
-                claws.setArmTargetPosition(40);
+                claws.setArmTargetPosition(20);
             } else {
                 claws.setArmTargetPosition(60);
             }
@@ -70,7 +61,11 @@ public class ClawPIDFTuning extends LinearOpMode {
                 claws.setArmTargetPosition(0);
             }
             else if (gamepad1.triangle) {
-                Actions.runBlocking(claws.clawMovementAction(40));
+                boolean isUp = false;
+                if(x > 4000)
+                    isUp = true;
+
+                Actions.runBlocking(claws.clawPowerAction(f, isUp));
             }
         }
     }
