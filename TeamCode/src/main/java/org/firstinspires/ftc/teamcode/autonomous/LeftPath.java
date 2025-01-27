@@ -185,11 +185,11 @@ public class LeftPath extends LinearOpMode {
                         sample2pickup, //movement
                         pickup2,
                         sample2basket, //movement
-                        unload3,
-                        sample3pickup,
-                        pickup3,
-                        sample3basket,
-                        unload4
+                        unload3
+                        //sample3pickup,
+                        //pickup3,
+                        //sample3basket,
+                        //unload4
                         //Park
                         )
                 );

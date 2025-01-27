@@ -19,8 +19,10 @@ import org.firstinspires.ftc.teamcode.Systems.DifferentialClaws;
 @Config
 @TeleOp(name="ClawPIDFTuning")
 public class ClawPIDFTuning extends LinearOpMode {
-    public static double p = 0.0075, i = 0.001, d = 0.00015;
-    public static double f = 0.1;
+    public static double p =0,// 0.0075,
+            i = 0,//0.001,
+            d =0;// 0.00015;
+    public static double f = 0;
     public static double x = 0;
     public static double startTime;
 
@@ -39,25 +41,25 @@ public class ClawPIDFTuning extends LinearOpMode {
 
             telemetry.addData("pos: ", claws.getActualArmRotation());
             telemetry.addData("target: ", claws.getArmTargetPosition());
-            telemetry.addData("curr rotation", claws.getArmPosition());
+            //telemetry.addData("curr rotation", claws.getArmPosition());
             telemetry.addData("right claw", claws.getServoVirtualPosition()[1]);
             telemetry.addData("left claw", claws.getServoVirtualPosition()[0]);
+            telemetry.addData("power: ", lastPIDPower);
+
 
             claws.updateRightClawServoRotation();
             claws.updateLeftClawServoRotation();
             telemetry.update();
 
-            if (gamepad2.square) {
-                lastPIDPower = claws.getPIDArmPower();
-                claws.rotateArm(lastPIDPower);
-                x = System.currentTimeMillis() - startTime;
-                x = x % 8000;
+            lastPIDPower = claws.getPIDArmPower();
+            claws.rotateArm(lastPIDPower);
+            x = System.currentTimeMillis() - startTime;
+            x = x % 8000;
 
-                if (x <= 4000) {
-                    claws.setArmTargetPosition(40);
-                } else {
-                    claws.setArmTargetPosition(60);
-                }
+            if (x <= 4000) {
+                claws.setArmTargetPosition(40);
+            } else {
+                claws.setArmTargetPosition(60);
             }
 
 

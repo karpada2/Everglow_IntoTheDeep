@@ -49,7 +49,7 @@ public class DifferentialClaws {
     public PIDController controller;
 
     public final double p = 0.0075, i = 0.001, d = 0.00015;
-    public double f = 0.1;
+    public double f = 0.15;
 
     private double target = 0;
 
@@ -102,6 +102,58 @@ public class DifferentialClaws {
             }
             return !(System.currentTimeMillis() - startTime >= 750);
         }
+    }
+
+    public class ClawPowerAction implements Action {
+        private boolean isInitialized = false;
+        //        private final double tolerance = 2.5; //in degrees, how much error can be accepted
+        double power;
+        long startTime;
+        public ClawPowerAction(double power) {
+            this.power = power;
+        }
+
+
+        @Override
+        public void preview(@NonNull Canvas fieldOverlay) {
+            Action.super.preview(fieldOverlay);
+        }
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            rotateArm(power);
+            return !(System.currentTimeMillis() - startTime >= 400);
+        }
+    }
+    public ClawPowerAction clawPowerAction(double power){
+        return new ClawPowerAction(power);
+    }
+
+    public class ClawRotatePowerAction implements Action {
+        private boolean isInitialized = false;
+        //        private final double tolerance = 2.5; //in degrees, how much error can be accepted
+        double power;
+        long startTime;
+        int sign = 0;
+        public ClawRotatePowerAction(ClawPowerState state, boolean isDown) {
+            this.power = state.state;
+            sign = isDown? -1: 1;
+        }
+
+
+        @Override
+        public void preview(@NonNull Canvas fieldOverlay) {
+            Action.super.preview(fieldOverlay);
+        }
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            setPower(sign*power,0);
+            return !(System.currentTimeMillis() - startTime >= 400);
+        }
+    }
+    public ClawRotatePowerAction clawRotatePowerAction(ClawPowerState state, boolean isGoingDown){
+        return new ClawRotatePowerAction(state, isGoingDown);
     }
 
     // receives the time in milliseconds until the action is considered finished
@@ -190,7 +242,7 @@ public class DifferentialClaws {
         rotateArm(0.01);
         rotateArm(0);
 
-        controller = new PIDController(p, i, d);
+        controller = new PIDController(0,0,0);//p, i, d);
         updateLeftClawServoRotation();
         updateRightClawServoRotation();
         rightClawStart = trueRightRotation;
@@ -266,7 +318,7 @@ public class DifferentialClaws {
         double pid = controller.calculate(armPos, target);
         double ff = Math.cos(Math.toRadians(target)) * f;
 
-        return -(pid + ff);
+        return (pid + ff);
     }
     public void rotateArm(double power){
         leftClawServo.setPower(power);
@@ -286,11 +338,6 @@ public class DifferentialClaws {
     }
 
     public void setArmTargetPosition(double pos){
-        if(pos >= target){
-            isGoingDown = false;
-        }else {
-            isGoingDown = true;
-        }
         target = pos;
     }
 
