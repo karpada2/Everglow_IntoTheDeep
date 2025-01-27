@@ -1,24 +1,19 @@
 package org.firstinspires.ftc.teamcode.OpMode;
 
-import static org.firstinspires.ftc.teamcode.MecanumDrive.linearInputToExponential;
-
-import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
-import com.acmerobotics.roadrunner.ftc.Actions;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import com.acmerobotics.roadrunner.Pose2d;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
-import org.firstinspires.ftc.robotcore.external.navigation.VoltageUnit;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Systems.ActionControl;
 import org.firstinspires.ftc.teamcode.Systems.ColorSensorSystem;
 import org.firstinspires.ftc.teamcode.Systems.DifferentialClaws;
 import org.firstinspires.ftc.teamcode.Systems.Elevators;
 
-@TeleOp(name = "Action Sequential OpMode")
+
+@Disabled
 public class ActionSequenceOpMode extends LinearOpMode {
 
     double joystickTolerance = 0.5;

@@ -150,6 +150,7 @@ public class FirstOpMode extends LinearOpMode {
             }
             flagElevatorHorizontalCircle = !gamepad2.circle;
             elevators.updateVert();
+            colorSensorSystem.updateAlert();
 
             if(elevators.getVertDestination() == 0 && gamepad2.square){
                 elevators.resetVert();

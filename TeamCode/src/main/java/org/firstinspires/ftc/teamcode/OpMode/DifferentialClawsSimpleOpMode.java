@@ -5,8 +5,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 
-@TeleOp(name="simple differential test op mode")
 @Disabled
+@TeleOp(name="simple differential test op mode")
+
 public class DifferentialClawsSimpleOpMode extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {

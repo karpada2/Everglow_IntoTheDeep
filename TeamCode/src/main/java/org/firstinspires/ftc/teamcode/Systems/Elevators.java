@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 public class Elevators{
-    final int epsilon = 50;
+    final int epsilon = 5;
 
     DcMotorEx rightVert;
     DcMotorEx leftVert;
@@ -43,7 +43,11 @@ public class Elevators{
                 setVerticalDestination(this.destination);
                 isInitialized = true;
             }
-            updateVert();
+
+            if (isElevatorInDestination()) {
+                setVerticalPower(0);
+            }
+            
             return !isElevatorInDestination();
         }
     }
@@ -80,7 +84,7 @@ public class Elevators{
             }
 
 
-            return motorIsHorizontalInDestination();
+            return !motorIsHorizontalInDestination();
         }
     }
 
@@ -90,11 +94,10 @@ public class Elevators{
     public enum VerticalState {
         VERTICAL_MIN(0),
         VERTICAL_PICKUP(0),
-        VERTICAL_HURDLE(720),
-        VERTICAL_LOW(2600),
-        VERTICAL_HIGH(4243),
-        VERTICAL_HIGH_SPECIMEN(1796),
-        VERTICAL_MAX(4243);
+        VERTICAL_HURDLE(970),
+        VERTICAL_LOW(7643),
+        VERTICAL_HIGH(11448),
+        VERTICAL_MAX(11448);
 
 
         public final int state;
@@ -106,8 +109,8 @@ public class Elevators{
 
     public enum MotorHorizontalState{
         HORIZONTAL_RETRACTED(0),
-        HORIZONTAL_HALFWAY(2360),
-        HORIZONTAL_EXTENDED(3700);
+        HORIZONTAL_HALFWAY(944),
+        HORIZONTAL_EXTENDED(1480);
 
         public final int state;
 
@@ -147,6 +150,10 @@ public class Elevators{
 
     }
 
+    public int getVerticalDestination() {
+        return verticalDestination;
+    }
+
     public int getVerticalCurrentPosition() {
         return rightVert.getCurrentPosition();
     }
@@ -154,9 +161,9 @@ public class Elevators{
     // sets the destination of the vertical motors to the specified number of ticks
     public void setVerticalDestination(int destination) {
 
-        if(destination<VerticalState.VERTICAL_MIN.state || destination>VerticalState.VERTICAL_MAX.state){
-            return;
-        }
+//        if(destination<VerticalState.VERTICAL_MIN.state || destination>VerticalState.VERTICAL_MAX.state){
+//            return;
+//        }
 
         double eps = 60;
         if (Math.abs(destination-getVerticalCurrentPosition())<=60 && destination == 0) {
@@ -175,7 +182,7 @@ public class Elevators{
     }
 
     public void updateVert(){
-        if (Math.abs(verticalDestination-getVerticalCurrentPosition())<=100 && verticalDestination == 0) {
+        if (Math.abs(verticalDestination-getVerticalCurrentPosition())<=120 && verticalDestination == 0) {
             setVerticalPower(0);
             double innerEps = 10;
             if(Math.abs(verticalDestination-getVerticalCurrentPosition())>= innerEps) {
@@ -192,7 +199,10 @@ public class Elevators{
 
     // checks whether the elevator is close enough (+- epsilon) to it's destination
     public boolean isElevatorInDestination() {
-        return Math.abs(getVertDestination() - getVerticalCurrentPosition()) <= epsilon;
+        if (getVerticalCurrentPosition() < getVerticalDestination()) {
+            return getVerticalCurrentPosition() >= getVerticalDestination() - epsilon;
+        }
+        return getVerticalCurrentPosition() <= getVerticalDestination() + epsilon;
     }
 
     public void setVerticalPower(double power){

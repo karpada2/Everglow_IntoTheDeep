@@ -21,44 +21,45 @@ public class ActionControl {
 
     public ActionControl(Elevators elevators, DifferentialClaws claws) {
         getReadyHalfwayPickUp = new SequentialAction(
-                claws.clawMovementAction(50), //mid
+                claws.setClawMovementAction(50), //mid
                 elevators.setMotorHorizontalElevatorAction(MotorHorizontalState.HORIZONTAL_HALFWAY),
-                claws.clawMovementAction(20) // down
+                claws.setClawMovementAction(20) // down
         );
 
         getReadyExtendedPickUp = new SequentialAction(
-                claws.clawMovementAction(50), //mid
+                claws.setClawMovementAction(50), //mid
                 elevators.setMotorHorizontalElevatorAction(MotorHorizontalState.HORIZONTAL_EXTENDED),
-                claws.clawMovementAction(0) // down
+                claws.setClawMovementAction(0) // down
         );
 
         returnFromPickUp = new SequentialAction(
-                claws.clawMovementAction(50), //mid
+                claws.setClawMovementAction(50), //mid
                 elevators.setMotorHorizontalElevatorAction(MotorHorizontalState.HORIZONTAL_RETRACTED),
-                claws.clawMovementAction(0) // down
+                claws.setClawMovementAction(30),
+                claws.setClawMovementAction(0) // down
         );
 
         getReadyDropLow = new SequentialAction(
-                claws.clawMovementAction(100),//mid
+                claws.setClawMovementAction(100),//mid
                 elevators.setVerticalElevatorAction(VerticalState.VERTICAL_LOW),
                 elevators.setMotorHorizontalElevatorAction(MotorHorizontalState.HORIZONTAL_HALFWAY),
-                claws.clawMovementAction(50) // down
+                claws.setClawMovementAction(50) // down
         );
 
         getReadyDropHigh = new SequentialAction(
-                claws.clawMovementAction(100), //up
+                claws.setClawMovementAction(100), //up
                 elevators.setVerticalElevatorAction(VerticalState.VERTICAL_HIGH),
-                claws.clawMovementAction(50), // ,mid
+                claws.setClawMovementAction(50), // ,mid
                 elevators.setMotorHorizontalElevatorAction(MotorHorizontalState.HORIZONTAL_HALFWAY)
-                //claws.clawMovementAction(0) // down
+                //claws.setClawMovementAction(0) // down
         );
 
         returnFromDrop = new SequentialAction(
-                claws.clawMovementAction(100), // up
+                claws.setClawMovementAction(100), // up
                 elevators.setMotorHorizontalElevatorAction(MotorHorizontalState.HORIZONTAL_RETRACTED),
-                claws.clawMovementAction(40), // down
+                claws.setClawMovementAction(40), // down
                 elevators.setVerticalElevatorAction(VerticalState.VERTICAL_MIN),
-                claws.clawMovementAction(0) // down
+                claws.setClawMovementAction(0) // down
         );
         //TODO: ADD CLAW MOVEMENTS TO THESE
     }

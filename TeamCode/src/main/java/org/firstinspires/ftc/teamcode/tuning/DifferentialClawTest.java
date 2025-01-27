@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.OpMode;
+package org.firstinspires.ftc.teamcode.tuning;
 
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ftc.Actions;
@@ -8,9 +8,9 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Systems.DifferentialClaws;
 
-@TeleOp(name="DifferentialClawTestOpMode")
 @Disabled
-public class DifferentialClawTestOpMode extends LinearOpMode {
+@TeleOp(name="DifferentialClawTest", group="Tests")
+public class DifferentialClawTest extends LinearOpMode {
 
     boolean flagCircle = false;
     boolean flagSquare = false;
