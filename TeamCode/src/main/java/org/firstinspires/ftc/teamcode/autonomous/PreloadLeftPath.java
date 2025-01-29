@@ -23,7 +23,7 @@ public class PreloadLeftPath extends LinearOpMode {
         Pose2d beginPose = new Pose2d(-31.1, -63,   Math.PI);
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
         DifferentialClaws claws  = new DifferentialClaws(this);
-        Elevators elevators  = new Elevators(this);
+        Elevators elevators  = new Elevators(this, true);
 
         TrajectoryActionBuilder B_unload0 = drive.actionBuilder(beginPose)
                 .waitSeconds(1)

@@ -48,8 +48,8 @@ public class DifferentialClaws {
 
     public PIDController controller;
 
-    public final double p = 0.0075, i = 0.001, d = 0.00015;
-    public double f = 0.15;
+    public final double p = 0.008, i = 0, d = 0.0001;
+    public double f = 0.08;
 
     private double target = 0;
 
@@ -66,8 +66,9 @@ public class DifferentialClaws {
         private boolean isInitialized = false;
 //        private final double tolerance = 2.5; //in degrees, how much error can be accepted
         double destination;
+        int timeTillFinish;
         long startTime;
-        public ClawMovementAction(double destination) {
+        public ClawMovementAction(double destination, int timeTillFinish) {
 //            double pos = lastPosRequest;
 //            lastPosRequest = destination;
 //            destination -= pos;
@@ -80,6 +81,7 @@ public class DifferentialClaws {
 //
 //            leftClawServoDestination = leftClawServoDestination % 360;
 //            rightClawServoDestination = rightClawServoDestination % 360;
+            this.timeTillFinish =timeTillFinish;
             this.destination = destination;
         }
 
@@ -100,7 +102,7 @@ public class DifferentialClaws {
                 isInitialized = true;
                 startTime = System.currentTimeMillis();
             }
-            return !(System.currentTimeMillis() - startTime >= 750);
+            return !(System.currentTimeMillis() - startTime >= timeTillFinish);
         }
     }
 
@@ -246,27 +248,27 @@ public class DifferentialClaws {
         clawInput1 = opMode.hardwareMap.get(AnalogInput.class, "clawInput1");
         clawInput2 = opMode.hardwareMap.get(AnalogInput.class, "clawInput2");
 
-        leftClawServo.setDirection(DcMotorSimple.Direction.FORWARD);
-        rightClawServo.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftClawServo.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightClawServo.setDirection(DcMotorSimple.Direction.FORWARD);
 
         rotateArm(0.01);
         rotateArm(0);
 
-        controller = new PIDController(0,0,0);//p, i, d);
+        controller = new PIDController(p, i, d);
         updateLeftClawServoRotation();
         updateRightClawServoRotation();
         rightClawStart = trueRightRotation;
         leftClawStart = trueLeftRotation;
         leftClawOldPos = leftClawStart;
         rightClawOldPos = rightClawStart;
-        armStartingPosition = getArmPosition() + 80;
+        armStartingPosition = getArmPosition() + 290;
 
     }
 
     public enum ClawPowerState {
-        TAKE_IN(0.75),
-        OFF(0),
-        SPIT(-0.75);
+        TAKE_IN(1),
+        OFF(0.08),
+        SPIT(-1);
 
         public final double state;
 
@@ -399,15 +401,15 @@ public class DifferentialClaws {
     // gets in degrees, adds the given to the current position
     public ClawMovementAction addClawMovementAction(double armPosition) {
         double out_val = this.armPosition + armPosition;
-        return clawMovementAction(out_val);
+        return clawMovementAction(out_val, 750);
     }
 
     //gets in degrees, sets the claw's position to the given position
-    public ClawMovementAction clawMovementAction(double dest) {
+    public ClawMovementAction clawMovementAction(double dest, int timeTillFinish) {
         //double diff = armPosition - this.armPosition;
         //ClawMovementAction action =;
         //this.armPosition = armPosition;
-        return new ClawMovementAction(dest);
+        return new ClawMovementAction(dest, timeTillFinish);
     }
 
     public HoldClawAndDropSampleAction test(double timeToHold, double timeToDrop) {

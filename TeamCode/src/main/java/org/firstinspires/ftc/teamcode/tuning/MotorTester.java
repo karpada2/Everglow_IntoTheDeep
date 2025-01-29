@@ -1,16 +1,17 @@
 package org.firstinspires.ftc.teamcode.tuning;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Systems.Elevators;
 
-
+@Disabled
 @TeleOp(name = "Motor test", group="Tests")
 public class MotorTester extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
-        Elevators elevators = new Elevators(this);
+        Elevators elevators = new Elevators(this, true);
         double horPosition = elevators.motorGetHorizontalPosition();
         double vertPosition = elevators.getVerticalCurrentPosition();
 

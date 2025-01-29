@@ -23,7 +23,7 @@ public class PreloadRightPath extends LinearOpMode {
         Pose2d beginPose = new Pose2d(23, -63,   Math.PI);
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
         DifferentialClaws claws  = new DifferentialClaws(this);
-        Elevators elevators  = new Elevators(this);
+        Elevators elevators  = new Elevators(this, true);
 
         TrajectoryActionBuilder B_unload0 = drive.actionBuilder(beginPose)
                 .setTangent((0.5)*Math.PI)

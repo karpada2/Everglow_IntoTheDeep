@@ -7,6 +7,7 @@ import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Systems.ActionControl;
@@ -14,8 +15,8 @@ import org.firstinspires.ftc.teamcode.Systems.ColorSensorSystem;
 import org.firstinspires.ftc.teamcode.Systems.DifferentialClaws;
 import org.firstinspires.ftc.teamcode.Systems.Elevators;
 
-
 @Disabled
+@TeleOp(name = "Action Sequance OpMode")
 public class ActionSequenceOpMode extends LinearOpMode {
 
     double joystickTolerance = 0.5;
@@ -29,7 +30,7 @@ public class ActionSequenceOpMode extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         DifferentialClaws claws = new DifferentialClaws(this);
         MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
-        elevators = new Elevators(this);
+        elevators = new Elevators(this, false);
         elevators.setVerticalPower(0.0);
         control = new ActionControl(elevators, claws);
         ColorSensorSystem colorSensorSystem = new ColorSensorSystem(this, true);
@@ -81,6 +82,11 @@ public class ActionSequenceOpMode extends LinearOpMode {
                     -linearInputToExponential(gamepad1.right_stick_x)
             ));
 
+            if(!control.isOnRun()){
+                claws.updateRightClawServoRotation();
+                claws.updateLeftClawServoRotation();
+            }
+
             if (gamepad2.right_trigger >= 0.35) { //split
                 claws.rotateWheels(gamepad2.right_trigger);
             }
@@ -90,8 +96,6 @@ public class ActionSequenceOpMode extends LinearOpMode {
             else {
                 if(!control.isOnRun()) {
                     telemetry.addLine("No Action Run");
-                    claws.updateRightClawServoRotation();
-                    claws.updateLeftClawServoRotation();
                     claws.rotateArm(claws.getPIDArmPower());
                 }
 //                Actions.runBlocking(claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.OFF));
@@ -102,47 +106,47 @@ public class ActionSequenceOpMode extends LinearOpMode {
             if (Math.abs(gamepad2.right_stick_y) > joystickTolerance) {
                 if(horElevatorPosition < 0){
                     horElevatorPosition = 0;
-                }else if(horElevatorPosition > 3700){
-                    horElevatorPosition =  3700;
+                }else if(horElevatorPosition >= Elevators.MotorHorizontalState.HORIZONTAL_EXTENDED.state){
+                    horElevatorPosition =  Elevators.MotorHorizontalState.HORIZONTAL_EXTENDED.state;
                 }
-                horElevatorPosition += -gamepad2.right_stick_y*40*1.5;
+                horElevatorPosition += -gamepad2.right_stick_y*40*3;
                 elevators.motorSetHorizontalDestination((int)(horElevatorPosition));
             }
 
             if (gamepad2.dpad_down && flagDpadDown) {
-                control.runAction(control.returnFromDrop);
+                control.runAction(control.returnFromDrop());
                 //Actions.runBlocking(control.returnFromDrop);
             }
             flagDpadDown = !gamepad2.dpad_down;
 
 
             if (gamepad2.dpad_up && flagDpadUp) {
-                control.runAction(control.getReadyDropHigh);
+                control.runAction(control.getReadyDropHigh());
                 //Actions.runBlocking(control.getReadyDropHigh);
             }
             flagDpadUp = !gamepad2.dpad_up;
 
             if (gamepad2.dpad_right && flagDpadRight) {
-                control.runAction(control.getReadyDropLow);
+                control.runAction(control.getReadyDropLow());
                 //Actions.runBlocking(control.getReadyDropLow);
             }
             flagDpadRight = !gamepad2.dpad_right;
 
 
             if (gamepad2.cross && flagX) {
-                control.runAction(control.returnFromPickUp);
+                control.runAction(control.returnFromPickUp());
                 //Actions.runBlocking(control.returnFromPickUp);
             }
             flagX = !gamepad2.cross;
 
             if (gamepad2.triangle && flagTriangle) {
-                control.runAction(control.getReadyExtendedPickUp);
+                control.runAction(control.getReadyExtendedPickUp());
                 //Actions.runBlocking(control.getReadyExtendedPickUp);
             }
             flagTriangle = !gamepad2.triangle;
 
             if (gamepad2.circle && flagCircle) {
-                control.runAction(control.getReadyHalfwayPickUp);
+                control.runAction(control.getReadyHalfwayPickUp());
                 //Actions.runBlocking(control.getReadyHalfwayPickUp);
             }
             flagCircle = !gamepad2.circle;

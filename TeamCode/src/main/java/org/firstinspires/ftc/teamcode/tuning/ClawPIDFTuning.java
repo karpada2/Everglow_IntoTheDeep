@@ -17,12 +17,10 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Systems.DifferentialClaws;
 
 @Config
-@TeleOp(name="ClawPIDFTuning")
+@TeleOp(name="ClawPIDFTuning", group = "Tests")
 public class ClawPIDFTuning extends LinearOpMode {
-    public static double p =0,// 0.0075,
-            i = 0,//0.001,
-            d =0;// 0.00015;
-    public static double f = 0;
+    public static double p = 0.008, i = 0, d = 0.0001;
+    public static double f = 0.08;
     public static double x = 0;
     public static double startTime;
 
@@ -36,37 +34,36 @@ public class ClawPIDFTuning extends LinearOpMode {
         startTime = System.currentTimeMillis();
         double lastPIDPower = 0;
         while (opModeIsActive()) {
+            claws.controller.setPID(p, i, d);
+            claws.setF(f);
 
             telemetry.addData("pos: ", claws.getActualArmRotation());
             telemetry.addData("target: ", claws.getArmTargetPosition());
+            telemetry.addData("curr rotation", claws.getArmPosition());
             //telemetry.addData("curr rotation", claws.getArmPosition());
             telemetry.addData("right claw", claws.getServoVirtualPosition()[1]);
             telemetry.addData("left claw", claws.getServoVirtualPosition()[0]);
             telemetry.addData("power: ", lastPIDPower);
 
-            x = System.currentTimeMillis() - startTime;
-            x = x % 8000;
 
-            if (x <= 4000) {
-                claws.setArmTargetPosition(20);
-            } else {
-                claws.setArmTargetPosition(60);
-            }
+            claws.updateRightClawServoRotation();
+            claws.updateLeftClawServoRotation();
+            telemetry.update();
 
+            if (gamepad2.square) {
+                lastPIDPower = claws.getPIDArmPower();
+                claws.rotateArm(lastPIDPower);
+                x = System.currentTimeMillis() - startTime;
+                x = x % 8000;
 
-            if (gamepad1.cross) {
-                claws.setArmTargetPosition(90);
-            }
-            else if (gamepad1.circle) {
-                claws.setArmTargetPosition(0);
-            }
-            else if (gamepad1.triangle) {
-                boolean isUp = false;
-                if(x > 4000)
-                    isUp = true;
-
-                Actions.runBlocking(claws.clawPowerAction(f, isUp));
+                if (x <= 4000) {
+                    claws.setArmTargetPosition(30);
+                } else {
+                    claws.setArmTargetPosition(170);
+                }
             }
         }
     }
 }
+
+
