@@ -132,8 +132,6 @@ public class DifferentialClaws {
             else if (abs(0 - getArmPosition()) > 10){
                 rotateArm(0);
             }
-            else
-                rotateArm(power);
             return !(System.currentTimeMillis() - startTime >= 1000);
         }
     }
