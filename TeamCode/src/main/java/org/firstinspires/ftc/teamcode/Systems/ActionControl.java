@@ -9,12 +9,6 @@ import org.firstinspires.ftc.teamcode.Systems.Elevators.VerticalState;
 
 
 public class ActionControl {
-//    public final Action getReadyExtendedPickUp;
-//    public final Action getReadyHalfwayPickUp;
-//    public final Action returnFromPickUp;
-//    public final Action getReadyDropLow;
-//    public final Action getReadyDropHigh;
-//    public final Action returnFromDrop;
     Elevators elevators;
     DifferentialClaws claws;
 
@@ -24,7 +18,6 @@ public class ActionControl {
     public ActionControl(Elevators elevators, DifferentialClaws claws) {
         this.elevators = elevators;
         this.claws = claws;
-        //TODO: ADD CLAW MOVEMENTS TO THESE
     }
 
     public Action returnFromDrop(){
