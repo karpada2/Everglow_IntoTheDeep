@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Systems;
 
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.ftc.Actions;
 
@@ -69,6 +70,17 @@ public class ActionControl {
                 claws.clawMovementAction(170, 750), //mid
                 elevators.setMotorHorizontalElevatorAction(MotorHorizontalState.HORIZONTAL_HALFWAY),
                 claws.clawMovementAction(0, 500) // down
+        );
+    }
+
+    public Action hangSpecimenHigh() {
+        return new SequentialAction(
+                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750),
+                elevators.setVerticalElevatorAction(VerticalState.VERTICAL_SPECIMEN_HIGH),
+                new ParallelAction(
+                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.HANG_SPECIMEN.state, 750),
+                        elevators.setVerticalElevatorAction(VerticalState.VERTICAL_MIN)
+                )
         );
     }
 
