@@ -263,6 +263,16 @@ public class DifferentialClaws {
 
     }
 
+    public enum ClawPositionState {
+        MIN(0.0),
+        MID(145.0),
+        HANG_SPECIMEN(262.0),
+        MAX(290.0);
+
+        public final double state;
+        ClawPositionState(double state) {this.state = state;}
+    }
+
     public enum ClawPowerState {
         TAKE_IN(1),
         OFF(0.08),
