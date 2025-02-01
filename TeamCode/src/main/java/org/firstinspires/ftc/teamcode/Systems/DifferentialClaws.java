@@ -23,6 +23,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.robotcore.external.Func;
+import org.firstinspires.ftc.teamcode.Systems.Token.TokenAction;
 
 public class DifferentialClaws {
 
@@ -60,38 +61,15 @@ public class DifferentialClaws {
 
     private double armStartingPosition;
 
-    public class ClawMovementAction implements Action {
-//        private double leftClawServoDestination;// in degrees, where 0 is the starting degrees
-//        private double rightClawServoDestination;
-//
-//        private final int directionleftClawServo;
-//        private final int directionrightClawServo;
-        private boolean isInitialized = false;
-//        private final double tolerance = 2.5; //in degrees, how much error can be accepted
+    public class ClawMovementAction extends TokenAction {
+
         double destination;
         int timeTillFinish;
         long startTime;
         public ClawMovementAction(double destination, int timeTillFinish) {
-//            double pos = lastPosRequest;
-//            lastPosRequest = destination;
-//            destination -= pos;
-//
-//            this.leftClawServoDestination = (getleftClawServoRotation() - destination);
-//            this.rightClawServoDestination = (getrightClawServoRotation() - destination);
-//
-//            directionleftClawServo = getleftClawServoRotation() < leftClawServoDestination ? -1 : 1;
-//            directionrightClawServo = getrightClawServoRotation() < rightClawServoDestination ? -1 : 1;
-//
-//            leftClawServoDestination = leftClawServoDestination % 360;
-//            rightClawServoDestination = rightClawServoDestination % 360;
             this.timeTillFinish =timeTillFinish;
             this.destination = destination;
-        }
-
-
-        @Override
-        public void preview(@NonNull Canvas fieldOverlay) {
-            Action.super.preview(fieldOverlay);
+            isDone = this::isWaitEnough;
         }
 
         @Override
@@ -102,10 +80,13 @@ public class DifferentialClaws {
             rotateArm(getPIDArmPower());
 
             if(!isInitialized){
-                isInitialized = true;
                 startTime = System.currentTimeMillis();
+                isInitialized = true;
             }
-            return !(System.currentTimeMillis() - startTime >= timeTillFinish);
+            return !isWaitEnough();
+        }
+        private boolean isWaitEnough(){
+            return System.currentTimeMillis() - startTime >= timeTillFinish;
         }
     }
 

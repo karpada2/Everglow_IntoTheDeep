@@ -43,12 +43,15 @@ import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+import org.firstinspires.ftc.teamcode.Systems.Token.TokenAction;
+import org.firstinspires.ftc.teamcode.Systems.Token.Tokenable;
 import org.firstinspires.ftc.teamcode.messages.DriveCommandMessage;
 import org.firstinspires.ftc.teamcode.messages.MecanumCommandMessage;
 import org.firstinspires.ftc.teamcode.messages.MecanumLocalizerInputsMessage;
@@ -59,7 +62,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Config
-public class MecanumDrive {
+public class MecanumDrive{
     public static class Params {
         // IMU orientation
         // TODO: fill in these values based on
@@ -498,5 +501,28 @@ public class MecanumDrive {
     public static double linearInputToExponential(double power){
         double base = 6;
         return (Math.pow(base, Math.abs(power)) - 1) / (base - 1) * Math.signum(power);
+    }
+
+    public class MecanumDriveAction extends TokenAction{
+        private Gamepad gamepad1, gamepad2;
+        public MecanumDriveAction(Gamepad gamepad1, Gamepad gamepad2, Tokenable Token){
+            this.gamepad1 = gamepad1;
+            this.gamepad2 = gamepad2;
+            isDone = Token;
+            isInitialized = true;
+        }
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            setDrivePowers(new PoseVelocity2d(
+                    new Vector2d(-linearInputToExponential(gamepad1.left_stick_y),
+                                -linearInputToExponential(gamepad1.left_stick_x)),
+                    -linearInputToExponential(gamepad1.right_stick_x)));
+
+            return !checkToken();
+        }
+    }
+
+    public MecanumDriveAction getMecanumDriveAction(Gamepad gamepad1,Gamepad gamepad2, Tokenable tokenable){
+        return new MecanumDriveAction(gamepad1,gamepad2,tokenable);
     }
 }

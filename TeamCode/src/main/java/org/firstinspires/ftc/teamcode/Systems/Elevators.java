@@ -30,20 +30,14 @@ public class Elevators implements Tokenable {
     int motorHorizontalDestination;
 
     // sets the vertical elevator to the specified position
-    public class VerticalElevatorAction implements Action {
+    public class VerticalElevatorAction extends TokenAction {
         private final int destination;
-        private boolean isInitialized = false;
-
         private long TEST_LONGEST_TIME = 7 *1000;
         private long TEST_START_TIME;
 
         public VerticalElevatorAction(int destination) {
             this.destination = destination;
-        }
-
-        @Override
-        public void preview(@NonNull Canvas fieldOverlay) {
-            Action.super.preview(fieldOverlay);
+            isDone = Elevators.this::isElevatorInDestination;
         }
 
         @Override
@@ -132,7 +126,7 @@ public class Elevators implements Tokenable {
         rightVert = opMode.hardwareMap.get(DcMotorEx.class, "rightVert");
         leftVert = opMode.hardwareMap.get(DcMotorEx.class, "leftVert");
         horMotor = opMode.hardwareMap.get(DcMotorEx.class, "motorHor");
-        
+
         rightVert.setDirection(DcMotorSimple.Direction.REVERSE);
         leftVert.setDirection(DcMotorSimple.Direction.FORWARD);
 
@@ -265,10 +259,6 @@ public class Elevators implements Tokenable {
         return new MotorHorizontalElevatorAction(state);
     }
 
-    public Action getVerticalAction(VerticalState state){
-        return new VerticalElevatorAction(state.state);
-
-    }
     public VerticalElevatorAction setVerticalElevatorAction(VerticalState targetState) {
         return new VerticalElevatorAction(targetState.state);
     }
@@ -298,7 +288,7 @@ public class Elevators implements Tokenable {
     }
 
     @Override
-    public Function0<Boolean> getToken(){
-        return this::isElevatorInDestination;
+    public Boolean invoke() {
+        return isElevatorInDestination();
     }
 }
