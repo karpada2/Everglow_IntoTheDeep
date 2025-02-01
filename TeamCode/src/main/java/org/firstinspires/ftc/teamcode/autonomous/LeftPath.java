@@ -17,6 +17,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.teamcode.Systems.ColorSensorSystem;
 import org.firstinspires.ftc.teamcode.Systems.DifferentialClaws;
 import org.firstinspires.ftc.teamcode.Systems.Elevators;
 
@@ -57,6 +58,7 @@ public class LeftPath extends LinearOpMode {
         DifferentialClaws claws  = new DifferentialClaws(this);
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
         Elevators elevators  = new Elevators(this, true);
+        ColorSensorSystem colorSensorSystem = new ColorSensorSystem(this, true);
         //Init Trajectories
         TrajectoryActionBuilder B_preload = drive.actionBuilder(beginPose)
                 .strafeToSplineHeading(basketPose.position,basketPose.heading);
@@ -93,7 +95,7 @@ public class LeftPath extends LinearOpMode {
                 .lineToY(collectLine, new TranslationalVelConstraint(VelConstraint))
                 .build();
 
-        Action BackAndForth2 = drive.actionBuilder(new Pose2d(-50 + sampleOffset,collectLine,0.5*Math.PI))
+        Action BackAndForth2 = drive.actionBuilder(new Pose2d(-60 + sampleOffset,collectLine,0.5*Math.PI))
              //   .waitSeconds(0.1)
                 .lineToY(collectLine+10, new TranslationalVelConstraint(VelConstraint))
                 .waitSeconds(0.1)
@@ -126,11 +128,11 @@ public class LeftPath extends LinearOpMode {
                         elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_HALFWAY),
                         claws.clawMovementAction(135, 750)
                         ),
-                        claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,1000)//,
-                        //new ParallelAction(
-                        //claws.clawMovementAction(260, 750),
-                        //elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_RETRACTED)
-                       // )
+                        claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,1000),
+                        new ParallelAction(
+                        claws.clawMovementAction(260, 750),
+                        elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_RETRACTED)
+                        )
                 );
         Action unload3 =
                 new SequentialAction(
@@ -160,23 +162,23 @@ public class LeftPath extends LinearOpMode {
         Action pickup1 = new ParallelAction(BackAndForth1,
                 new SequentialAction(elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_HALFWAY),
                         claws.clawMovementAction(0, 750),
-                        claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, 1500),
+                        claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, colorSensorSystem),
                         claws.clawMovementAction(280, 1500),
                         elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_RETRACTED)
                 ));
         Action pickup2 = new ParallelAction(BackAndForth2,
                 new SequentialAction(elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_HALFWAY),
                         claws.clawMovementAction(0, 750),
-                        claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, 1500),
-                        claws.clawMovementAction(150, 1000),
+                        claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, colorSensorSystem),
+                        claws.clawMovementAction(280, 1500),
                         elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_RETRACTED)
                 ));
 
         Action pickup3 = new ParallelAction(BackAndForth3,
                 new SequentialAction(elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_HALFWAY),
                         claws.clawMovementAction(0, 750),
-                        claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, 1500),
-                        claws.clawMovementAction(250, 1000),
+                        claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, colorSensorSystem),
+                        claws.clawMovementAction(250, 1500),
                         elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_RETRACTED)
                 ));
 
@@ -210,20 +212,20 @@ public class LeftPath extends LinearOpMode {
 
                         new ParallelAction(
                                 elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MAX),
-                        sample1basket //movement
+                                sample1basket //movement
                         ),
                         unload2,
-                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MAX)
-//                        new ParallelAction(
-//                                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN),
-//                                sample2pickup //movement
-//                        ),
-//                        pickup2,
-//                        new ParallelAction(
-//                                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MAX),
-//                                sample2basket  //movement
-//                        ),
-//                        unload3
+
+                        new ParallelAction(
+                                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN),
+                                sample2pickup //movement
+                        ),
+                        pickup2,
+                        new ParallelAction(
+                                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MAX),
+                                sample2basket  //movement
+                        ),
+                        unload3
                         //sample3pickup,
 
                         //pickup3,

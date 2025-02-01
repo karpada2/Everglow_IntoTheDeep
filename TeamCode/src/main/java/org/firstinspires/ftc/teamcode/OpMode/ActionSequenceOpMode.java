@@ -7,7 +7,9 @@ import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Systems.ActionControl;
@@ -15,7 +17,6 @@ import org.firstinspires.ftc.teamcode.Systems.ColorSensorSystem;
 import org.firstinspires.ftc.teamcode.Systems.DifferentialClaws;
 import org.firstinspires.ftc.teamcode.Systems.Elevators;
 
-@Disabled
 @TeleOp(name = "Action Sequance OpMode")
 public class ActionSequenceOpMode extends LinearOpMode {
 
@@ -166,5 +167,16 @@ public class ActionSequenceOpMode extends LinearOpMode {
             telemetry.addData("hor position: ", elevators.motorGetHorizontalPosition());
             telemetry.update();
         }
+
+
     }
+//    public static void drive(OpMode opMode, MecanumDrive drive){
+//        drive.setDrivePowers(new PoseVelocity2d(
+//                new Vector2d(
+//                        -linearInputToExponential(opMode.gamepad1.left_stick_y),
+//                        -linearInputToExponential(opMode.gamepad1.left_stick_x)
+//                ),
+//                -linearInputToExponential(opMode.gamepad1.right_stick_x)
+//        ));
+//    }
 }

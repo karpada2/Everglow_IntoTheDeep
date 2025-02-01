@@ -11,6 +11,7 @@ package org.firstinspires.ftc.teamcode.Systems;
 import static java.lang.Math.abs;
 
 import androidx.annotation.NonNull;
+import androidx.arch.core.util.Function;
 
 import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
@@ -20,6 +21,8 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+
+import org.firstinspires.ftc.robotcore.external.Func;
 
 public class DifferentialClaws {
 
@@ -172,10 +175,16 @@ public class DifferentialClaws {
         private final double timeUntilFinished;
         private double startTime;
         private boolean isInitialized = false;
+        private ColorSensorSystem colorSensorSystem = null;
 
         public ClawSampleInteractionAction(ClawPowerState state, double timeToStop) {
+            assert timeToStop >= 0;
             this.wantedPower = state.state;
             this.timeUntilFinished = timeToStop;
+        }
+        public ClawSampleInteractionAction(ClawPowerState state, ColorSensorSystem colorSensorSystem) {
+            this(state, 1500);
+            this.colorSensorSystem = colorSensorSystem;
         }
 
         @Override
@@ -194,7 +203,8 @@ public class DifferentialClaws {
                 isInitialized = true;
             }
 
-            return System.currentTimeMillis() - startTime < timeUntilFinished;
+            return System.currentTimeMillis() - startTime < timeUntilFinished
+                    || (colorSensorSystem != null && !colorSensorSystem.isSpecimenIn());
         }
     }
 
@@ -385,6 +395,10 @@ public class DifferentialClaws {
 
     public ClawSampleInteractionAction setClawSampleInteractionAction(ClawPowerState state, double timeUntilFinished) {
         return new ClawSampleInteractionAction(state, timeUntilFinished);
+    }
+
+    public ClawSampleInteractionAction setClawSampleInteractionAction(ClawPowerState state, ColorSensorSystem colorSensorSystem) {
+        return new ClawSampleInteractionAction(state, colorSensorSystem);
     }
 
     public ClawSampleInteractionAction setClawSampleInteractionAction(ClawPowerState state) {

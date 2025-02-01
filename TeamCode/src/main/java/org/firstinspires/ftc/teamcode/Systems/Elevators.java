@@ -10,7 +10,15 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-public class Elevators{
+import org.firstinspires.ftc.teamcode.Systems.Token.TokenAction;
+import org.firstinspires.ftc.teamcode.Systems.Token.Tokenable;
+
+import java.util.List;
+import java.util.function.Consumer;
+
+import kotlin.jvm.functions.Function0;
+
+public class Elevators implements Tokenable {
     final int epsilon = 100;
 
 
@@ -26,6 +34,9 @@ public class Elevators{
         private final int destination;
         private boolean isInitialized = false;
 
+        private long TEST_LONGEST_TIME = 7 *1000;
+        private long TEST_START_TIME;
+
         public VerticalElevatorAction(int destination) {
             this.destination = destination;
         }
@@ -40,12 +51,13 @@ public class Elevators{
 
             if (!isInitialized) {
                 setVerticalDestination(this.destination);
+                TEST_START_TIME = System.currentTimeMillis();
                 isInitialized = true;
             }
 
             updateVert();
             
-            return !isElevatorInDestination();
+            return !isElevatorInDestination() || System.currentTimeMillis() - TEST_START_TIME < TEST_LONGEST_TIME;
         }
     }
 
@@ -120,7 +132,7 @@ public class Elevators{
         rightVert = opMode.hardwareMap.get(DcMotorEx.class, "rightVert");
         leftVert = opMode.hardwareMap.get(DcMotorEx.class, "leftVert");
         horMotor = opMode.hardwareMap.get(DcMotorEx.class, "motorHor");
-
+        
         rightVert.setDirection(DcMotorSimple.Direction.REVERSE);
         leftVert.setDirection(DcMotorSimple.Direction.FORWARD);
 
@@ -185,7 +197,7 @@ public class Elevators{
     }
 
     public void updateVert(){
-        if (Math.abs(verticalDestination-getVerticalCurrentPosition())<=50 && verticalDestination == 0) {
+        if (Math.abs(verticalDestination-getVerticalCurrentPosition())<=100 && verticalDestination == 0) {
             setVerticalPower(0);
             double innerEps = 10;
             if(Math.abs(verticalDestination-getVerticalCurrentPosition())>= innerEps) {
@@ -283,5 +295,10 @@ public class Elevators{
         leftVert.setTargetPosition(dest);
         rightVert.setPower(0.65);
         leftVert.setPower(0.65);
+    }
+
+    @Override
+    public Function0<Boolean> getToken(){
+        return this::isElevatorInDestination;
     }
 }
