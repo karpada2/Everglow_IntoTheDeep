@@ -22,7 +22,7 @@ public class MeepMeepTesting {
         
         Pose2d left_beginPose = new Pose2d(-31.1, -63,   Math.PI);
 
-        Pose2d basket_pose = new Pose2d(-53,-53,1.25*Math.PI);
+        Pose2d basket_pose = new Pose2d(-55,-55,1.25*Math.PI);
         Pose2d right_beginPose = new Pose2d(23, -63,   Math.PI);
         TrajectoryActionBuilder left_path = myBot.getDrive().actionBuilder(left_beginPose)
                 .waitSeconds(2)

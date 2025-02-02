@@ -19,7 +19,7 @@ public class TestOpMode extends LinearOpMode {
         DifferentialClaws claws = new DifferentialClaws(this);
         MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
 
-        Elevators elevators = new Elevators(this, true);
+        Elevators elevators = new Elevators(this);
         //elevators.setVerticalPower(0.0);
         boolean isInitialized = false;
         boolean secondery = false;

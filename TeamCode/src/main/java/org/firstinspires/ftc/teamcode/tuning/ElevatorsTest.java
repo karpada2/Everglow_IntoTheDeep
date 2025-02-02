@@ -11,11 +11,13 @@ import org.firstinspires.ftc.teamcode.Systems.Elevators;
 public class ElevatorsTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
-        Elevators elevators = new Elevators(this, true);
+        Elevators elevators = new Elevators(this);
+        elevators.setVerticalDestination(0);
+        elevators.setVerticalPower(0);
 
         waitForStart();
         while (opModeIsActive()){
-            telemetry.addData("vert elevators pos:", elevators.getHorizontalPosition());
+            telemetry.addData("vert elevators pos:", elevators.getVerticalCurrentPosition());
             telemetry.update();
         }
     }

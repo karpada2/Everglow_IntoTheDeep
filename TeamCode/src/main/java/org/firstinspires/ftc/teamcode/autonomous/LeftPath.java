@@ -52,12 +52,12 @@ public class LeftPath extends LinearOpMode {
     public void runOpMode()  throws InterruptedException{
         // Init Poses
         Pose2d beginPose = new Pose2d(-31.1, -63,   Math.PI);
-        Pose2d basketPose = new Pose2d(-53,-53,1.25*Math.PI);
+        Pose2d basketPose = new Pose2d(-55.1,-55.1,1.25*Math.PI);
 
         // Init Systems
         DifferentialClaws claws  = new DifferentialClaws(this);
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
-        Elevators elevators  = new Elevators(this, true);
+        Elevators elevators  = new Elevators(this);
         ColorSensorSystem colorSensorSystem = new ColorSensorSystem(this, true);
         //Init Trajectories
         TrajectoryActionBuilder B_preload = drive.actionBuilder(beginPose)
@@ -112,52 +112,52 @@ public class LeftPath extends LinearOpMode {
         //Action armUp = claws.clawMovementAction(100);
 
         Action unload1 = new SequentialAction(
-                new ParallelAction(
-                elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_HALFWAY),
-                claws.clawMovementAction(135, 750) //down
-                ),
+//                new ParallelAction(
+//                elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_HALFWAY),
+                claws.clawMovementAction(270, 750), //down
+//                ),
                 claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,1000),
-                new ParallelAction(
-                claws.clawMovementAction(260, 750),
-                elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_RETRACTED)
-                )
+//                new ParallelAction(
+                claws.clawMovementAction(290, 750)
+//                elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_RETRACTED)
+//                )
         );
         Action unload2 =
                 new SequentialAction(
-                        new ParallelAction(
-                        elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_HALFWAY),
-                        claws.clawMovementAction(135, 750)
-                        ),
+//                new ParallelAction(
+//                elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_HALFWAY),
+                        claws.clawMovementAction(270, 750), //down 135
+//                ),
                         claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,1000),
-                        new ParallelAction(
-                        claws.clawMovementAction(260, 750),
-                        elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_RETRACTED)
-                        )
+//                new ParallelAction(
+                        claws.clawMovementAction(290, 750) //260
+//                elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_RETRACTED)
+//                )
                 );
         Action unload3 =
                 new SequentialAction(
-                        new ParallelAction(
-                        elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_HALFWAY),
-                        claws.clawMovementAction(135, 750)
-                                ),
+//                new ParallelAction(
+//                elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_HALFWAY),
+                        claws.clawMovementAction(270, 750), //down 135
+//                ),
                         claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,1000),
-                        new ParallelAction(
-                        claws.clawMovementAction(260, 750),
-                        elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_RETRACTED)
-                        )
+//                new ParallelAction(
+                        claws.clawMovementAction(290, 750) //260
+//                elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_RETRACTED)
+//                )
                 );
 
         Action unload4 =
                 new SequentialAction(
-                        new ParallelAction(
-                        elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_HALFWAY),
-                        claws.clawMovementAction(135, 750)
-                        ),
+//                new ParallelAction(
+//                elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_HALFWAY),
+                        claws.clawMovementAction(270, 750), //down 135
+//                ),
                         claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,1000),
-                        new ParallelAction(
-                        claws.clawMovementAction(260, 750),
-                        elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_RETRACTED)
-                        )
+//                new ParallelAction(
+                        claws.clawMovementAction(290, 750) //260
+//                elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_RETRACTED)
+//                )
                 );
         Action pickup1 = new ParallelAction(BackAndForth1,
                 new SequentialAction(elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_HALFWAY),
@@ -200,38 +200,38 @@ public class LeftPath extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
                         new ParallelAction(
-                                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MAX),
+                                //elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HIGH),
                                 preload //movement
                         ),
                         unload1,
                         new ParallelAction(
-                                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN),
+                                //elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN),
                                 sample1pickup //movement
                         ),
                         pickup1,
 
                         new ParallelAction(
-                                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MAX),
+                                //elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HIGH),
                                 sample1basket //movement
                         ),
                         unload2,
 
-                        new ParallelAction(
-                                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN),
+                       new ParallelAction(
+//                                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN),
                                 sample2pickup //movement
                         ),
                         pickup2,
                         new ParallelAction(
-                                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MAX),
+//                                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MAX),
                                 sample2basket  //movement
                         ),
-                        unload3
-                        //sample3pickup,
+                        unload3,
+                        sample3pickup,
 
-                        //pickup3,
-                        //sample3basket,
-                        //unload4
-                        //Park
+                        pickup3,
+                        sample3basket,
+                        unload4,
+                        Park
                         )
                 );
     }

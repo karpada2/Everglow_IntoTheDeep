@@ -51,7 +51,7 @@ public class Elevators implements Tokenable {
 
             updateVert();
             
-            return !isElevatorInDestination() || System.currentTimeMillis() - TEST_START_TIME < TEST_LONGEST_TIME;
+            return !isElevatorInDestination(); //|| System.currentTimeMillis() - TEST_START_TIME < TEST_LONGEST_TIME;
         }
     }
 
@@ -62,31 +62,24 @@ public class Elevators implements Tokenable {
     -------------------------------------------------------------------
      */
     // moves the horizontal elevators to destination, and is considered finished when they reach the destination
-    public class MotorHorizontalElevatorAction implements Action {
+    public class MotorHorizontalElevatorAction extends TokenAction {
         private final int destination;
-        private boolean isInitialized = false;
 
         public MotorHorizontalElevatorAction(MotorHorizontalState state) {
             //motorSetHorizontalDestination(state);
             this.destination = state.state;
-        }
-
-        @Override
-        public void preview(@NonNull Canvas fieldOverlay) {
-            Action.super.preview(fieldOverlay);
+            isDone = Elevators.this::motorIsHorizontalInDestination;
         }
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            if (horMotor.getPower() == 0) {
-                motorSetHorizontalPower(0.8);
-            }
+
             if (!isInitialized) {
                 motorSetHorizontalDestination(this.destination);
                 isInitialized = true;
             }
 
-
+            motorSetHorizontalDestination(this.destination);
             return !motorIsHorizontalInDestination();
         }
     }
@@ -99,7 +92,7 @@ public class Elevators implements Tokenable {
         VERTICAL_PICKUP(0),
         VERTICAL_HURDLE(970),
         VERTICAL_LOW(7643),
-        VERTICAL_HIGH(11000),
+        VERTICAL_HIGH(9000),
         VERTICAL_MAX(11448);
 
 
@@ -113,7 +106,7 @@ public class Elevators implements Tokenable {
     public enum MotorHorizontalState{
         HORIZONTAL_RETRACTED(0),
         HORIZONTAL_HALFWAY(400),
-        HORIZONTAL_EXTENDED(1440);
+        HORIZONTAL_EXTENDED(1005);
 
         public final int state;
 
@@ -122,24 +115,18 @@ public class Elevators implements Tokenable {
         }
     }
 
-    public Elevators(OpMode opMode, boolean isToRestart) {
+    public Elevators(OpMode opMode) {
         rightVert = opMode.hardwareMap.get(DcMotorEx.class, "rightVert");
         leftVert = opMode.hardwareMap.get(DcMotorEx.class, "leftVert");
         horMotor = opMode.hardwareMap.get(DcMotorEx.class, "motorHor");
 
         rightVert.setDirection(DcMotorSimple.Direction.REVERSE);
         leftVert.setDirection(DcMotorSimple.Direction.FORWARD);
-
-        if(isToRestart)
-            setVerticalDestination(VerticalState.VERTICAL_MIN.state);
-        else
-            setVerticalDestination(leftVert.getCurrentPosition());
+        setVerticalDestination(VerticalState.VERTICAL_MIN.state);
         rightVert.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         leftVert.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        if(isToRestart) {
-            rightVert.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            leftVert.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        }
+        rightVert.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftVert.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightVert.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         leftVert.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
@@ -149,9 +136,8 @@ public class Elevators implements Tokenable {
         horMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         motorSetHorizontalDestination(MotorHorizontalState.HORIZONTAL_RETRACTED);
-        horMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        if(isToRestart)
-            horMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        horMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        horMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         horMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
 //        setHorizontalPosition(HorizontalState.HORIZONTAL_RETRACTED.state);
@@ -169,14 +155,8 @@ public class Elevators implements Tokenable {
 
     // sets the destination of the vertical motors to the specified number of ticks
     public void setVerticalDestination(int destination) {
-
-//        if(destination<VerticalState.VERTICAL_MIN.state || destination>VerticalState.VERTICAL_MAX.state){
-//            return;
-//        }
-
-        double eps = 60;
         if (Math.abs(destination-getVerticalCurrentPosition())<=60 && destination == 0) {
-            //setVerticalPower(0);
+            setVerticalPower(0);
         }
         else {
             setVerticalPower(0.8);
@@ -191,7 +171,7 @@ public class Elevators implements Tokenable {
     }
 
     public void updateVert(){
-        if (Math.abs(verticalDestination-getVerticalCurrentPosition())<=100 && verticalDestination == 0) {
+        if (Math.abs(verticalDestination-getVerticalCurrentPosition())<=200 && verticalDestination == 0) {
             setVerticalPower(0);
             double innerEps = 10;
             if(Math.abs(verticalDestination-getVerticalCurrentPosition())>= innerEps) {
@@ -231,7 +211,7 @@ public class Elevators implements Tokenable {
     }
 
     public boolean motorIsHorizontalInDestination() {
-        return Math.abs(motorGetHorizontalPosition() - motorGetHorizontalDestination()) < epsilon;
+        return Math.abs(motorGetHorizontalPosition() - motorGetHorizontalDestination()) < 20;
     }
 
     public void motorSetHorizontalDestination(MotorHorizontalState state) {
@@ -240,7 +220,7 @@ public class Elevators implements Tokenable {
     }
 
     public void motorSetHorizontalDestination(int destination) {
-        double eps = 12;
+        double eps = 25;
         if(destination>=MotorHorizontalState.HORIZONTAL_RETRACTED.state && destination<=MotorHorizontalState.HORIZONTAL_EXTENDED.state) {
             if (Math.abs(destination - motorGetHorizontalPosition()) < eps) {
                 motorSetHorizontalPower(0);

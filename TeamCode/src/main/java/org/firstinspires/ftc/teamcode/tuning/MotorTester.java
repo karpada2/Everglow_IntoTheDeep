@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.Systems.Elevators;
 public class MotorTester extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
-        Elevators elevators = new Elevators(this, true);
+        Elevators elevators = new Elevators(this);
         double horPosition = elevators.motorGetHorizontalPosition();
         double vertPosition = elevators.getVerticalCurrentPosition();
 

@@ -16,7 +16,7 @@ import org.firstinspires.ftc.teamcode.Systems.Token.TokenSequentialAction;
 public class TokenActionTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
-        Elevators elevators = new Elevators(this, true);
+        Elevators elevators = new Elevators(this);
         MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0,0,0));
         DifferentialClaws claws = new DifferentialClaws(this);
 
