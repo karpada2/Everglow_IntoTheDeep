@@ -169,10 +169,10 @@ public class ActionSequenceOpMode extends LinearOpMode {
             flagCircle = !gamepad1.circle;
 
             if(gamepad1.right_bumper && flagClawSpit){
- //               if(clawToggle)
+                if(clawToggle)
                     claws.setArmTargetPosition(100);
- //               else
- //                   claws.setArmTargetPosition(0);
+                else
+                    claws.setArmTargetPosition(0);
                 clawToggle = !clawToggle;
                 startTime = System.currentTimeMillis();
             }

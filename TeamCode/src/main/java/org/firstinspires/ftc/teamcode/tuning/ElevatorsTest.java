@@ -18,6 +18,7 @@ public class ElevatorsTest extends LinearOpMode {
         waitForStart();
         while (opModeIsActive()){
             telemetry.addData("vert elevators pos:", elevators.getVerticalCurrentPosition());
+            telemetry.addData("vert elevators pos:", elevators.getHorizontalPosition());
             telemetry.update();
         }
     }

@@ -105,8 +105,8 @@ public class Elevators implements Tokenable {
 
     public enum MotorHorizontalState{
         HORIZONTAL_RETRACTED(0),
-        HORIZONTAL_HALFWAY(400),
-        HORIZONTAL_EXTENDED(1005);
+        HORIZONTAL_HALFWAY(773),
+        HORIZONTAL_EXTENDED(1464);
 
         public final int state;
 
