@@ -65,6 +65,15 @@ public class ActionControl {
         ));
     }
 
+    public Action getReadyPickUpSpecimen(){
+        return returnWithDrive(new TokenSequentialAction(
+                claws.clawMovementAction(290, 750), //up
+                elevators.setVerticalElevatorAction(VerticalState.VERTICAL_HIGH),
+                claws.clawMovementAction(270, 800) // ,mid
+                //claws.clawMovementAction(0) // down
+        ));
+    }
+
     public  Action getReadyDropLow(){
         return returnWithDrive(new TokenSequentialAction(
                 claws.clawMovementAction(250, 1000),//mid
