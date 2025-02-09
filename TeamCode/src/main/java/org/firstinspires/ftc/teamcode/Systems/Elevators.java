@@ -91,6 +91,7 @@ public class Elevators implements Tokenable {
         VERTICAL_MIN(0),
         VERTICAL_PICKUP(0),
         VERTICAL_HURDLE(970),
+        VERTICAL_SPECIMEN_HIGH(4553),
         VERTICAL_LOW(7643),
         VERTICAL_HIGH(9000),
         VERTICAL_MAX(11448);
