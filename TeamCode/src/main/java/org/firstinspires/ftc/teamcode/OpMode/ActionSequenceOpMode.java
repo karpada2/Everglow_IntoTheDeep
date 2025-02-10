@@ -6,11 +6,8 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Systems.ActionControl;
@@ -89,7 +86,7 @@ public class ActionSequenceOpMode extends LinearOpMode {
                             -linearInputToExponential(gamepad1.left_stick_y),
                             -linearInputToExponential(gamepad1.left_stick_x)
                     ),
-                    -linearInputToExponential(gamepad2.right_stick_x)
+                    -linearInputToExponential(gamepad1.right_stick_x)
             ));
 
             //if(!control.isOnRun()){
