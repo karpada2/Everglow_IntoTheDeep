@@ -8,10 +8,7 @@
 
 package org.firstinspires.ftc.teamcode.Systems;
 
-import static java.lang.Math.abs;
-
 import androidx.annotation.NonNull;
-import androidx.arch.core.util.Function;
 
 import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
@@ -22,7 +19,6 @@ import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-import org.firstinspires.ftc.robotcore.external.Func;
 import org.firstinspires.ftc.teamcode.Systems.Token.TokenAction;
 
 public class DifferentialClaws {
@@ -216,7 +212,7 @@ public class DifferentialClaws {
         double leftDiff = trueLeftRotation - leftClawStart;
         double rightDiff = trueRightRotation - rightClawStart;
 
-        return Math.abs(((-rightDiff+leftDiff)/2)*1.4);
+        return Math.abs(((-rightDiff+leftDiff)/2)*(20.0/43.0));
     }
 
     public static double getRotationOfInput(AnalogInput input) {
