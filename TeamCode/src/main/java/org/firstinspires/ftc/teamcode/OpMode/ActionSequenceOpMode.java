@@ -89,7 +89,7 @@ public class ActionSequenceOpMode extends LinearOpMode {
                             -linearInputToExponential(gamepad1.left_stick_y),
                             -linearInputToExponential(gamepad1.left_stick_x)
                     ),
-                    -linearInputToExponential(gamepad1.right_stick_x)
+                    -linearInputToExponential(gamepad2.right_stick_x)
             ));
 
             //if(!control.isOnRun()){
@@ -97,10 +97,10 @@ public class ActionSequenceOpMode extends LinearOpMode {
                 claws.updateLeftClawServoRotation();
             //}
 
-            if (gamepad1.right_trigger >= 0.35) { //split
-                claws.rotateWheels(gamepad1.right_trigger);
+            if (gamepad2.right_trigger >= 0.35) { //split
+                claws.rotateWheels(gamepad2.right_trigger);
             }
-            else if (gamepad1.left_trigger >= 0.4) {
+            else if (gamepad2.left_trigger >= 0.4) {
                 claws.rotateWheels(-1);
             }
             else {
@@ -112,75 +112,75 @@ public class ActionSequenceOpMode extends LinearOpMode {
                 claws.rotateArm(lastPower);
                 //}
 //                Actions.runBlocking(claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.OFF));
-//                claws.rotateArm(gamepad1.left_stick_y); //Todo: Maybe remove in the future
+//                claws.rotateArm(gamepad2.left_stick_y); //Todo: Maybe remove in the future
             }
 
-//            if(gamepad1.square && flagElevatorHorizontalSquare)
+//            if(gamepad2.square && flagElevatorHorizontalSquare)
 //                startTime = System.currentTimeMillis();
-//            flagElevatorHorizontalSquare = !gamepad1.square;
+//            flagElevatorHorizontalSquare = !gamepad2.square;
 
 
-//            if (Math.abs(gamepad1.right_stick_y) > joystickTolerance) {
+//            if (Math.abs(gamepad2.right_stick_y) > joystickTolerance) {
 //                if(horElevatorPosition < 0){
 //                    horElevatorPosition = 0;
 //                }else if(horElevatorPosition >= Elevators.MotorHorizontalState.HORIZONTAL_EXTENDED.state){
 //                    horElevatorPosition =  Elevators.MotorHorizontalState.HORIZONTAL_EXTENDED.state;
 //                }
-//                horElevatorPosition += -gamepad1.right_stick_y*40*3;
+//                horElevatorPosition += -gamepad2.right_stick_y*40*3;
 //                elevators.motorSetHorizontalDestination((int)(horElevatorPosition));
 //            }
 
-            if (gamepad1.dpad_down && flagDpadDown) {
+            if (gamepad2.dpad_down && flagDpadDown) {
                 //control.runAction(control.returnFromDrop());
                 Actions.runBlocking(control.returnFromDrop());
             }
-            flagDpadDown = !gamepad1.dpad_down;
+            flagDpadDown = !gamepad2.dpad_down;
 
 
-            if (gamepad1.dpad_up && flagDpadUp) {
+            if (gamepad2.dpad_up && flagDpadUp) {
                 //.runAction(control.getReadyDropHigh());
                 Actions.runBlocking(control.getReadyDropHigh());
             }
-            flagDpadUp = !gamepad1.dpad_up;
+            flagDpadUp = !gamepad2.dpad_up;
 
-            if (gamepad1.dpad_right && flagDpadRight) {
+            if (gamepad2.dpad_right && flagDpadRight) {
                 //control.runAction(control.getReadyDropLow());
                 Actions.runBlocking(control.getReadyDropLow());
             }
-            flagDpadRight = !gamepad1.dpad_right;
+            flagDpadRight = !gamepad2.dpad_right;
 
-            if (gamepad1.dpad_left && flagElevatorVerticalDpadLeft) {
+            if (gamepad2.dpad_left && flagElevatorVerticalDpadLeft) {
                 //control.runAction(control.getReadyDropLow());
                 Actions.runBlocking(control.hangSpecimenHigh());
             }
-            flagElevatorVerticalDpadLeft = !gamepad1.dpad_left;
+            flagElevatorVerticalDpadLeft = !gamepad2.dpad_left;
 
 
-            if (gamepad1.cross && flagX) {
+            if (gamepad2.cross && flagX) {
                 //control.runAction(control.returnFromPickUp());
                 Actions.runBlocking(control.returnFromPickUp());
             }
-            flagX = !gamepad1.cross;
+            flagX = !gamepad2.cross;
 
-            if (gamepad1.triangle && flagTriangle) {
+            if (gamepad2.triangle && flagTriangle) {
                 //control.runAction(control.getReadyExtendedPickUp());
                 Actions.runBlocking(control.getReadyExtendedPickUp());
             }
-            flagTriangle = !gamepad1.triangle;
+            flagTriangle = !gamepad2.triangle;
 
-            if (gamepad1.circle && flagCircle) {
+            if (gamepad2.circle && flagCircle) {
                 //control.runAction(control.getReadyHalfwayPickUp());
                 Actions.runBlocking(control.getReadyHalfwayPickUp());
             }
-            flagCircle = !gamepad1.circle;
+            flagCircle = !gamepad2.circle;
 
-            if (gamepad1.square && flagElevatorHorizontalSquare) {
+            if (gamepad2.square && flagElevatorHorizontalSquare) {
                 //control.runAction(control.getReadyHalfwayPickUp());
                 Actions.runBlocking(control.getReadyPickUpSpecimen());
             }
-            flagElevatorHorizontalSquare = !gamepad1.square;
+            flagElevatorHorizontalSquare = !gamepad2.square;
 
-            if(gamepad1.right_bumper && flagClawSpit){
+            if(gamepad2.right_bumper && flagClawSpit){
                 if(clawToggle)
                     claws.setArmTargetPosition(100);
                 else
@@ -188,7 +188,7 @@ public class ActionSequenceOpMode extends LinearOpMode {
                 clawToggle = !clawToggle;
                 startTime = System.currentTimeMillis();
             }
-            flagClawSpit = !gamepad1.right_bumper;
+            flagClawSpit = !gamepad2.right_bumper;
             //double power = pid + ff;
             //if(!control.isOnRun()){
             elevators.updateVert();
@@ -198,7 +198,7 @@ public class ActionSequenceOpMode extends LinearOpMode {
 
             //telemetry.addData("pos: ", claws.getActualArmRotation());
             //telemetry.addData("target: ", claws.getArmTargetPosition());
-            telemetry.addData("Right Stick y: ", gamepad1.right_stick_y);
+            telemetry.addData("Right Stick y: ", gamepad2.right_stick_y);
             telemetry.addData("precieved hor position: ", horElevatorPosition);
             telemetry.addData("hor position: ", elevators.motorGetHorizontalPosition());
             telemetry.update();
@@ -209,10 +209,10 @@ public class ActionSequenceOpMode extends LinearOpMode {
 //    public static void drive(OpMode opMode, MecanumDrive drive){
 //        drive.setDrivePowers(new PoseVelocity2d(
 //                new Vector2d(
-//                        -linearInputToExponential(opMode.gamepad1.left_stick_y),
-//                        -linearInputToExponential(opMode.gamepad1.left_stick_x)
+//                        -linearInputToExponential(opMode.gamepad2.left_stick_y),
+//                        -linearInputToExponential(opMode.gamepad2.left_stick_x)
 //                ),
-//                -linearInputToExponential(opMode.gamepad1.right_stick_x)
+//                -linearInputToExponential(opMode.gamepad2.right_stick_x)
 //        ));
 //    }
 }
