@@ -115,9 +115,9 @@ public class ActionSequenceOpMode extends LinearOpMode {
 //                claws.rotateArm(gamepad1.left_stick_y); //Todo: Maybe remove in the future
             }
 
-            if(gamepad1.square && flagElevatorHorizontalSquare)
-                startTime = System.currentTimeMillis();
-            flagElevatorHorizontalSquare = !gamepad1.square;
+//            if(gamepad1.square && flagElevatorHorizontalSquare)
+//                startTime = System.currentTimeMillis();
+//            flagElevatorHorizontalSquare = !gamepad1.square;
 
 
 //            if (Math.abs(gamepad1.right_stick_y) > joystickTolerance) {
@@ -149,6 +149,12 @@ public class ActionSequenceOpMode extends LinearOpMode {
             }
             flagDpadRight = !gamepad1.dpad_right;
 
+            if (gamepad1.dpad_left && flagElevatorVerticalDpadLeft) {
+                //control.runAction(control.getReadyDropLow());
+                Actions.runBlocking(control.hangSpecimenHigh());
+            }
+            flagElevatorVerticalDpadLeft = !gamepad1.dpad_left;
+
 
             if (gamepad1.cross && flagX) {
                 //control.runAction(control.returnFromPickUp());
@@ -167,6 +173,12 @@ public class ActionSequenceOpMode extends LinearOpMode {
                 Actions.runBlocking(control.getReadyHalfwayPickUp());
             }
             flagCircle = !gamepad1.circle;
+
+            if (gamepad1.square && flagElevatorHorizontalSquare) {
+                //control.runAction(control.getReadyHalfwayPickUp());
+                Actions.runBlocking(control.getReadyPickUpSpecimen());
+            }
+            flagElevatorHorizontalSquare = !gamepad1.square;
 
             if(gamepad1.right_bumper && flagClawSpit){
                 if(clawToggle)

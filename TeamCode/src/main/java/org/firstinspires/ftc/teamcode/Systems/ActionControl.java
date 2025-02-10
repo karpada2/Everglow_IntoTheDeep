@@ -11,6 +11,7 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Systems.Elevators.MotorHorizontalState;
 import org.firstinspires.ftc.teamcode.Systems.Elevators.VerticalState;
 import org.firstinspires.ftc.teamcode.Systems.Token.TokenAction;
+import org.firstinspires.ftc.teamcode.Systems.Token.TokenParallelAction;
 import org.firstinspires.ftc.teamcode.Systems.Token.TokenSequentialAction;
 
 
@@ -67,10 +68,11 @@ public class ActionControl {
 
     public Action getReadyPickUpSpecimen(){
         return returnWithDrive(new TokenSequentialAction(
-                claws.clawMovementAction(290, 750), //up
-                elevators.setVerticalElevatorAction(VerticalState.VERTICAL_HIGH),
-                claws.clawMovementAction(270, 800) // ,mid
-                //claws.clawMovementAction(0) // down
+                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, 750),
+                new TokenParallelAction(
+                claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, 200),
+                elevators.setMotorHorizontalElevatorAction(MotorHorizontalState.HORIZONTAL_HALFWAY)
+                )
         ));
     }
 
@@ -105,6 +107,16 @@ public class ActionControl {
                 elevators.setMotorHorizontalElevatorAction(MotorHorizontalState.HORIZONTAL_HALFWAY),
                 claws.clawMovementAction(0, 800) // down
         ));
+    }
+
+    public Action hangSpecimenHigh() {
+        return returnWithDrive(new TokenSequentialAction(
+                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750),
+                elevators.setVerticalElevatorAction(VerticalState.VERTICAL_SPECIMEN_HIGH),
+                claws.clawMovementAction(DifferentialClaws.ClawPositionState.HANG_SPECIMEN.state, 750),
+                elevators.setVerticalElevatorAction(VerticalState.VERTICAL_MIN)
+                )
+        );
     }
 
 //    public void runAction(Action action){

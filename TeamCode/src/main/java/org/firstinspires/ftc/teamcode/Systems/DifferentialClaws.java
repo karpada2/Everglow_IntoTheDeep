@@ -90,26 +90,21 @@ public class DifferentialClaws {
         }
     }
     // receives the time in milliseconds until the action is considered finished
-    public class ClawSampleInteractionAction implements Action {
+    public class ClawSampleInteractionAction extends TokenAction {
         private final double wantedPower;
         private final double timeUntilFinished;
         private double startTime;
-        private boolean isInitialized = false;
         private ColorSensorSystem colorSensorSystem = null;
 
         public ClawSampleInteractionAction(ClawPowerState state, double timeToStop) {
             assert timeToStop >= 0;
             this.wantedPower = state.state;
             this.timeUntilFinished = timeToStop;
+            isDone = this::isFinished;
         }
         public ClawSampleInteractionAction(ClawPowerState state, ColorSensorSystem colorSensorSystem) {
             this(state, 1500);
             this.colorSensorSystem = colorSensorSystem;
-        }
-
-        @Override
-        public void preview(@NonNull Canvas fieldOverlay) {
-            Action.super.preview(fieldOverlay);
         }
 
         @Override
@@ -123,8 +118,12 @@ public class DifferentialClaws {
                 isInitialized = true;
             }
 
-            return System.currentTimeMillis() - startTime < timeUntilFinished
-                    || (colorSensorSystem != null && !colorSensorSystem.isSpecimenIn());
+            return !isFinished();
+        }
+
+        private boolean isFinished(){
+            return (System.currentTimeMillis() - startTime > timeUntilFinished)
+                    || (colorSensorSystem != null && colorSensorSystem.isSpecimenIn());
         }
     }
 
