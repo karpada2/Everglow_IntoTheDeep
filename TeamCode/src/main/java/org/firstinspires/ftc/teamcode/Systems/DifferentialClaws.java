@@ -8,25 +8,20 @@
 
 package org.firstinspires.ftc.teamcode.Systems;
 
-import static java.lang.Math.abs;
-
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
+import org.firstinspires.ftc.teamcode.Systems.Token.TokenAction;
+
 public class DifferentialClaws {
-
-    public static final double holdingPower = 0.1;
-
-    public static double getRotationOfInput(AnalogInput input) {
-        return (input.getVoltage() / input.getMaxVoltage()) * 360;
-    }
 
     CRServo leftClawServo;
     CRServo rightClawServo;
@@ -36,105 +31,95 @@ public class DifferentialClaws {
     double armPosition = 0;
     double lastPosRequest = 0;
 
+    boolean isGoingDown = false;
+
     // tracks from -∞ - ∞ the rotation of each motor.
-    double leftClawServoRotation = 0;
-    double rightClawServoRotation = 0;
+    //double leftClawServoRotation = 0;
+    //double rightClawServoRotation = 0;
+
+    private double leftClawOldPos;
+    private double rightClawOldPos;
+
+    private final double leftClawStart;
+    private final double rightClawStart;
+
+    private double trueLeftRotation = 0;
+    private double trueRightRotation = 0;
+
+    public PIDController controller;
+
+    public final double p = 0.008, i = 0, d = 0.0001;
+    public double f = 0.08;
+
+    private double target = 0;
 
     private ClawPowerState wheelRotationState;
 
-    public class ClawMovementAction implements Action {
-        private double leftClawServoDestination;// in degrees, where 0 is the starting degrees
-        private double rightClawServoDestination;
+    private double armStartingPosition;
 
-        private final int directionleftClawServo;
-        private final int directionrightClawServo;
-        private boolean isInitialized = false;
+    public class ClawMovementAction extends TokenAction {
 
-        private final double power = 0.2;
-        private final double tolerance = 5; //in degrees, how much error can be accepted
-        public ClawMovementAction(double destination) {
-            double pos = lastPosRequest;
-            lastPosRequest = destination;
-            destination -= pos;
-
-            this.leftClawServoDestination = (getleftClawServoRotation() - destination);
-            this.rightClawServoDestination = (getrightClawServoRotation() - destination);
-
-            directionleftClawServo = getleftClawServoRotation() < leftClawServoDestination ? -1 : 1;
-            directionrightClawServo = getrightClawServoRotation() < rightClawServoDestination ? -1 : 1;
-
-            leftClawServoDestination = leftClawServoDestination % 360;
-            rightClawServoDestination = rightClawServoDestination % 360;
-
-        }
-
-//        public ClawMovementAction(double destination, Telemetry telemetry) {
-//            this.leftClawServoDestination = (getleftClawServoRotation() - destination);
-//            this.rightClawServoDestination = (getrightClawServoRotation() - destination);
-//
-//            goUp =  destination > 0? 1 : -1;
-//
-//            directionleftClawServo = getleftClawServoRotation() < leftClawServoDestination ? -1 : 1;
-//            directionrightClawServo = getrightClawServoRotation() < rightClawServoDestination ? -1 : 1;
-//
-//            leftClawServoDestination = leftClawServoDestination % 360;
-//            rightClawServoDestination = rightClawServoDestination % 360;
-//        }
-
-        @Override
-        public void preview(@NonNull Canvas fieldOverlay) {
-            Action.super.preview(fieldOverlay);
+        double destination;
+        int timeTillFinish;
+        long startTime;
+        public ClawMovementAction(double destination, int timeTillFinish) {
+            this.timeTillFinish =timeTillFinish;
+            this.destination = destination;
+            isDone = this::isWaitEnough;
         }
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            setArmTargetPosition(destination);
+            updateLeftClawServoRotation();
+            updateRightClawServoRotation();
+            rotateArm(getPIDArmPower());
 
-            if (!isInitialized) {
-                leftClawServo.setPower(power * directionleftClawServo);
-                rightClawServo.setPower(power * directionrightClawServo);
+            if(!isInitialized){
+                startTime = System.currentTimeMillis();
                 isInitialized = true;
             }
-
-            if (abs(getleftClawServoRotation() - leftClawServoDestination) < tolerance || abs(getleftClawServoRotation() - leftClawServoDestination) < tolerance) {
-                leftClawServo.setPower(holdingPower);
-                rightClawServo.setPower(holdingPower);
-                return false;
-            }
-            return true;
+            return !isWaitEnough();
+        }
+        private boolean isWaitEnough(){
+            return System.currentTimeMillis() - startTime >= timeTillFinish;
         }
     }
-
     // receives the time in milliseconds until the action is considered finished
-    public class ClawSampleInteractionAction implements Action {
+    public class ClawSampleInteractionAction extends TokenAction {
         private final double wantedPower;
         private final double timeUntilFinished;
         private double startTime;
-        private boolean isInitialized = false;
-        private final double bonusRight, bonusLeft;
+        private ColorSensorSystem colorSensorSystem = null;
 
         public ClawSampleInteractionAction(ClawPowerState state, double timeToStop) {
+            assert timeToStop >= 0;
             this.wantedPower = state.state;
             this.timeUntilFinished = timeToStop;
-
-            bonusLeft = state == ClawPowerState.SPIT? 0 : 2.5*holdingPower;
-            bonusRight = state == ClawPowerState.SPIT? 2.5*holdingPower : 0;
+            isDone = this::isFinished;
         }
-
-        @Override
-        public void preview(@NonNull Canvas fieldOverlay) {
-            Action.super.preview(fieldOverlay);
+        public ClawSampleInteractionAction(ClawPowerState state, ColorSensorSystem colorSensorSystem) {
+            this(state, 1500);
+            this.colorSensorSystem = colorSensorSystem;
         }
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            updateRightClawServoRotation();
+            updateLeftClawServoRotation();
             if (!isInitialized) {
-                leftClawServo.setPower(wantedPower + 4*holdingPower);
+                leftClawServo.setPower(wantedPower);
                 rightClawServo.setPower(-wantedPower);
                 startTime = System.currentTimeMillis();
                 isInitialized = true;
             }
 
-            return System.currentTimeMillis() - startTime < timeUntilFinished;
+            return !isFinished();
+        }
+
+        private boolean isFinished(){
+            return (System.currentTimeMillis() - startTime > timeUntilFinished)
+                    || (colorSensorSystem != null && colorSensorSystem.isSpecimenIn());
         }
     }
 
@@ -186,27 +171,105 @@ public class DifferentialClaws {
         clawInput1 = opMode.hardwareMap.get(AnalogInput.class, "clawInput1");
         clawInput2 = opMode.hardwareMap.get(AnalogInput.class, "clawInput2");
 
-        leftClawServo.setDirection(DcMotorSimple.Direction.FORWARD);
-        rightClawServo.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftClawServo.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightClawServo.setDirection(DcMotorSimple.Direction.FORWARD);
 
-        rotateWheels(0);
+        rotateArm(0.01);
+        rotateArm(0);
+
+        controller = new PIDController(p, i, d);
+        updateLeftClawServoRotation();
+        updateRightClawServoRotation();
+        rightClawStart = trueRightRotation;
+        leftClawStart = trueLeftRotation;
+        leftClawOldPos = leftClawStart;
+        rightClawOldPos = rightClawStart;
+        armStartingPosition = getArmPosition() + 290;
+
+    }
+
+    public enum ClawPositionState {
+        MIN(0.0),
+        MID(145.0),
+        HANG_SPECIMEN(262.0),
+        MAX(290.0);
+
+        public final double state;
+        ClawPositionState(double state) {this.state = state;}
     }
 
     public enum ClawPowerState {
-        TAKE_IN(0.75),
-        OFF(0),
-        SPIT(-0.75);
+        TAKE_IN(1),
+        OFF(0.08),
+        SPIT(-1);
 
         public final double state;
 
         ClawPowerState(double state) {this.state = state;}
     }
 
+    public double getArmPosition() {
+        double leftDiff = trueLeftRotation - leftClawStart;
+        double rightDiff = trueRightRotation - rightClawStart;
+
+        return Math.abs(((-rightDiff+leftDiff)/2)*(20.0/43.0));
+    }
+
+    public static double getRotationOfInput(AnalogInput input) {
+        return (input.getVoltage() / input.getMaxVoltage()) * 360;
+    }
+
+    public void updateLeftClawServoRotation() {
+        double currentRotation = getRotationOfInput(clawInput1);
+        double diff = currentRotation - leftClawOldPos;
+
+        double newRotationEstimate = 180;
+        if(Math.abs(diff) > newRotationEstimate){
+            //new rotation occur
+            if(diff < 0)
+                diff += 360; //add rotation
+            else
+                diff -= 360; //minus rotation
+        }
+
+        leftClawOldPos = currentRotation;
+        trueLeftRotation += diff;
+    }
+
+    public void updateRightClawServoRotation() {
+        double currentRotation = getRotationOfInput(clawInput2);
+        double diff = currentRotation - rightClawOldPos;
+
+        double newRotationEstimate = 180;
+        if(Math.abs(diff) > newRotationEstimate){
+            //new rotation occur
+            if(diff < 0)
+                diff += 360; //add rotation
+            else
+                diff -= 360; //minus rotation
+        }
+
+        rightClawOldPos = currentRotation;
+        trueRightRotation += diff;
+    }
+    public double getActualArmRotation() {
+        return Math.max(getArmPosition() - armStartingPosition, armStartingPosition - getArmPosition());
+    }
+    public void setF(double f){
+        this.f = f;
+    }
+    public double getPIDArmPower(){
+        int armPos = (int)(getActualArmRotation());
+        double pid = controller.calculate(armPos, target);
+        double ff = Math.cos(Math.toRadians(target*(90./290.))) * f;
+
+        return (pid + ff);
+    }
     public void rotateArm(double power){
-        power /= 2;
         leftClawServo.setPower(power);
         rightClawServo.setPower(power);
     }
+
 
     public void rotateWheels(double state) {
         leftClawServo.setPower(state);
@@ -219,6 +282,16 @@ public class DifferentialClaws {
         rightClawServo.setPower(-state.state);
     }
 
+    public void setArmTargetPosition(double pos){
+        target = pos;
+    }
+
+    public double getArmTargetPosition(){
+        return target;
+    }
+    public double[] getServoVirtualPosition(){
+        return new double[] {trueLeftRotation, trueRightRotation};
+    }
     public void setPower(double p1, double p2){
         double sum = p1+p2;
         p1 /= sum;
@@ -249,21 +322,38 @@ public class DifferentialClaws {
         return new ClawSampleInteractionAction(state, timeUntilFinished);
     }
 
+    public ClawSampleInteractionAction setClawSampleInteractionAction(ClawPowerState state, ColorSensorSystem colorSensorSystem) {
+        return new ClawSampleInteractionAction(state, colorSensorSystem);
+    }
+
     public ClawSampleInteractionAction setClawSampleInteractionAction(ClawPowerState state) {
         return new ClawSampleInteractionAction(state, 0);
     }
 
     // gets in degrees
-//    public ClawMovementAction setClawMovementAction(double armPosition, Telemetry telemetry) {
+//    public ClawMovementAction addClawMovementAction(double armPosition, Telemetry telemetry) {
 //        return new ClawMovementAction(armPosition, telemetry);
 //    }
 
-    // gets in degrees
-    public ClawMovementAction setClawMovementAction(double armPosition) {
-        return new ClawMovementAction(armPosition);
+    // gets in degrees, adds the given to the current position
+    public ClawMovementAction addClawMovementAction(double armPosition) {
+        double out_val = this.armPosition + armPosition;
+        return clawMovementAction(out_val, 750);
+    }
+
+    //gets in degrees, sets the claw's position to the given position
+    public ClawMovementAction clawMovementAction(double dest, int timeTillFinish) {
+        //double diff = armPosition - this.armPosition;
+        //ClawMovementAction action =;
+        //this.armPosition = armPosition;
+        return new ClawMovementAction(dest, timeTillFinish);
     }
 
     public HoldClawAndDropSampleAction test(double timeToHold, double timeToDrop) {
         return new HoldClawAndDropSampleAction(timeToHold, timeToDrop);
     }
+
+//    public ClawMovementAction clawMovementAction(double dest) {
+//        return new ClawMovementAction(dest);
+//    }
 }

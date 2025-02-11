@@ -10,8 +10,17 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-public class Elevators{
-    final int epsilon = 5;
+import org.firstinspires.ftc.teamcode.Systems.Token.TokenAction;
+import org.firstinspires.ftc.teamcode.Systems.Token.Tokenable;
+
+import java.util.List;
+import java.util.function.Consumer;
+
+import kotlin.jvm.functions.Function0;
+
+public class Elevators implements Tokenable {
+    final int epsilon = 100;
+
 
     DcMotorEx rightVert;
     DcMotorEx leftVert;
@@ -21,30 +30,28 @@ public class Elevators{
     int motorHorizontalDestination;
 
     // sets the vertical elevator to the specified position
-    public class VerticalElevatorAction implements Action {
+    public class VerticalElevatorAction extends TokenAction {
         private final int destination;
-        private boolean isInitialized = false;
+        private long TEST_LONGEST_TIME = 7 *1000;
+        private long TEST_START_TIME;
 
         public VerticalElevatorAction(int destination) {
             this.destination = destination;
-        }
-
-        @Override
-        public void preview(@NonNull Canvas fieldOverlay) {
-            Action.super.preview(fieldOverlay);
+            isDone = Elevators.this::isElevatorInDestination;
         }
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            if (leftVert.getPower() == 0.0) {
-                setVerticalPower(0.8);
-            }
+
             if (!isInitialized) {
                 setVerticalDestination(this.destination);
+                TEST_START_TIME = System.currentTimeMillis();
                 isInitialized = true;
             }
 
-            return !isElevatorInDestination();
+            updateVert();
+            
+            return !isElevatorInDestination(); //|| System.currentTimeMillis() - TEST_START_TIME < TEST_LONGEST_TIME;
         }
     }
 
@@ -55,30 +62,24 @@ public class Elevators{
     -------------------------------------------------------------------
      */
     // moves the horizontal elevators to destination, and is considered finished when they reach the destination
-    public class MotorHorizontalElevatorAction implements Action {
+    public class MotorHorizontalElevatorAction extends TokenAction {
         private final int destination;
-        private boolean isInitialized = false;
 
         public MotorHorizontalElevatorAction(MotorHorizontalState state) {
-            motorSetHorizontalDestination(state);
+            //motorSetHorizontalDestination(state);
             this.destination = state.state;
-        }
-
-        @Override
-        public void preview(@NonNull Canvas fieldOverlay) {
-            Action.super.preview(fieldOverlay);
+            isDone = Elevators.this::motorIsHorizontalInDestination;
         }
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            if (horMotor.getPower() == 0) {
-                motorSetHorizontalPower(0.8);
-            }
+
             if (!isInitialized) {
                 motorSetHorizontalDestination(this.destination);
                 isInitialized = true;
             }
 
+            motorSetHorizontalDestination(this.destination);
             return !motorIsHorizontalInDestination();
         }
     }
@@ -89,11 +90,11 @@ public class Elevators{
     public enum VerticalState {
         VERTICAL_MIN(0),
         VERTICAL_PICKUP(0),
-        VERTICAL_SUB_HURDLE(700),
-        VERTICAL_HURDLE(720),
-        VERTICAL_LOW(3070),
-        VERTICAL_HIGH(4243),
-        VERTICAL_MAX(4243);
+        VERTICAL_HURDLE(970),
+        VERTICAL_SPECIMEN_HIGH(4553),
+        VERTICAL_LOW(7643),
+        VERTICAL_HIGH(9000),
+        VERTICAL_MAX(11448);
 
 
         public final int state;
@@ -105,8 +106,8 @@ public class Elevators{
 
     public enum MotorHorizontalState{
         HORIZONTAL_RETRACTED(0),
-        HORIZONTAL_HALFWAY(2360),
-        HORIZONTAL_EXTENDED(3700);
+        HORIZONTAL_HALFWAY(773),
+        HORIZONTAL_EXTENDED(1464);
 
         public final int state;
 
@@ -122,7 +123,6 @@ public class Elevators{
 
         rightVert.setDirection(DcMotorSimple.Direction.REVERSE);
         leftVert.setDirection(DcMotorSimple.Direction.FORWARD);
-
         setVerticalDestination(VerticalState.VERTICAL_MIN.state);
         rightVert.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         leftVert.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
@@ -134,12 +134,12 @@ public class Elevators{
 //        leftHor.setDirection(Servo.Direction.REVERSE);
 //        rightHor.setDirection(Servo.Direction.FORWARD);
 
-        horMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        horMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         motorSetHorizontalDestination(MotorHorizontalState.HORIZONTAL_RETRACTED);
-        horMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        horMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         horMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        horMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);//TODO: Run to position
+        horMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
 //        setHorizontalPosition(HorizontalState.HORIZONTAL_RETRACTED.state);
 
@@ -156,12 +156,6 @@ public class Elevators{
 
     // sets the destination of the vertical motors to the specified number of ticks
     public void setVerticalDestination(int destination) {
-
-        if(destination<VerticalState.VERTICAL_MIN.state || destination>VerticalState.VERTICAL_MAX.state){
-            return;
-        }
-
-        double eps = 60;
         if (Math.abs(destination-getVerticalCurrentPosition())<=60 && destination == 0) {
             setVerticalPower(0);
         }
@@ -178,7 +172,7 @@ public class Elevators{
     }
 
     public void updateVert(){
-        if (Math.abs(verticalDestination-getVerticalCurrentPosition())<=120 && verticalDestination == 0) {
+        if (Math.abs(verticalDestination-getVerticalCurrentPosition())<=200 && verticalDestination == 0) {
             setVerticalPower(0);
             double innerEps = 10;
             if(Math.abs(verticalDestination-getVerticalCurrentPosition())>= innerEps) {
@@ -188,17 +182,20 @@ public class Elevators{
                 leftVert.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             }
         }
+        else if(Math.abs(verticalDestination-getVerticalCurrentPosition())<=epsilon){
+            setVerticalPower(0.6);
+        }
         else {
-            setVerticalPower(0.8);
+            setVerticalPower(1);
         }
     }
 
     // checks whether the elevator is close enough (+- epsilon) to it's destination
     public boolean isElevatorInDestination() {
-        if (getVerticalCurrentPosition() < getVerticalDestination()) {
-            return getVerticalCurrentPosition() >= getVerticalDestination() - epsilon;
-        }
-        return getVerticalCurrentPosition() <= getVerticalDestination() + epsilon;
+//        if (getVerticalCurrentPosition() < getVerticalDestination()) {
+//            return getVerticalCurrentPosition() >= getVerticalDestination() - epsilon;
+//        }
+        return Math.abs(getVerticalCurrentPosition() - getVerticalDestination()) <= epsilon;
     }
 
     public void setVerticalPower(double power){
@@ -215,7 +212,7 @@ public class Elevators{
     }
 
     public boolean motorIsHorizontalInDestination() {
-        return Math.abs(motorGetHorizontalPosition() - motorGetHorizontalDestination()) < epsilon;
+        return Math.abs(motorGetHorizontalPosition() - motorGetHorizontalDestination()) < 20;
     }
 
     public void motorSetHorizontalDestination(MotorHorizontalState state) {
@@ -224,8 +221,8 @@ public class Elevators{
     }
 
     public void motorSetHorizontalDestination(int destination) {
-        double eps = 12;
-        if(destination>MotorHorizontalState.HORIZONTAL_RETRACTED.state && destination<MotorHorizontalState.HORIZONTAL_EXTENDED.state) {
+        double eps = 25;
+        if(destination>=MotorHorizontalState.HORIZONTAL_RETRACTED.state && destination<=MotorHorizontalState.HORIZONTAL_EXTENDED.state) {
             if (Math.abs(destination - motorGetHorizontalPosition()) < eps) {
                 motorSetHorizontalPower(0);
             } else {
@@ -243,10 +240,6 @@ public class Elevators{
         return new MotorHorizontalElevatorAction(state);
     }
 
-    public Action getVerticalAction(VerticalState state){
-        return new VerticalElevatorAction(state.state);
-
-    }
     public VerticalElevatorAction setVerticalElevatorAction(VerticalState targetState) {
         return new VerticalElevatorAction(targetState.state);
     }
@@ -258,10 +251,25 @@ public class Elevators{
         leftVert.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftVert.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         leftVert.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-
+        leftVert.setPower(0);
+        rightVert.setPower(0);
     }
 
     public MotorHorizontalElevatorAction setMotorHorizontalElevatorAction(MotorHorizontalState destinationState) {
         return new MotorHorizontalElevatorAction(destinationState);
+    }
+    public double getHorizontalPosition(){
+        return horMotor.getCurrentPosition();
+    }
+    public void setVertDest(int dest){
+        rightVert.setTargetPosition(dest);
+        leftVert.setTargetPosition(dest);
+        rightVert.setPower(0.65);
+        leftVert.setPower(0.65);
+    }
+
+    @Override
+    public Boolean invoke() {
+        return isElevatorInDestination();
     }
 }

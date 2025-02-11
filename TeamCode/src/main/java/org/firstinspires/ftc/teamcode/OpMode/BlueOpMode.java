@@ -16,8 +16,8 @@ import org.firstinspires.ftc.teamcode.Systems.Elevators;
 
 import fi.iki.elonen.NanoHTTPD;
 
-@TeleOp(name = "RedOpMode")
-public class FirstOpMode extends LinearOpMode {
+@TeleOp(name = "BlueOpMode")
+public class BlueOpMode extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         DifferentialClaws claws = new DifferentialClaws(this);
@@ -31,7 +31,7 @@ public class FirstOpMode extends LinearOpMode {
         waitForStart();
         //LynxModule controlHub = hardwareMap.get(LynxModule.class, "Control Hub");
         //LynxModule expansionHub = hardwareMap.get(LynxModule.class, "Expansion Hub 2");
-        ColorSensorSystem colorSensorSystem = new ColorSensorSystem(this, false);
+        ColorSensorSystem colorSensorSystem = new ColorSensorSystem(this, true);
 
         elevators.motorSetHorizontalPower(1);
 

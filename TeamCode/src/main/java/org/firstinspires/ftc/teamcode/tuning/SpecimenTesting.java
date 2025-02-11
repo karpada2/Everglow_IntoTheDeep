@@ -1,37 +1,38 @@
-package org.firstinspires.ftc.teamcode.OpMode;
+package org.firstinspires.ftc.teamcode.tuning;
 
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
-import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.robotcore.external.navigation.VoltageUnit;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.teamcode.Systems.ActionControl;
 import org.firstinspires.ftc.teamcode.Systems.ColorSensorSystem;
 import org.firstinspires.ftc.teamcode.Systems.DifferentialClaws;
 import org.firstinspires.ftc.teamcode.Systems.Elevators;
 
-import fi.iki.elonen.NanoHTTPD;
+@TeleOp(name="SpecimenTesting", group="Tests")
+public class SpecimenTesting extends LinearOpMode {
 
-@TeleOp(name = "RedOpMode")
-public class FirstOpMode extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         DifferentialClaws claws = new DifferentialClaws(this);
         MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
 
         Elevators elevators = new Elevators(this);
+        ColorSensorSystem colorSensorSystem = new ColorSensorSystem(this, false);
         elevators.setVerticalPower(0.0);
         boolean isInitialized = false;
         boolean secondery = false;
 
+        ActionControl control = new ActionControl(elevators, claws, colorSensorSystem, drive, gamepad1, gamepad2);
+
         waitForStart();
         //LynxModule controlHub = hardwareMap.get(LynxModule.class, "Control Hub");
         //LynxModule expansionHub = hardwareMap.get(LynxModule.class, "Expansion Hub 2");
-        ColorSensorSystem colorSensorSystem = new ColorSensorSystem(this, false);
+
 
         elevators.motorSetHorizontalPower(1);
 
@@ -46,6 +47,8 @@ public class FirstOpMode extends LinearOpMode {
         boolean flagElevatorHorizontalTriangle = true;
         boolean flagElevatorHorizontalCircle = true;
         boolean flagElevatorHorizontalSquare = true;
+
+        boolean flagRightBumper = true;
 
         boolean flagClawTakeIn = true;
         boolean ClawState = true;
@@ -139,13 +142,13 @@ public class FirstOpMode extends LinearOpMode {
                 horElevatorPosition = Elevators.MotorHorizontalState.HORIZONTAL_RETRACTED.state;
             }
             flagElevatorHorizontalTriangle = !gamepad2.triangle;
-//
-//            if(gamepad2.square && flagElevatorHorizontalSquare){
-//                elevators.setHorizontalPosition(Elevators.HorizontalState.HORIZONTAL_DROP.state);
-//            }
-//            flagElevatorHorizontalSquare = !gamepad2.square;
-//
-//
+
+            if(gamepad2.square && flagElevatorHorizontalSquare){
+                Actions.runBlocking(control.hangSpecimenHigh());
+            }
+            flagElevatorHorizontalSquare = !gamepad2.square;
+
+
             if(gamepad2.circle && flagElevatorHorizontalCircle){
                 elevators.motorSetHorizontalDestination(Elevators.MotorHorizontalState.HORIZONTAL_HALFWAY.state);
                 horElevatorPosition = Elevators.MotorHorizontalState.HORIZONTAL_HALFWAY.state;
@@ -153,20 +156,20 @@ public class FirstOpMode extends LinearOpMode {
             flagElevatorHorizontalCircle = !gamepad2.circle;
             if(isInitialized && secondery)
                 elevators.updateVert();
-            colorSensorSystem.updateAlert();
+//            colorSensorSystem.updateAlert();
 
-            if(gamepad2.square && !isInitialized){
+            if(gamepad2.right_bumper && !isInitialized){
                 elevators.setVerticalDestination(-Elevators.VerticalState.VERTICAL_HIGH.state);
                 isInitialized = true;
                 flagElevatorHorizontalSquare = false;
             }
 
-            if(gamepad2.square && isInitialized && flagElevatorHorizontalSquare){
+            if(gamepad2.right_bumper && isInitialized && flagRightBumper){
                 elevators.resetVert();
                 elevators.setVerticalDestination(0);
                 secondery = true;
             }
-            flagElevatorHorizontalSquare = !gamepad2.square;
+            flagRightBumper = !gamepad2.right_bumper;
 
 //            Currently Broken, might cause damage to robot
 //            AnalogueExtensionHorizontal = -gamepad2.right_stick_x;
@@ -200,6 +203,5 @@ public class FirstOpMode extends LinearOpMode {
 //            telemetry.addData("right_trigger:", gamepad2.right_bumper);
 //            telemetry.update();
         }
-
     }
 }
