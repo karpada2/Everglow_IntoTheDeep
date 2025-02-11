@@ -1,91 +1,99 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
+import androidx.annotation.NonNull;
+
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.teamcode.Systems.ColorSensorSystem;
+import org.firstinspires.ftc.teamcode.Systems.DifferentialClaws;
 import org.firstinspires.ftc.teamcode.Systems.Elevators;
 
 @Config
 @Autonomous(name="RightPath", group="Autonomous")
 public class RightPath extends LinearOpMode {
+    public class AddToTelemetryAction implements Action {
+        private final Telemetry telemetry;
+        private final String title;
+        private final double value;
+
+        public AddToTelemetryAction(Telemetry telemetry, String title, double value) {
+            this.telemetry = telemetry;
+            this.title = title;
+            this.value = value;
+        }
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            telemetry.addData(title,value);
+            telemetry.update();
+            return false;
+        }
+    }
+    public static double collectLine = -50;
+    public static double collectLineSampleThree = -40;
+    public static double sampleOffset = 3.5;
+    public static double VelConstraint = 10;
+
     @Override
     public void runOpMode()  throws InterruptedException{
-        Pose2d beginPose = new Pose2d(20, -63,   (1./2)*Math.PI);
+        // Init Poses
+        Pose2d beginPose = new Pose2d(-31.1, -63,   Math.PI);
+        Pose2d basketPose = new Pose2d(-55.1,-55.1,1.25*Math.PI);
+
+        // Init Systems
+        DifferentialClaws claws  = new DifferentialClaws(this);
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
-        //ClawsActionBuilder claws  = new ClawsActionBuilder(this);
         Elevators elevators  = new Elevators(this);
+        ColorSensorSystem colorSensorSystem = new ColorSensorSystem(this, true);
+        //Init Trajectories
+        TrajectoryActionBuilder B_preload = drive.actionBuilder(beginPose)
+                .strafeToSplineHeading(basketPose.position,basketPose.heading);
 
-        TrajectoryActionBuilder B_sample1 = drive.actionBuilder(beginPose)
-                .strafeToSplineHeading(new Vector2d(36,-34),0.75*Math.PI - Math.PI /2);
+//        TrajectoryActionBuilder B_park = B_sample3basket.endTrajectory().fresh()
+//                .setTangent(Math.PI * 0.5)
+//                .splineToLinearHeading(new Pose2d(-24,-10, 0),0);
 
-        TrajectoryActionBuilder B_unload1 = B_sample1.endTrajectory().fresh()
-                .strafeToSplineHeading(new Vector2d(52,-50),-Math.PI /2);
 
-        TrajectoryActionBuilder B_sample2 = B_unload1.endTrajectory().fresh()
-                .strafeToSplineHeading(new Vector2d(48, -34),0.75*Math.PI- Math.PI /2);
-
-        TrajectoryActionBuilder B_unload2 = B_sample2.endTrajectory().fresh()
-                .strafeToSplineHeading(new Vector2d(54,-50),-Math.PI /2);
-
-        TrajectoryActionBuilder B_sample3 = B_unload2.endTrajectory().fresh()
-                .strafeToSplineHeading(new Vector2d(57, -34),0.75*Math.PI- Math.PI /2);
-
-        TrajectoryActionBuilder B_unload3 = B_sample3.endTrajectory().fresh()
-                .strafeToSplineHeading(new Vector2d(56,-50),-Math.PI /2);
-
-        TrajectoryActionBuilder B_sample4 = B_unload3.endTrajectory().fresh()
-                .setTangent(Math.PI * 0.5)
-                .splineToSplineHeading(new Pose2d(26,0, Math.PI),Math.PI);
-
-        TrajectoryActionBuilder B_unload4 = B_sample4.endTrajectory().fresh()
-                .setTangent(-(0.75)*Math.PI + Math.PI / 2)
-                .splineToSplineHeading(new Pose2d(58,-50,- Math.PI / 2),- Math.PI / 2);
-
-        // All the actions are Trajectory Builders, need to be converted to actions
-        Action sample1 = B_sample1.build();
-        Action unload1 = B_unload1.build();
-
-        Action sample2 = B_sample2.build();
-        Action unload2 = B_unload2.build();
-
-        Action sample3 = B_sample3.build();
-        Action unload3 = B_unload3.build();
-
-        Action sample4 = B_sample4.build();
-        Action unload4 = B_unload4.build();
-
-//        Actions.runBlocking(v_e to 0 and h_e to 0)
-//        Actions.runBlocking(set elevator power to 0.8)
-
-//        Actions.runBlocking(
-//                new SequentialAction(
-//                        sample1,
-//                        claws.clawTakeInAction(), // takes in sample
-//                        unload1,
-//                        claws.clawSpitAction(), //release sample
-//                        sample2,
-//                        claws.clawTakeInAction(), // takes in sample
-//                        unload2,
-//                        claws.clawSpitAction(), //release sample
-//                        sample3,
-//                        claws.clawTakeInAction(), // takes in sample
-//                        unload3,
-//                        claws.clawSpitAction(), //release sample
-//                        sample4,
-//                        claws.clawTakeInAction(), // takes in sample
-//                        unload4,
-//                        claws.clawSpitAction() //release sample
-//
-//
+        Action unload1 = new SequentialAction(
+//                new ParallelAction(
+//                elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_HALFWAY),
+                claws.clawMovementAction(270, 750), //down
+//                ),
+                claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,1000),
+//                new ParallelAction(
+                claws.clawMovementAction(290, 750)
+//                elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_RETRACTED)
 //                )
-//        );
+        );
+
+//        Action pickup1 = new ParallelAction(BackAndForth1,
+//                new SequentialAction(elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_HALFWAY),
+//                        claws.clawMovementAction(0, 750),
+//                        claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, 1000), //colorSensorSystem
+//                        claws.clawMovementAction(280, 1500),
+//                        elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_RETRACTED)
+//                ));
+        Action preload = B_preload.build();
+
+//        Action Park = B_park.build();
+
+        waitForStart();
+
+        Actions.runBlocking(
+                pass
+        );
     }
 }

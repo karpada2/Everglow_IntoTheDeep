@@ -28,6 +28,8 @@ public class DifferentialClaws {
     AnalogInput clawInput1;
     AnalogInput clawInput2;
 
+    final int maxPoint = 100;
+
     double armPosition = 0;
     double lastPosRequest = 0;
 
@@ -184,7 +186,7 @@ public class DifferentialClaws {
         leftClawStart = trueLeftRotation;
         leftClawOldPos = leftClawStart;
         rightClawOldPos = rightClawStart;
-        armStartingPosition = getArmPosition() + 290;
+        armStartingPosition = getArmPosition() + maxPoint;
 
     }
 
@@ -261,7 +263,7 @@ public class DifferentialClaws {
     public double getPIDArmPower(){
         int armPos = (int)(getActualArmRotation());
         double pid = controller.calculate(armPos, target);
-        double ff = Math.cos(Math.toRadians(target*(90./290.))) * f;
+        double ff = Math.cos(Math.toRadians(target*(90./maxPoint))) * f;
 
         return (pid + ff);
     }

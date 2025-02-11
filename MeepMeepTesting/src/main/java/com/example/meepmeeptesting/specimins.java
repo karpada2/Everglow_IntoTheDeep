@@ -22,7 +22,7 @@ public class specimins {
         double firstSpeciminX = 48;
         double secondSpeciminX = 60;
         double PickSpeciminY = -12;
-        Pose2d specimins_dropPose = new Pose2d(31.1, -57,   0);
+        Pose2d specimins_dropPose = new Pose2d(31.1, -57,   Math.PI/2);
         Pose2d specimins_basketPose = new Pose2d(0,-34,Math.PI/2);
         Pose2d specimins_endPose = new Pose2d(23,-10,0);
 
@@ -31,11 +31,10 @@ public class specimins {
         // Start with the horizontal elevator already extended as needed
         // The horizontal elevator could always be extended to the right amount
         TrajectoryActionBuilder specimins_path_Preload = myBot.getDrive().actionBuilder(specimins_dropPose)
-                .waitSeconds(3)
                 .setTangent((1)*Math.PI)
                 .splineToLinearHeading(new Pose2d(0,-34, Math.PI/2),Math.PI/2)
                 // Lower the vertical elevator
-                .waitSeconds(3)
+                .waitSeconds(1)
                 .strafeToSplineHeading(specimins_dropPose.position, specimins_dropPose.heading)
                 // Claw drops sample (in case it didn't drop earlier)
                 .waitSeconds(3)
@@ -44,7 +43,14 @@ public class specimins {
 
         TrajectoryActionBuilder specimins_path= myBot.getDrive().actionBuilder(specimins_dropPose)
                 // Moves the first sample
-//                .waitSeconds(1)
+                .waitSeconds(2)
+                .setTangent((1)*Math.PI)
+                .strafeTo(specimins_basketPose.position)
+                // Lower the vertical elevator
+                .waitSeconds(1)
+                .strafeToSplineHeading(specimins_dropPose.position, specimins_dropPose.heading)
+
+                .waitSeconds(5)
                 .setTangent((1)*Math.PI / 2)
                 .splineToLinearHeading(new Pose2d(33,-30, Math.PI / 2),Math.PI / 2)
                 .splineToSplineHeading(new Pose2d(firstSpeciminX,PickSpeciminY, 0),0)

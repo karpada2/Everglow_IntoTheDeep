@@ -81,19 +81,19 @@ public class PreloadRightPath extends LinearOpMode {
                 .waitSeconds(3)
                 .build();
 
-        Action release = new SequentialAction(
-                claws.clawMovementAction(100),
-                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SUB_HURDLE),
-                new ParallelAction(
-                        claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN,1000),
-                        claws.clawMovementAction(90)//
-                ),
-                new ParallelAction(
-                        claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,1000),
-                        claws.clawMovementAction(80)
-                ),
-                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HURDLE)
-        );
+//        Action release = new SequentialAction(
+//                claws.clawMovementAction(100),
+//                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SUB_HURDLE),
+//                new ParallelAction(
+//                        claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN,1000),
+//                        claws.clawMovementAction(90)//
+//                ),
+//                new ParallelAction(
+//                        claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,1000),
+//                        claws.clawMovementAction(80)
+//                ),
+//                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HURDLE)
+//        );
 
         Action preload_1 = B_preload_1.build();
         Action preload_2 = B_preload_2.build();
@@ -129,11 +129,11 @@ public class PreloadRightPath extends LinearOpMode {
                 new SequentialAction(
                         unload1,
                         preload_2,
-                        release,
+                        //release,
                         pickup1,
                         unload2,
                         sample1basket_2,
-                        release,
+                        //release,
                         Park_Lower
                 )
         );
