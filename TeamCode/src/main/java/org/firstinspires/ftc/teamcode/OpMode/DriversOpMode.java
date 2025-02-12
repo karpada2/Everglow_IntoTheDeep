@@ -1,12 +1,9 @@
 package org.firstinspires.ftc.teamcode.OpMode;
 
-import android.graphics.Path;
-
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
@@ -135,7 +132,7 @@ public class DriversOpMode {
             flagElevatorVerticalDpadLeft = !gamepad2.dpad_left;
 
             if(gamepad2.dpad_up && flagElevatorVerticalDpadUp){
-                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_LOW.state);
+                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_SPECIMEN_HIGH.state);
             }
             flagElevatorVerticalDpadUp = !gamepad2.dpad_up;
 
