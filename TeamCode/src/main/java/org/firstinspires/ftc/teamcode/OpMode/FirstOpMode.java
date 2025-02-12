@@ -118,7 +118,7 @@ public class FirstOpMode extends LinearOpMode {
             flagElevatorVerticalDpadUp = !gamepad2.dpad_up;
 
             if(gamepad2.dpad_right && flagElevatorVerticalDpadRight){
-                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_HIGH.state);
+                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_OPMODE_HIGH.state);
             }
             flagElevatorVerticalDpadRight = !gamepad2.dpad_right;
 

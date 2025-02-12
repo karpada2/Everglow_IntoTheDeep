@@ -12,8 +12,6 @@ public class MeepMeepTesting {
         System.setProperty("sun.java2d.opengl", "true");
         MeepMeep meepMeep = new MeepMeep(600);
 
-
-
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
@@ -22,7 +20,8 @@ public class MeepMeepTesting {
         
         Pose2d left_beginPose = new Pose2d(-31.1, -63,   Math.PI);
 
-        Pose2d basket_pose = new Pose2d(-55,-55,1.25*Math.PI);
+        Pose2d basket_pose = new Pose2d(-56,-54.8,1.25*Math.PI);
+
         Pose2d right_beginPose = new Pose2d(23, -63,   Math.PI);
         TrajectoryActionBuilder left_path = myBot.getDrive().actionBuilder(left_beginPose)
                 .waitSeconds(2)

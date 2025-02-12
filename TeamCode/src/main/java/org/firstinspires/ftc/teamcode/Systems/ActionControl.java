@@ -47,10 +47,10 @@ public class ActionControl {
     public Action returnFromDrop(){
 
         return returnWithDrive(new TokenSequentialAction(
-                claws.clawMovementAction(290,1000), // up
+                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state,1000), // up
                 //elevators.setMotorHorizontalElevatorAction(MotorHorizontalState.HORIZONTAL_RETRACTED),
                 elevators.setVerticalElevatorAction(VerticalState.VERTICAL_MIN),
-                claws.clawMovementAction(0, 800))); // down
+                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 800))); // down
     }
 
     public Action returnWithDrive(TokenSequentialAction tokenAction){
@@ -59,10 +59,10 @@ public class ActionControl {
 
     public Action getReadyDropHigh(){
         return returnWithDrive(new TokenSequentialAction(
-                claws.clawMovementAction(290, 750), //up
+                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750), //up
                 elevators.setVerticalElevatorAction(VerticalState.VERTICAL_HIGH),
-                claws.clawMovementAction(270, 800) // ,mid
-                //claws.clawMovementAction(0) // down
+                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 800) // ,mid
+                //claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state) // down
         ));
     }
 
@@ -78,34 +78,34 @@ public class ActionControl {
 
     public  Action getReadyDropLow(){
         return returnWithDrive(new TokenSequentialAction(
-                claws.clawMovementAction(250, 1000),//mid
+                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 1000),//mid
                 elevators.setVerticalElevatorAction(VerticalState.VERTICAL_LOW),
                 elevators.setMotorHorizontalElevatorAction(MotorHorizontalState.HORIZONTAL_HALFWAY),
-                claws.clawMovementAction(0, 800) // down
+                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 800) // down
         ));
     }
 
     public Action returnFromPickUp(){
         return returnWithDrive(new TokenSequentialAction(
-                claws.clawMovementAction(170, 750), //mid
+                claws.clawMovementAction(45, 750), //mid
                 elevators.setMotorHorizontalElevatorAction(MotorHorizontalState.HORIZONTAL_RETRACTED),
-                claws.clawMovementAction(280, 800) // down
+                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 800) // down
         ));
     }
 
     public Action getReadyExtendedPickUp(){
         return returnWithDrive(new TokenSequentialAction(
-                claws.clawMovementAction(170, 750), //mid
+                claws.clawMovementAction(45, 750), //mid
                 elevators.setMotorHorizontalElevatorAction(MotorHorizontalState.HORIZONTAL_EXTENDED)
-                //claws.clawMovementAction(0, 800) // down
+                //claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 800) // down
         ));
     }
 
     public Action getReadyHalfwayPickUp(){
         return returnWithDrive(new TokenSequentialAction(
-                claws.clawMovementAction(170, 750), //mid
+                claws.clawMovementAction(45, 750), //mid
                 elevators.setMotorHorizontalElevatorAction(MotorHorizontalState.HORIZONTAL_HALFWAY),
-                claws.clawMovementAction(0, 800) // down
+                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 800) // down
         ));
     }
 

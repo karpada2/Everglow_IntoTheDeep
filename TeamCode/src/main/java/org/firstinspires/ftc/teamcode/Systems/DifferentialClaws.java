@@ -28,7 +28,7 @@ public class DifferentialClaws {
     AnalogInput clawInput1;
     AnalogInput clawInput2;
 
-    final int maxPoint = 100;
+    public static final double maxPoint = 100;
 
     double armPosition = 0;
     double lastPosRequest = 0;
@@ -90,9 +90,10 @@ public class DifferentialClaws {
     // receives the time in milliseconds until the action is considered finished
     public class ClawSampleInteractionAction extends TokenAction {
         private final double wantedPower;
-        private final double timeUntilFinished;
+        private double timeUntilFinished;
         private double startTime;
         private ColorSensorSystem colorSensorSystem = null;
+        boolean isIn = false;
 
         public ClawSampleInteractionAction(ClawPowerState state, double timeToStop) {
             assert timeToStop >= 0;
@@ -101,7 +102,7 @@ public class DifferentialClaws {
             isDone = this::isFinished;
         }
         public ClawSampleInteractionAction(ClawPowerState state, ColorSensorSystem colorSensorSystem) {
-            this(state, 1500);
+            this(state, 2500);
             this.colorSensorSystem = colorSensorSystem;
         }
 
@@ -116,12 +117,18 @@ public class DifferentialClaws {
                 isInitialized = true;
             }
 
+            if(colorSensorSystem != null && colorSensorSystem.isSpecimenIn() && !isIn)
+            {
+                startTime = System.currentTimeMillis();
+                timeUntilFinished = 400;
+                isIn = true;
+            }
+
             return !isFinished();
         }
 
         private boolean isFinished(){
-            return (System.currentTimeMillis() - startTime > timeUntilFinished)
-                    || (colorSensorSystem != null && colorSensorSystem.isSpecimenIn());
+            return (System.currentTimeMillis() - startTime > timeUntilFinished);
         }
     }
 
@@ -193,8 +200,8 @@ public class DifferentialClaws {
     public enum ClawPositionState {
         MIN(0.0),
         MID(145.0),
-        HANG_SPECIMEN(262.0),
-        MAX(290.0);
+        HANG_SPECIMEN(maxPoint-10),
+        MAX(maxPoint);
 
         public final double state;
         ClawPositionState(double state) {this.state = state;}
@@ -203,7 +210,7 @@ public class DifferentialClaws {
     public enum ClawPowerState {
         TAKE_IN(1),
         OFF(0.08),
-        SPIT(-1);
+        SPIT(-0.2);
 
         public final double state;
 
