@@ -64,6 +64,49 @@ public class MeepMeepTesting {
                 .waitSeconds(1) //grabs sample
                 ;
 
+        Pose2d left_beginPose_with_specimen = new Pose2d(-31.1, -62,   0.5*Math.PI);
+        Pose2d hanging_pose = new Pose2d(0,-34,0.5*Math.PI);
+        TrajectoryActionBuilder left_path_with_specimen = myBot.getDrive().actionBuilder(left_beginPose_with_specimen)
+                .waitSeconds(2)
+                .strafeToSplineHeading(hanging_pose.position,hanging_pose.heading)
+                // goes to basket
+                .waitSeconds(1) //puts sample in basket
+                .strafeToSplineHeading(new Vector2d(-50,-50),0.5*Math.PI)
+                .waitSeconds(1)
+                .lineToY(-40)
+                .waitSeconds(0.2)
+                .lineToY(-50)
+                // goes to right sample on the left
+                .waitSeconds(1) //grabs sample remove
+                //elevator
+                .strafeToSplineHeading(basket_pose.position,basket_pose.heading)
+                .waitSeconds(1)
+                // goes to basket
+/*                .strafeToSplineHeading(new Vector2d(-60, -50),0.5*Math.PI)
+                .waitSeconds(1)
+                .lineToY(-40)
+                .waitSeconds(0.2)
+                .lineToY(-50)
+                // goes to middle sample on the left
+                .waitSeconds(1) //grabs sample
+                //elevator
+                .strafeToSplineHeading(basket_pose.position,basket_pose.heading)
+                .waitSeconds(1)
+                // goes to basket
+                .strafeToSplineHeading(new Vector2d(-45, -25),1*Math.PI)
+                .waitSeconds(1)
+                .lineToX(-55)
+                .waitSeconds(0.2)
+                //.lineToY(-50)
+                .strafeToSplineHeading(basket_pose.position,basket_pose.heading)
+                // goes to basket
+                .waitSeconds(1)
+                // goes to park
+                .setTangent(Math.PI * 0.5)
+                .splineToLinearHeading(new Pose2d(-24,-10, 0),0)
+                .waitSeconds(1) //grabs sample*/
+                ;
+
         TrajectoryActionBuilder preload_left_path = myBot.getDrive().actionBuilder(left_beginPose)
                 .waitSeconds(2)
                 //.strafeToSplineHeading(new Vector2d(-51,-51),1.25*Math.PI) //just for right
@@ -96,7 +139,7 @@ public class MeepMeepTesting {
                 .waitSeconds(1) //grabs sample
                 ;
 
-        myBot.runAction(left_path.build());
+        myBot.runAction(left_path_with_specimen.build());
 
         TrajectoryActionBuilder right_path = myBot.getDrive().actionBuilder(right_beginPose)
                 .waitSeconds(10)
