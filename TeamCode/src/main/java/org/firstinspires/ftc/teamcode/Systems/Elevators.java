@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.Systems;
 
 import androidx.annotation.NonNull;
 
-import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -12,11 +11,6 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.Systems.Token.TokenAction;
 import org.firstinspires.ftc.teamcode.Systems.Token.Tokenable;
-
-import java.util.List;
-import java.util.function.Consumer;
-
-import kotlin.jvm.functions.Function0;
 
 public class Elevators implements Tokenable {
     final int epsilon = 100;
@@ -96,7 +90,6 @@ public class Elevators implements Tokenable {
         VERTICAL_HIGH(9000),
         VERTICAL_OPMODE_HIGH(10000),
         VERTICAL_MAX(11448);
-
 
         public final int state;
 
