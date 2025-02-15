@@ -63,7 +63,7 @@ public class FirstOpMode extends LinearOpMode {
             //driving
             drive.setDrivePowers(new PoseVelocity2d(
                     new Vector2d(
-                            -gamepad1.left_stick_y*(7.5),
+                            LinearToExpo(-gamepad1.left_stick_y),
                             -gamepad1.left_stick_x
                     ),
                     -gamepad1.right_stick_x
@@ -168,6 +168,7 @@ public class FirstOpMode extends LinearOpMode {
             }
             flagElevatorHorizontalSquare = !gamepad2.square;
 
+
 //            Currently Broken, might cause damage to robot
 //            AnalogueExtensionHorizontal = -gamepad2.right_stick_x;
 //            elevators.setHorizontalPosition(elevators.getHorizontalState() + AnalogueExtensionHorizontal * HorizontalAnalogueFactor);
@@ -200,6 +201,11 @@ public class FirstOpMode extends LinearOpMode {
 //            telemetry.addData("right_trigger:", gamepad2.right_bumper);
 //            telemetry.update();
         }
+
+    }
+    public double LinearToExpo(double input) {
+        if (input >= 0) return input*input;
+        else return -input*input;
 
     }
 }
