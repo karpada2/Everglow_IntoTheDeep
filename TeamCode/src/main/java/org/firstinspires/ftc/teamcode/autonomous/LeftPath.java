@@ -234,7 +234,7 @@ public class LeftPath extends LinearOpMode {
                         pickup3,
 
                         new ParallelAction(
-                                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HIGH),
+                                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_HIGH),
                                 sample3basket  //movement
                         ),
                         unload4,

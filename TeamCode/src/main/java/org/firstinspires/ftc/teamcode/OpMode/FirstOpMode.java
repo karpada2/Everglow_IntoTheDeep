@@ -63,7 +63,7 @@ public class FirstOpMode extends LinearOpMode {
             //driving
             drive.setDrivePowers(new PoseVelocity2d(
                     new Vector2d(
-                            -gamepad1.left_stick_y,
+                            -gamepad1.left_stick_y*(7.5),
                             -gamepad1.left_stick_x
                     ),
                     -gamepad1.right_stick_x
@@ -108,7 +108,7 @@ public class FirstOpMode extends LinearOpMode {
             flagElevatorVerticalDpadDown = !gamepad2.dpad_down;
 
             if(gamepad2.dpad_left && flagElevatorVerticalDpadLeft){
-                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_HURDLE.state);
+                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_SPECIMEN_HIGH.state);
             }
             flagElevatorVerticalDpadLeft = !gamepad2.dpad_left;
 
