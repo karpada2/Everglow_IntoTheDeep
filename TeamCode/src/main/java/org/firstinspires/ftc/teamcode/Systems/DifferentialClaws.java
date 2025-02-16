@@ -28,7 +28,7 @@ public class DifferentialClaws {
     AnalogInput clawInput1;
     AnalogInput clawInput2;
 
-    public static final double maxPoint = 100;
+    public static final double maxPoint = 68;
 
     double armPosition = 0;
     double lastPosRequest = 0;
@@ -199,7 +199,7 @@ public class DifferentialClaws {
 
     public enum ClawPositionState {
         MIN(0.0),
-        MID(145.0),
+        MID(maxPoint/2),
         HANG_SPECIMEN(maxPoint-10),
         MAX(maxPoint);
 
