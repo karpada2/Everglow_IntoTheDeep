@@ -19,8 +19,8 @@ import org.firstinspires.ftc.teamcode.Systems.DifferentialClaws;
 @Config
 @TeleOp(name="ClawPIDFTuning", group = "Tests")
 public class ClawPIDFTuning extends LinearOpMode {
-    public static double p = 0.0075, i=0,d=0.00005;//0.008, i = 0, d = 0.0001;
-    public static double f = 0.05;//0.08;
+    public static double p = 0, i = 0, d = 0;//0.0075, i=0,d=0.00005;//0.008, i = 0, d = 0.0001;
+    public static double f = 0;//0.05;
     public static double x = 0;
     public static double startTime;
 
