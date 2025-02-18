@@ -17,6 +17,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.teamcode.Systems.ActionControl;
 import org.firstinspires.ftc.teamcode.Systems.ColorSensorSystem;
 import org.firstinspires.ftc.teamcode.Systems.DifferentialClaws;
 import org.firstinspires.ftc.teamcode.Systems.Elevators;
@@ -47,7 +48,7 @@ public class RightPath extends LinearOpMode {
     double secondSpeciminX = 60;
     double PickSpeciminY = -12;
     Pose2d specimins_dropPose = new Pose2d(31.1, -57,   Math.PI/2);
-    Pose2d specimins_basketPose = new Pose2d(0,-34,Math.PI/2);
+    Pose2d specimins_basketPose = new Pose2d(0,-32,Math.PI/2);
     Pose2d specimins_endPose = new Pose2d(23,-10,0);
 
 
@@ -66,33 +67,30 @@ public class RightPath extends LinearOpMode {
         DifferentialClaws claws  = new DifferentialClaws(this);
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
         Elevators elevators  = new Elevators(this);
+
         ColorSensorSystem colorSensorSystem = new ColorSensorSystem(this, true);
+        ActionControl actionControl = new ActionControl(elevators,colorSensorSystem,drive);
         //Init Trajectories
         TrajectoryActionBuilder B_preload = drive.actionBuilder(beginPose)
-                .waitSeconds(2)
                 .strafeTo(specimins_basketPose.position)
                 // Lower the vertical elevator
-                .waitSeconds(1)
-                .setTangent(-0.3)
-//                .strafeToSplineHeading(specimins_dropPose.position, specimins_dropPose.heading)
 
-                .splineToConstantHeading(new Vector2d(33,-35),Math.PI/6)
-                .splineToSplineHeading(new Pose2d(firstSpeciminX-7,PickSpeciminY,Math.PI/2),0)
+//                .setTangent(-0.3)
+//
+//                .splineToConstantHeading(new Vector2d(33,-35),Math.PI/6)
+//                .splineToSplineHeading(new Pose2d(firstSpeciminX-7,PickSpeciminY,Math.PI/2),0)
+//
+//                .splineToConstantHeading(new Vector2d(firstSpeciminX,dropSpeciminY),-Math.PI/3)
+//
+//                .splineToConstantHeading(new Vector2d(secondSpeciminX-3,PickSpeciminY),0)
+//                .waitSeconds(1)
 //                .setTangent(-Math.PI/2)
-//                .splineToConstantHeading(new Vector2d(firstSpeciminX,PickSpeciminY-50),-Math.PI/2)
-//                .waitSeconds(0.01)
-//                .waitSeconds(0.001)
-                .splineToConstantHeading(new Vector2d(firstSpeciminX,dropSpeciminY),-Math.PI/3)
-                // Moves the second sample
-//                .setTangent(Math.PI * 0.3)
-                .splineToConstantHeading(new Vector2d(secondSpeciminX-3,PickSpeciminY),0)
-                .waitSeconds(1)
-                .setTangent(-Math.PI/2)
-                .strafeTo(new Vector2d(secondSpeciminX,dropSpeciminY));
+//                .strafeTo(new Vector2d(secondSpeciminX,dropSpeciminY))
+                ;
 
-//        TrajectoryActionBuilder B_park = B_sample3basket.endTrajectory().fresh()
-//                .setTangent(Math.PI * 0.5)
-//                .splineToLinearHeading(new Pose2d(-24,-10, 0),0);
+        TrajectoryActionBuilder B_park = B_preload.endTrajectory().fresh()
+                .setTangent(-Math.PI/4)
+                .splineToSplineHeading(new Pose2d(60,-60,Math.PI),0)
 
 
         Action unload1 = new SequentialAction(
@@ -116,12 +114,16 @@ public class RightPath extends LinearOpMode {
 //                ));
         Action preload = B_preload.build();
 
-//        Action Park = B_park.build();
+        Action park = B_park.build();
 
         waitForStart();
 
         Actions.runBlocking(
-                preload
+                new SequentialAction(
+                        preload,
+
+                        park
+                )
         );
     }
 }

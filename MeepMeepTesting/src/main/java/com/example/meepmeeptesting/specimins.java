@@ -47,10 +47,11 @@ public class specimins {
                 .strafeTo(specimins_basketPose.position)
                 // Lower the vertical elevator
                 .waitSeconds(1)
-                .setTangent(-0.3)
+                .setTangent(-Math.PI/4)
 //                .strafeToSplineHeading(specimins_dropPose.position, specimins_dropPose.heading)
 
-                .splineToConstantHeading(new Vector2d(33,-35),Math.PI/6)
+                .splineToSplineHeading(new Pose2d(60,-60,Math.PI),0)
+                .waitSeconds(1)
                 .splineToSplineHeading(new Pose2d(firstSpeciminX-7,PickSpeciminY,Math.PI/2),0)
 //                .setTangent(-Math.PI/2)
 //                .splineToConstantHeading(new Vector2d(firstSpeciminX,PickSpeciminY-50),-Math.PI/2)
