@@ -18,7 +18,7 @@ public class specimins {
                 .setDimensions(14,18.1)
                 .build();
 
-        double dropSpeciminY = -60;
+        double dropSpeciminY = -52;
         double firstSpeciminX = 48;
         double secondSpeciminX = 60;
         double PickSpeciminY = -12;
@@ -44,20 +44,24 @@ public class specimins {
         TrajectoryActionBuilder specimins_path= myBot.getDrive().actionBuilder(specimins_dropPose)
                 // Moves the first sample
                 .waitSeconds(2)
-                .setTangent((1)*Math.PI)
                 .strafeTo(specimins_basketPose.position)
                 // Lower the vertical elevator
                 .waitSeconds(1)
-                .strafeToSplineHeading(specimins_dropPose.position, specimins_dropPose.heading)
+                .setTangent(-0.3)
+//                .strafeToSplineHeading(specimins_dropPose.position, specimins_dropPose.heading)
 
-                .waitSeconds(5)
-                .setTangent((1)*Math.PI / 2)
-                .splineToLinearHeading(new Pose2d(33,-30, Math.PI / 2),Math.PI / 2)
-                .splineToSplineHeading(new Pose2d(firstSpeciminX,PickSpeciminY, 0),0)
-                .strafeTo(new Vector2d(firstSpeciminX,dropSpeciminY))
+                .splineToConstantHeading(new Vector2d(33,-35),Math.PI/6)
+                .splineToSplineHeading(new Pose2d(firstSpeciminX-7,PickSpeciminY,Math.PI/2),0)
+//                .setTangent(-Math.PI/2)
+//                .splineToConstantHeading(new Vector2d(firstSpeciminX,PickSpeciminY-50),-Math.PI/2)
+//                .waitSeconds(0.01)
+//                .waitSeconds(0.001)
+                .splineToConstantHeading(new Vector2d(firstSpeciminX,dropSpeciminY),-Math.PI/3)
                 // Moves the second sample
-                .setTangent(Math.PI * 0.5)
-                .splineToConstantHeading(new Vector2d(secondSpeciminX,PickSpeciminY),0)
+//                .setTangent(Math.PI * 0.3)
+                .splineToConstantHeading(new Vector2d(secondSpeciminX-3,PickSpeciminY),0)
+                .waitSeconds(1)
+                .setTangent(-Math.PI/2)
                 .strafeTo(new Vector2d(secondSpeciminX,dropSpeciminY))
 
                 // Goes to the basket

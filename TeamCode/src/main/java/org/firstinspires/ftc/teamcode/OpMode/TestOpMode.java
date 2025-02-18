@@ -114,7 +114,7 @@ public class TestOpMode extends LinearOpMode {
             flagElevatorVerticalDpadUp = !gamepad2.dpad_up;
 
             if(gamepad2.dpad_right && flagElevatorVerticalDpadRight){
-                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_HIGH.state);
+                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_MAX.state);
             }
             flagElevatorVerticalDpadRight = !gamepad2.dpad_right;
 

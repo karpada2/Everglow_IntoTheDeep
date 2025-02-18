@@ -42,6 +42,15 @@ public class RightPath extends LinearOpMode {
             return false;
         }
     }
+    double dropSpeciminY = -52;
+    double firstSpeciminX = 48;
+    double secondSpeciminX = 60;
+    double PickSpeciminY = -12;
+    Pose2d specimins_dropPose = new Pose2d(31.1, -57,   Math.PI/2);
+    Pose2d specimins_basketPose = new Pose2d(0,-34,Math.PI/2);
+    Pose2d specimins_endPose = new Pose2d(23,-10,0);
+
+
     public static double collectLine = -50;
     public static double collectLineSampleThree = -40;
     public static double sampleOffset = 3.5;
@@ -60,7 +69,26 @@ public class RightPath extends LinearOpMode {
         ColorSensorSystem colorSensorSystem = new ColorSensorSystem(this, true);
         //Init Trajectories
         TrajectoryActionBuilder B_preload = drive.actionBuilder(beginPose)
-                .strafeToSplineHeading(basketPose.position,basketPose.heading);
+                .waitSeconds(2)
+                .strafeTo(specimins_basketPose.position)
+                // Lower the vertical elevator
+                .waitSeconds(1)
+                .setTangent(-0.3)
+//                .strafeToSplineHeading(specimins_dropPose.position, specimins_dropPose.heading)
+
+                .splineToConstantHeading(new Vector2d(33,-35),Math.PI/6)
+                .splineToSplineHeading(new Pose2d(firstSpeciminX-7,PickSpeciminY,Math.PI/2),0)
+//                .setTangent(-Math.PI/2)
+//                .splineToConstantHeading(new Vector2d(firstSpeciminX,PickSpeciminY-50),-Math.PI/2)
+//                .waitSeconds(0.01)
+//                .waitSeconds(0.001)
+                .splineToConstantHeading(new Vector2d(firstSpeciminX,dropSpeciminY),-Math.PI/3)
+                // Moves the second sample
+//                .setTangent(Math.PI * 0.3)
+                .splineToConstantHeading(new Vector2d(secondSpeciminX-3,PickSpeciminY),0)
+                .waitSeconds(1)
+                .setTangent(-Math.PI/2)
+                .strafeTo(new Vector2d(secondSpeciminX,dropSpeciminY));
 
 //        TrajectoryActionBuilder B_park = B_sample3basket.endTrajectory().fresh()
 //                .setTangent(Math.PI * 0.5)
@@ -92,8 +120,8 @@ public class RightPath extends LinearOpMode {
 
         waitForStart();
 
-//        Actions.runBlocking(
-//                pass
-//        );
+        Actions.runBlocking(
+                preload
+        );
     }
 }

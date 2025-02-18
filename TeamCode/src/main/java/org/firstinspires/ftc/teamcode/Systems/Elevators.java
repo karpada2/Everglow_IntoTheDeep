@@ -154,7 +154,7 @@ public class Elevators implements Tokenable {
             setVerticalPower(0);
         }
         else {
-            setVerticalPower(0.8);
+            setVerticalPower(1);
         }
         rightVert.setTargetPosition(destination);
         leftVert.setTargetPosition(destination);
