@@ -57,9 +57,9 @@ public class ClawPIDFTuning extends LinearOpMode {
                 x = x % 8000;
 
                 if (x <= 4000) {
-                    claws.setArmTargetPosition(0);
+                    claws.setArmTargetPosition(68);
                 } else {
-                    claws.setArmTargetPosition(DifferentialClaws.maxPoint);
+                    claws.setArmTargetPosition(58);
                 }
             }
         }

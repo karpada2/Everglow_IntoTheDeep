@@ -64,7 +64,7 @@ public class MeepMeepTesting {
                 .waitSeconds(1) //grabs sample
                 ;
 
-        Pose2d left_beginPose_with_specimen = new Pose2d(-31.1, -62,   0.5*Math.PI);
+        Pose2d left_beginPose_with_specimen = new Pose2d(-31.1, -63,   Math.PI);
         Pose2d hanging_pose = new Pose2d(0,-34,0.5*Math.PI);
         TrajectoryActionBuilder left_path_with_specimen = myBot.getDrive().actionBuilder(left_beginPose_with_specimen)
                 .waitSeconds(2)

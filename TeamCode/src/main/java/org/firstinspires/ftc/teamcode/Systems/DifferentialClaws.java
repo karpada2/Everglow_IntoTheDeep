@@ -202,7 +202,8 @@ public class DifferentialClaws {
     public enum ClawPositionState {
         MIN(0.0),
         MID(maxPoint/2),
-        HANG_SPECIMEN(maxPoint-10),
+        SPIT_STATE(maxPoint-10),
+        HANG_SPECIMEN(maxPoint-30),
         MAX(maxPoint);
 
         public final double state;

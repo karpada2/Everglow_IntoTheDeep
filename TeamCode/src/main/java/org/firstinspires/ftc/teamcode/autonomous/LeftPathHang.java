@@ -18,32 +18,15 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.teamcode.Systems.ActionControl;
 import org.firstinspires.ftc.teamcode.Systems.ColorSensorSystem;
 import org.firstinspires.ftc.teamcode.Systems.DifferentialClaws;
 import org.firstinspires.ftc.teamcode.Systems.Elevators;
 
 @Config
-@Autonomous(name="LeftPath", group="Autonomous")
-public class LeftPath extends LinearOpMode {
-
-    public class AddToTelemetryAction implements Action {
-        private final Telemetry telemetry;
-        private final String title;
-        private final double value;
-
-        public AddToTelemetryAction(Telemetry telemetry, String title, double value) {
-            this.telemetry = telemetry;
-            this.title = title;
-            this.value = value;
-        }
-
-        @Override
-        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            telemetry.addData(title,value);
-            telemetry.update();
-            return false;
-        }
-    }
+@Autonomous(name="LeftPathHang", group="Autonomous")
+public class LeftPathHang extends LinearOpMode {
+    ActionControl control;
     public static int DownTime = 400;
     public static double collectLine = -50;
     public static double collectLineSampleThree = -40;
@@ -55,15 +38,17 @@ public class LeftPath extends LinearOpMode {
         // Init Poses
         Pose2d beginPose = new Pose2d(-31.1, -63,   Math.PI);
         Pose2d basketPose = new Pose2d(-57,-55.3,1.25*Math.PI);
+        Pose2d hanging_pose = new Pose2d(0,-30,0.5*Math.PI);
 
         // Init Systems
         DifferentialClaws claws  = new DifferentialClaws(this);
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
         Elevators elevators  = new Elevators(this);
         ColorSensorSystem colorSensorSystem = new ColorSensorSystem(this, true);
+        control = new ActionControl(elevators, claws, colorSensorSystem, drive, gamepad1, gamepad2);
         //Init Trajectories
         TrajectoryActionBuilder B_preload = drive.actionBuilder(beginPose)
-                .strafeToSplineHeading(basketPose.position,basketPose.heading);
+                .strafeToSplineHeading(hanging_pose.position,hanging_pose.heading);
 
         TrajectoryActionBuilder B_sample1pickup = B_preload.endTrajectory().fresh()
                 .strafeToSplineHeading(new Vector2d(-50 + sampleOffset,collectLine),0.5*Math.PI, new AngularVelConstraint(Math.PI/2));
@@ -98,14 +83,14 @@ public class LeftPath extends LinearOpMode {
                 .build();
 
         Action BackAndForth2 = drive.actionBuilder(new Pose2d(-60 + sampleOffset,collectLine,0.5*Math.PI))
-             //   .waitSeconds(0.1)
+                //   .waitSeconds(0.1)
                 .lineToY(collectLine+10, new TranslationalVelConstraint(VelConstraint))
                 .waitSeconds(0.1)
                 .lineToY(collectLine)
                 .build();
 
         Action BackAndForth3 = drive.actionBuilder(new Pose2d(collectLineSampleThree, -25,Math.PI))
-             //   .waitSeconds(0.1)
+                //   .waitSeconds(0.1)
                 .lineToX(collectLineSampleThree-10, new TranslationalVelConstraint(VelConstraint))
                 .waitSeconds(0.1)
                 .lineToX(collectLineSampleThree, new TranslationalVelConstraint(VelConstraint))
@@ -113,24 +98,19 @@ public class LeftPath extends LinearOpMode {
         // Turning action builders into actions
         //Action armUp = claws.clawMovementAction(DownTime);
 
-        Action unload1 = new SequentialAction(
-                claws.clawMovementAction(DifferentialClaws.ClawPositionState.SPIT_STATE.state, 750),
-                claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,1000),
-                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, DownTime)
-        );
         Action unload2 =
                 new SequentialAction(
-                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.SPIT_STATE.state, 750),
+                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.HANG_SPECIMEN.state, 750),
                         claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,1000),
                         claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750)
                 );
         Action unload3 = new SequentialAction(
-                claws.clawMovementAction(DifferentialClaws.ClawPositionState.SPIT_STATE.state, 750),
+                claws.clawMovementAction(DifferentialClaws.ClawPositionState.HANG_SPECIMEN.state, 750),
                 claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,1000),
                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750)
         );
         Action unload4 = new SequentialAction(
-                claws.clawMovementAction(DifferentialClaws.ClawPositionState.SPIT_STATE.state, 750),
+                claws.clawMovementAction(DifferentialClaws.ClawPositionState.HANG_SPECIMEN.state, 750),
                 claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,1000),
                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750)
         );
@@ -177,12 +157,9 @@ public class LeftPath extends LinearOpMode {
 
         Actions.runBlocking(
                 new SequentialAction(
-                        new ParallelAction(
-                                //claws.clawMovementAction(58, 750),
-                                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HIGH),
-                                preload //movement
-                        ),
-                        unload1,
+                        preload, //movement
+                        control.hangSpecimenHigh(),
+                        
                         new ParallelAction(
                                 elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN),
                                 sample1pickup //movement
@@ -196,7 +173,7 @@ public class LeftPath extends LinearOpMode {
                         ),
                         unload2,
 
-                       new ParallelAction(
+                        new ParallelAction(
                                 elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN),
                                 sample2pickup //movement
                         ),
