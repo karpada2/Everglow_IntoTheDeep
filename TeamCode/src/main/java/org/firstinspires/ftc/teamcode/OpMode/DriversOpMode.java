@@ -1,37 +1,42 @@
 package org.firstinspires.ftc.teamcode.OpMode;
 
+import android.graphics.Path;
+
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
-import com.acmerobotics.roadrunner.ftc.Actions;
-import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.Gamepad;
 
-import org.firstinspires.ftc.robotcore.external.navigation.VoltageUnit;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Systems.ColorSensorSystem;
 import org.firstinspires.ftc.teamcode.Systems.DifferentialClaws;
 import org.firstinspires.ftc.teamcode.Systems.Elevators;
 
-import fi.iki.elonen.NanoHTTPD;
+public class DriversOpMode {
+    private final LinearOpMode opMode;
+    private final Gamepad gamepad1, gamepad2;
 
-@TeleOp(name = "RedOpMode")
-public class FirstOpMode extends LinearOpMode {
-    @Override
-    public void runOpMode() throws InterruptedException {
-        DifferentialClaws claws = new DifferentialClaws(this);
-        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
+    public DriversOpMode(LinearOpMode opMode, Gamepad gamepad1, Gamepad gamepad2){
+        this.opMode = opMode;
+        this.gamepad1 = gamepad1;
+        this.gamepad2 = gamepad2;
+    }
 
-        Elevators elevators = new Elevators(this);
+    public void run(boolean isBlue){
+        DifferentialClaws claws = new DifferentialClaws(opMode);
+        MecanumDrive drive = new MecanumDrive(opMode.hardwareMap, new Pose2d(0, 0, 0));
+
+        Elevators elevators = new Elevators(opMode);
         elevators.setVerticalPower(0.0);
         boolean isInitialized = false;
         boolean secondery = false;
 
-        waitForStart();
+        opMode.waitForStart();
         //LynxModule controlHub = hardwareMap.get(LynxModule.class, "Control Hub");
         //LynxModule expansionHub = hardwareMap.get(LynxModule.class, "Expansion Hub 2");
-        ColorSensorSystem colorSensorSystem = new ColorSensorSystem(this, false);
+        ColorSensorSystem colorSensorSystem = new ColorSensorSystem(opMode, isBlue);
 
         elevators.motorSetHorizontalPower(1);
 
@@ -50,6 +55,8 @@ public class FirstOpMode extends LinearOpMode {
         boolean flagClawTakeIn = true;
         boolean ClawState = true;
         boolean flagClawSpit = true;
+        double lastPIDPower = 0;
+        double virtualClawPose = claws.maxPoint;
 
         double horElevatorPosition = 0;
 
@@ -59,7 +66,7 @@ public class FirstOpMode extends LinearOpMode {
         double HorizontalAnalogueFactor = 1;
         double AnalogueExtensionHorizontal;
 
-        while (opModeIsActive()) {
+        while (opMode.opModeIsActive()) {
             //driving
             drive.setDrivePowers(new PoseVelocity2d(
                     new Vector2d(
@@ -71,15 +78,30 @@ public class FirstOpMode extends LinearOpMode {
             drive.updatePoseEstimate();
 
 
+            claws.updateRightClawServoRotation();
+            claws.updateLeftClawServoRotation();
+
             if (gamepad2.right_trigger >= 0.4) { //split
                 claws.rotateWheels(gamepad2.right_trigger);
             }
             else if (gamepad2.left_trigger >= 0.4) {
                 claws.rotateWheels(-1);
             }
+            else if (gamepad2.right_bumper) {
+                virtualClawPose = 90;
+                lastPIDPower = claws.getPIDArmPower();
+                claws.rotateArm(lastPIDPower);
+                claws.setArmTargetPosition(virtualClawPose);
+            }
+            else if (gamepad2.left_bumper) {
+                virtualClawPose = 0;
+                lastPIDPower = claws.getPIDArmPower();
+                claws.rotateArm(lastPIDPower);
+                claws.setArmTargetPosition(virtualClawPose);
+            }
             else {
                 claws.rotateArm(DifferentialClaws.ClawPowerState.OFF.state);
-                claws.rotateArm(gamepad2.left_stick_y);
+                claws.rotateArm(-gamepad2.left_stick_y); //- Math.cos(Math.toRadians((claws.getActualArmRotation()/claws.maxPoint)*120. - 30.)) * claws.f
             }
 
             if (Math.abs(gamepad2.right_stick_y) > joystickTolerance) {
@@ -88,19 +110,19 @@ public class FirstOpMode extends LinearOpMode {
                 }else if(horElevatorPosition >= Elevators.MotorHorizontalState.HORIZONTAL_EXTENDED.state){
                     horElevatorPosition =  Elevators.MotorHorizontalState.HORIZONTAL_EXTENDED.state;
                 }
-                horElevatorPosition += -gamepad2.right_stick_y*40*3;
-                elevators.motorSetHorizontalDestination((int)(horElevatorPosition));
+                //horElevatorPosition += -gamepad2.right_stick_y*40*3;
+                //elevators.motorSetHorizontalDestination((int)(horElevatorPosition));
+                elevators.motorSetHorizontalPower(-gamepad2.right_stick_y);
             }
-            telemetry.addData("Right Stick y: ", gamepad2.right_stick_y);
-            telemetry.addData("precieved hor position: ", horElevatorPosition);
-            telemetry.addData("hor position: ", elevators.motorGetHorizontalPosition());
+            opMode.telemetry.addData("hor motor: ", elevators.horMotor.getPower());
+            opMode.telemetry.addData("virtual Pos:", virtualClawPose);
+            opMode.telemetry.addData("precieved hor position: ", horElevatorPosition);
+            opMode.telemetry.addData("hor position: ", elevators.motorGetHorizontalPosition());
 //            telemetry.addData("Control Hub auxillary volts: ", controlHub.getAuxiliaryVoltage(VoltageUnit.VOLTS));
 //            telemetry.addData("Expansion Hub auxillary volts: ", expansionHub.getAuxiliaryVoltage(VoltageUnit.VOLTS));
 //            telemetry.addData("Control Hub used volts: ", controlHub.getInputVoltage(VoltageUnit.VOLTS));
 //            telemetry.addData("Expansion Hub used volts: ", expansionHub.getInputVoltage(VoltageUnit.VOLTS));
-            telemetry.update();
-
-
+            opMode.telemetry.update();
 
             if(gamepad2.dpad_down && flagElevatorVerticalDpadDown) {
                 elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_PICKUP.state);
@@ -118,11 +140,11 @@ public class FirstOpMode extends LinearOpMode {
             flagElevatorVerticalDpadUp = !gamepad2.dpad_up;
 
             if(gamepad2.dpad_right && flagElevatorVerticalDpadRight){
-                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_OPMODE_HIGH.state);
+                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_HIGH.state);
             }
             flagElevatorVerticalDpadRight = !gamepad2.dpad_right;
 
-            telemetry.addData("vert pos:", elevators.getVerticalCurrentPosition());
+            opMode.telemetry.addData("vert pos:", elevators.getVerticalCurrentPosition());
 
             // Read line 105
 //            AnalogueExtensionVertical = -gamepad2.left_stick_y;
@@ -203,9 +225,8 @@ public class FirstOpMode extends LinearOpMode {
         }
 
     }
-    public double LinearToExpo(double input) {
+    public static double LinearToExpo(double input) {
         if (input >= 0) return input*input;
         else return -input*input;
-
     }
 }

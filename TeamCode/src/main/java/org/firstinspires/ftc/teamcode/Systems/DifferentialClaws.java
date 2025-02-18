@@ -28,7 +28,7 @@ public class DifferentialClaws {
     AnalogInput clawInput1;
     AnalogInput clawInput2;
 
-    public static final double maxPoint = 100;
+    public static final double maxPoint = 68;
 
     double armPosition = 0;
     double lastPosRequest = 0;
@@ -50,8 +50,10 @@ public class DifferentialClaws {
 
     public PIDController controller;
 
-    public final double p = 0.008, i = 0, d = 0.0001;
-    public double f = 0.08;
+    public final double p = 0.009,//.008,
+            i = 0,
+            d = 0.0002;//.0001;
+    public double f = 0.12;//0.08;
 
     private double target = 0;
 
@@ -199,8 +201,9 @@ public class DifferentialClaws {
 
     public enum ClawPositionState {
         MIN(0.0),
-        MID(145.0),
-        HANG_SPECIMEN(maxPoint-10),
+        MID(maxPoint/2),
+        SPIT_STATE(maxPoint-10),
+        HANG_SPECIMEN(maxPoint-30),
         MAX(maxPoint);
 
         public final double state;
@@ -208,9 +211,9 @@ public class DifferentialClaws {
     }
 
     public enum ClawPowerState {
-        TAKE_IN(1),
+        TAKE_IN(-1),
         OFF(0.08),
-        SPIT(-0.2);
+        SPIT(0.2);
 
         public final double state;
 
@@ -270,9 +273,9 @@ public class DifferentialClaws {
     public double getPIDArmPower(){
         int armPos = (int)(getActualArmRotation());
         double pid = controller.calculate(armPos, target);
-        double ff = Math.cos(Math.toRadians(target*(90./maxPoint))) * f;
+        double ff = Math.cos(Math.toRadians((armPos/maxPoint)*120. - 30.)) * f;
 
-        return (pid + ff);
+        return -(pid + ff);
     }
     public void rotateArm(double power){
         leftClawServo.setPower(power);
