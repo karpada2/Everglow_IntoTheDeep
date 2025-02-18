@@ -22,7 +22,7 @@ public class specimins {
         double firstSpeciminX = 48;
         double secondSpeciminX = 60;
         double PickSpeciminY = -12;
-        Pose2d specimins_dropPose = new Pose2d(31.1, -57,   Math.PI/2);
+        Pose2d specimins_dropPose = new Pose2d(27, -62,   Math.PI/2);
         Pose2d specimins_basketPose = new Pose2d(0,-34,Math.PI/2);
         Pose2d specimins_endPose = new Pose2d(23,-10,0);
 
@@ -52,7 +52,7 @@ public class specimins {
 
                 .splineToSplineHeading(new Pose2d(60,-60,Math.PI),0)
                 .waitSeconds(1)
-                .splineToSplineHeading(new Pose2d(firstSpeciminX-7,PickSpeciminY,Math.PI/2),0)
+                /*.splineToSplineHeading(new Pose2d(firstSpeciminX-7,PickSpeciminY,Math.PI/2),0)
 //                .setTangent(-Math.PI/2)
 //                .splineToConstantHeading(new Vector2d(firstSpeciminX,PickSpeciminY-50),-Math.PI/2)
 //                .waitSeconds(0.01)
@@ -99,7 +99,7 @@ public class specimins {
                 .strafeTo(specimins_basketPose.position)
                 // Dropping the sample -Lowering the vertical elevator
                 .strafeTo(new Vector2d(38, -34))
-                .splineToLinearHeading((specimins_endPose),Math.PI)
+                .splineToLinearHeading((specimins_endPose),Math.PI)*/
                 ;
 
         myBot.runAction(specimins_path.build());
