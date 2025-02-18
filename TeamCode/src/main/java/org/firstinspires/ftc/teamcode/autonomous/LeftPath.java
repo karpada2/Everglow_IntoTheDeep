@@ -48,7 +48,7 @@ public class LeftPath extends LinearOpMode {
     public static double collectLine = -50;
     public static double collectLineSampleThree = -40;
     public static double sampleOffset = 3.5;
-    public static double VelConstraint = 10;
+    public static double VelConstraint = 5;
 
     @Override
     public void runOpMode()  throws InterruptedException{
@@ -94,14 +94,14 @@ public class LeftPath extends LinearOpMode {
                 .waitSeconds(0.1)
                 .lineToY(collectLine+10, new TranslationalVelConstraint(VelConstraint))
                 .waitSeconds(1)
-                .lineToY(collectLine, new TranslationalVelConstraint(VelConstraint))
+                .lineToY(collectLine)
                 .build();
 
         Action BackAndForth2 = drive.actionBuilder(new Pose2d(-60 + sampleOffset,collectLine,0.5*Math.PI))
              //   .waitSeconds(0.1)
                 .lineToY(collectLine+10, new TranslationalVelConstraint(VelConstraint))
                 .waitSeconds(0.1)
-                .lineToY(collectLine, new TranslationalVelConstraint(VelConstraint))
+                .lineToY(collectLine)
                 .build();
 
         Action BackAndForth3 = drive.actionBuilder(new Pose2d(collectLineSampleThree, -25,Math.PI))
@@ -114,23 +114,23 @@ public class LeftPath extends LinearOpMode {
         //Action armUp = claws.clawMovementAction(DownTime);
 
         Action unload1 = new SequentialAction(
-                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750),
+                claws.clawMovementAction(DifferentialClaws.ClawPositionState.HANG_SPECIMEN.state, DownTime),
                 claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,1000),
-                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750)
+                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, DownTime)
         );
         Action unload2 =
                 new SequentialAction(
-                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750),
+                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.HANG_SPECIMEN.state, 750),
                         claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,1000),
                         claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750)
                 );
         Action unload3 = new SequentialAction(
-                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750),
+                claws.clawMovementAction(DifferentialClaws.ClawPositionState.HANG_SPECIMEN.state, 750),
                 claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,1000),
                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750)
         );
         Action unload4 = new SequentialAction(
-                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750),
+                claws.clawMovementAction(DifferentialClaws.ClawPositionState.HANG_SPECIMEN.state, 750),
                 claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,1000),
                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750)
         );
@@ -178,6 +178,7 @@ public class LeftPath extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
                         new ParallelAction(
+                                claws.clawMovementAction(63, 750),
                                 elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HIGH),
                                 preload //movement
                         ),
@@ -186,6 +187,7 @@ public class LeftPath extends LinearOpMode {
                                 elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN),
                                 sample1pickup //movement
                         ),
+                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, DownTime),
                         pickup1,
 
                         new ParallelAction(

@@ -101,7 +101,7 @@ public class DriversOpMode {
             }
             else {
                 claws.rotateArm(DifferentialClaws.ClawPowerState.OFF.state);
-                claws.rotateArm(gamepad2.left_stick_y ); //- Math.cos(Math.toRadians((claws.getActualArmRotation()/claws.maxPoint)*120. - 30.)) * claws.f
+                claws.rotateArm(-gamepad2.left_stick_y); //- Math.cos(Math.toRadians((claws.getActualArmRotation()/claws.maxPoint)*120. - 30.)) * claws.f
             }
 
             if (Math.abs(gamepad2.right_stick_y) > joystickTolerance) {
@@ -110,11 +110,11 @@ public class DriversOpMode {
                 }else if(horElevatorPosition >= Elevators.MotorHorizontalState.HORIZONTAL_EXTENDED.state){
                     horElevatorPosition =  Elevators.MotorHorizontalState.HORIZONTAL_EXTENDED.state;
                 }
-                horElevatorPosition += -gamepad2.right_stick_y*40*3;
-                elevators.motorSetHorizontalDestination((int)(horElevatorPosition));
+                //horElevatorPosition += -gamepad2.right_stick_y*40*3;
+                //elevators.motorSetHorizontalDestination((int)(horElevatorPosition));
+                elevators.motorSetHorizontalPower(-gamepad2.right_stick_y);
             }
-            opMode.telemetry.addData("right vertical motor: ", elevators.rightVert.getPower());
-            opMode.telemetry.addData("left  vertical motor: ", elevators.leftVert.getPower());
+            opMode.telemetry.addData("hor motor: ", elevators.horMotor.getPower());
             opMode.telemetry.addData("virtual Pos:", virtualClawPose);
             opMode.telemetry.addData("precieved hor position: ", horElevatorPosition);
             opMode.telemetry.addData("hor position: ", elevators.motorGetHorizontalPosition());
@@ -140,7 +140,7 @@ public class DriversOpMode {
             flagElevatorVerticalDpadUp = !gamepad2.dpad_up;
 
             if(gamepad2.dpad_right && flagElevatorVerticalDpadRight){
-                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_OPMODE_HIGH.state);
+                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_HIGH.state);
             }
             flagElevatorVerticalDpadRight = !gamepad2.dpad_right;
 

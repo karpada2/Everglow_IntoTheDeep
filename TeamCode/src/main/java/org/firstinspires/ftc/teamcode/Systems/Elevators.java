@@ -16,9 +16,9 @@ public class Elevators implements Tokenable {
     final int epsilon = 100;
 
 
-    public DcMotorEx rightVert;
-    public DcMotorEx leftVert;
-    DcMotorEx horMotor;
+    DcMotorEx rightVert;
+    DcMotorEx leftVert;
+    public DcMotorEx horMotor;
 
     int verticalDestination;
     int motorHorizontalDestination;
@@ -128,7 +128,7 @@ public class Elevators implements Tokenable {
 //        leftHor.setDirection(Servo.Direction.REVERSE);
 //        rightHor.setDirection(Servo.Direction.FORWARD);
 
-        horMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        horMotor.setDirection(DcMotorSimple.Direction.FORWARD);
 
         motorSetHorizontalDestination(MotorHorizontalState.HORIZONTAL_RETRACTED);
         horMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
@@ -220,7 +220,7 @@ public class Elevators implements Tokenable {
             if (Math.abs(destination - motorGetHorizontalPosition()) < eps) {
                 motorSetHorizontalPower(0);
             } else {
-                motorSetHorizontalPower(0.8);
+                motorSetHorizontalPower(1);
             }
             horMotor.setTargetPosition(destination);
         }
