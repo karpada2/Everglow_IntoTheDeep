@@ -18,11 +18,13 @@ public class Sweeper {
 
     public Sweeper(OpMode opMode) {
         sweeper = opMode.hardwareMap.get(Servo.class, "sweeper");
+        sweeper.setDirection(Servo.Direction.FORWARD);
+        setAngle(SweeperAngle.SWEEPER_RETRACTED);
     }
 
     public enum SweeperAngle {
-        SWEEPER_RETRACTED(0.0),
-        SWEEPER_EXTENDED(120.0);
+        SWEEPER_RETRACTED(180.0),
+        SWEEPER_EXTENDED(90.0);
 
         public final double angle;
 
