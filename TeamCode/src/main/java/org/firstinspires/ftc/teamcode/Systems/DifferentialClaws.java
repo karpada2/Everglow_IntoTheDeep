@@ -96,15 +96,17 @@ public class DifferentialClaws {
         private double startTime;
         private ColorSensorSystem colorSensorSystem = null;
         boolean isIn = false;
+        boolean isToInsert = true;
 
-        public ClawSampleInteractionAction(ClawPowerState state, double timeToStop) {
+        private ClawSampleInteractionAction(ClawPowerState state, double timeToStop) {
             assert timeToStop >= 0;
             this.wantedPower = state.state;
             this.timeUntilFinished = timeToStop;
             isDone = this::isFinished;
         }
-        public ClawSampleInteractionAction(ClawPowerState state, ColorSensorSystem colorSensorSystem) {
+        public ClawSampleInteractionAction(ClawPowerState state, ColorSensorSystem colorSensorSystem, boolean insert) {
             this(state, 2500);
+            isToInsert = insert;
             this.colorSensorSystem = colorSensorSystem;
         }
 
@@ -130,7 +132,7 @@ public class DifferentialClaws {
         }
 
         private boolean isFinished(){
-            return (System.currentTimeMillis() - startTime > timeUntilFinished);
+            return (colorSensorSystem.isSpecimenIn() == isToInsert);
         }
     }
 
@@ -335,7 +337,7 @@ public class DifferentialClaws {
     }
 
     public ClawSampleInteractionAction setClawSampleInteractionAction(ClawPowerState state, ColorSensorSystem colorSensorSystem) {
-        return new ClawSampleInteractionAction(state, colorSensorSystem);
+        return new ClawSampleInteractionAction(state, colorSensorSystem, state == ClawPowerState.TAKE_IN);
     }
 
     public ClawSampleInteractionAction setClawSampleInteractionAction(ClawPowerState state) {

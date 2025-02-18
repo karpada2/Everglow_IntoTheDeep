@@ -38,7 +38,7 @@ public class LeftPathHang extends LinearOpMode {
         // Init Poses
         Pose2d beginPose = new Pose2d(-31.1, -63,   Math.PI);
         Pose2d basketPose = new Pose2d(-57,-55.3,1.25*Math.PI);
-        Pose2d hanging_pose = new Pose2d(0,-30,0.5*Math.PI);
+        Pose2d hanging_pose = new Pose2d(-2,-30,0.5*Math.PI);
 
         // Init Systems
         DifferentialClaws claws  = new DifferentialClaws(this);
@@ -53,7 +53,7 @@ public class LeftPathHang extends LinearOpMode {
         TrajectoryActionBuilder B_sample1pickup = B_preload.endTrajectory().fresh()
                 .strafeToSplineHeading(new Vector2d(-50 + sampleOffset,collectLine),0.5*Math.PI, new AngularVelConstraint(Math.PI/2));
 
-        TrajectoryActionBuilder B_sample1basket = B_sample1pickup.endTrajectory().fresh()
+        TrajectoryActionBuilder B_sample1basket = drive.actionBuilder(new Pose2d(-50 + sampleOffset,collectLine+10,0.5*Math.PI))
                 .strafeToSplineHeading(basketPose.position,basketPose.heading);
 
         TrajectoryActionBuilder B_sample2pickup = B_sample1basket.endTrajectory().fresh()
@@ -62,7 +62,7 @@ public class LeftPathHang extends LinearOpMode {
         TrajectoryActionBuilder B_sample3pickup = B_sample1basket.endTrajectory().fresh()
                 .strafeToSplineHeading(new Vector2d(collectLineSampleThree, -23),Math.PI, new TranslationalVelConstraint(VelConstraint));
 
-        TrajectoryActionBuilder B_sample2basket = B_sample2pickup.endTrajectory().fresh()
+        TrajectoryActionBuilder B_sample2basket = drive.actionBuilder(new Pose2d(-60 + sampleOffset,collectLine+10,0.5*Math.PI))
                 .strafeToSplineHeading(basketPose.position,basketPose.heading);
 
         TrajectoryActionBuilder B_sample3basket = B_sample3pickup.endTrajectory().fresh()
@@ -72,21 +72,14 @@ public class LeftPathHang extends LinearOpMode {
                 .setTangent(Math.PI * 0.5)
                 .splineToLinearHeading(new Pose2d(-22,-10, 0),0);
 
-        Action wait = drive.actionBuilder(new Pose2d(0,0,0))
-                .build();
-
         Action BackAndForth1 = drive.actionBuilder(new Pose2d(-50 + sampleOffset,collectLine,0.5*Math.PI))
-                .waitSeconds(0.1)
                 .lineToY(collectLine+10, new TranslationalVelConstraint(VelConstraint))
                 .waitSeconds(1)
-                .lineToY(collectLine)
                 .build();
 
         Action BackAndForth2 = drive.actionBuilder(new Pose2d(-60 + sampleOffset,collectLine,0.5*Math.PI))
-                //   .waitSeconds(0.1)
                 .lineToY(collectLine+10, new TranslationalVelConstraint(VelConstraint))
                 .waitSeconds(0.1)
-                .lineToY(collectLine)
                 .build();
 
         Action BackAndForth3 = drive.actionBuilder(new Pose2d(collectLineSampleThree, -25,Math.PI))
@@ -101,34 +94,30 @@ public class LeftPathHang extends LinearOpMode {
         Action unload2 =
                 new SequentialAction(
                         claws.clawMovementAction(DifferentialClaws.ClawPositionState.HANG_SPECIMEN.state, 750),
-                        claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,1000),
+                        claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,colorSensorSystem),
                         claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750)
                 );
         Action unload3 = new SequentialAction(
                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.HANG_SPECIMEN.state, 750),
-                claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,1000),
+                claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,colorSensorSystem),
                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750)
         );
         Action unload4 = new SequentialAction(
                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.HANG_SPECIMEN.state, 750),
-                claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,1000),
+                claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,colorSensorSystem),
                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750)
         );
         Action pickup1 = new ParallelAction(BackAndForth1,
                 new SequentialAction(
                         elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_HALFWAY),
                         claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, DownTime),
-                        claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, colorSensorSystem),
-                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 1000),
-                        elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_RETRACTED)
+                        claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, colorSensorSystem)
                 ));
         Action pickup2 = new ParallelAction(BackAndForth2,
                 new SequentialAction(
                         elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_HALFWAY),
                         claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, DownTime),
-                        claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, colorSensorSystem),
-                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 1000),
-                        elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_RETRACTED)
+                        claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, colorSensorSystem)
                 ));
 
         Action pickup3 = new ParallelAction(BackAndForth3,
@@ -157,9 +146,12 @@ public class LeftPathHang extends LinearOpMode {
 
         Actions.runBlocking(
                 new SequentialAction(
-                        preload, //movement
+                        new ParallelAction(
+                                preload, //movement
+                                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_HIGH)
+                        ),
                         control.hangSpecimenHigh(),
-                        
+
                         new ParallelAction(
                                 elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN),
                                 sample1pickup //movement
@@ -168,6 +160,8 @@ public class LeftPathHang extends LinearOpMode {
                         pickup1,
 
                         new ParallelAction(
+                                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 1000),
+                                elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_RETRACTED),
                                 elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HIGH),
                                 sample1basket //movement
                         ),
@@ -178,7 +172,10 @@ public class LeftPathHang extends LinearOpMode {
                                 sample2pickup //movement
                         ),
                         pickup2,
+
                         new ParallelAction(
+                                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 1000),
+                                elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_RETRACTED),
                                 elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HIGH),
                                 sample2basket  //movement
                         ),

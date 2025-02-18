@@ -70,7 +70,7 @@ public class ActionControl {
         return returnWithDrive(new TokenSequentialAction(
                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, 750),
                 new TokenParallelAction(
-                claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, 200),
+                claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, colorSensorSystem),
                 elevators.setMotorHorizontalElevatorAction(MotorHorizontalState.HORIZONTAL_HALFWAY)
                 )
         ));
@@ -118,6 +118,7 @@ public class ActionControl {
                 )
         );
     }
+
 
 //    public void runAction(Action action){
 //        if(!isRunAction){
