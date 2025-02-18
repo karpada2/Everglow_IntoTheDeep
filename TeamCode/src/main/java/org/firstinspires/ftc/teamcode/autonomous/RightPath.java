@@ -30,7 +30,7 @@ public class RightPath extends LinearOpMode {
     public void runOpMode()  throws InterruptedException{
         // Init Poses
         Pose2d beginPose = new Pose2d(27, -62,   Math.PI/2);
-        Pose2d hangPose = new Pose2d(2,-32,Math.PI/2);;
+        Pose2d hangPose = new Pose2d(6,-32,Math.PI/2);;
 
         // Init Systems
         DifferentialClaws claws  = new DifferentialClaws(this);
