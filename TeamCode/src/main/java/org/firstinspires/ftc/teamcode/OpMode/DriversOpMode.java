@@ -78,6 +78,8 @@ public class DriversOpMode {
             drive.updatePoseEstimate();
 
 
+            claws.updateRightClawServoRotation();
+            claws.updateLeftClawServoRotation();
 
             if (gamepad2.right_trigger >= 0.4) { //split
                 claws.rotateWheels(gamepad2.right_trigger);
@@ -85,17 +87,21 @@ public class DriversOpMode {
             else if (gamepad2.left_trigger >= 0.4) {
                 claws.rotateWheels(-1);
             }
-            else {
-                virtualClawPose += gamepad2.left_stick_y*3;
-                claws.updateRightClawServoRotation();
-                claws.updateLeftClawServoRotation();
+            else if (gamepad2.right_bumper) {
+                virtualClawPose = 90;
                 lastPIDPower = claws.getPIDArmPower();
                 claws.rotateArm(lastPIDPower);
                 claws.setArmTargetPosition(virtualClawPose);
-                opMode.telemetry.addData("virtual Pos:", virtualClawPose);
-
-                //claws.rotateArm(DifferentialClaws.ClawPowerState.OFF.state);
-                //claws.rotateArm(gamepad2.left_stick_y);
+            }
+            else if (gamepad2.left_bumper) {
+                virtualClawPose = 0;
+                lastPIDPower = claws.getPIDArmPower();
+                claws.rotateArm(lastPIDPower);
+                claws.setArmTargetPosition(virtualClawPose);
+            }
+            else {
+                claws.rotateArm(DifferentialClaws.ClawPowerState.OFF.state);
+                claws.rotateArm(gamepad2.left_stick_y ); //- Math.cos(Math.toRadians((claws.getActualArmRotation()/claws.maxPoint)*120. - 30.)) * claws.f
             }
 
             if (Math.abs(gamepad2.right_stick_y) > joystickTolerance) {
@@ -107,7 +113,9 @@ public class DriversOpMode {
                 horElevatorPosition += -gamepad2.right_stick_y*40*3;
                 elevators.motorSetHorizontalDestination((int)(horElevatorPosition));
             }
-            opMode.telemetry.addData("Right Stick y: ", gamepad2.right_stick_y);
+            opMode.telemetry.addData("right vertical motor: ", elevators.rightVert.getPower());
+            opMode.telemetry.addData("left  vertical motor: ", elevators.leftVert.getPower());
+            opMode.telemetry.addData("virtual Pos:", virtualClawPose);
             opMode.telemetry.addData("precieved hor position: ", horElevatorPosition);
             opMode.telemetry.addData("hor position: ", elevators.motorGetHorizontalPosition());
 //            telemetry.addData("Control Hub auxillary volts: ", controlHub.getAuxiliaryVoltage(VoltageUnit.VOLTS));
