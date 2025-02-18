@@ -69,7 +69,7 @@ public class RightPath extends LinearOpMode {
         Elevators elevators  = new Elevators(this);
 
         ColorSensorSystem colorSensorSystem = new ColorSensorSystem(this, true);
-        ActionControl actionControl = new ActionControl(elevators,colorSensorSystem,drive);
+        ActionControl actionControl = new ActionControl(elevators,claws,colorSensorSystem,drive,gamepad1,gamepad2);
         //Init Trajectories
         TrajectoryActionBuilder B_preload = drive.actionBuilder(beginPose)
                 .strafeTo(specimins_basketPose.position)
@@ -121,7 +121,7 @@ public class RightPath extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
                         preload,
-
+                        actionControl.hangSpecimenHigh(),
                         park
                 )
         );
