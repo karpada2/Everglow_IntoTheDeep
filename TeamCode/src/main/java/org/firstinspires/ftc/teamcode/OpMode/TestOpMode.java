@@ -3,14 +3,13 @@ package org.firstinspires.ftc.teamcode.OpMode;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
-import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
-import org.firstinspires.ftc.teamcode.Systems.ColorSensorSystem;
 import org.firstinspires.ftc.teamcode.Systems.DifferentialClaws;
 import org.firstinspires.ftc.teamcode.Systems.Elevators;
+import org.firstinspires.ftc.teamcode.Systems.Sweeper;
 
 @TeleOp(name = "TestOpMode!!")
 public class TestOpMode extends LinearOpMode {
@@ -18,11 +17,14 @@ public class TestOpMode extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         DifferentialClaws claws = new DifferentialClaws(this);
         MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
+        Sweeper sweeper = new Sweeper(this);
 
         Elevators elevators = new Elevators(this);
         //elevators.setVerticalPower(0.0);
         boolean isInitialized = false;
         boolean secondery = false;
+
+
 
         waitForStart();
         //LynxModule controlHub = hardwareMap.get(LynxModule.class, "Control Hub");
@@ -40,12 +42,6 @@ public class TestOpMode extends LinearOpMode {
 
         boolean flagElevatorHorizontalX = true;
         boolean flagElevatorHorizontalTriangle = true;
-        boolean flagElevatorHorizontalCircle = true;
-        boolean flagElevatorHorizontalSquare = true;
-
-        boolean flagClawTakeIn = true;
-        boolean ClawState = true;
-        boolean flagClawSpit = true;
 
         double horElevatorPosition = 0;
 
@@ -135,6 +131,13 @@ public class TestOpMode extends LinearOpMode {
                 horElevatorPosition = Elevators.MotorHorizontalState.HORIZONTAL_RETRACTED.state;
             }
             flagElevatorHorizontalTriangle = !gamepad2.triangle;
+
+            if (gamepad2.right_bumper) {
+                sweeper.setAngle(Sweeper.SweeperAngle.SWEEPER_EXTENDED);
+            }
+            else {
+                sweeper.setAngle(Sweeper.SweeperAngle.SWEEPER_RETRACTED);
+            }
 ////
 ////            if(gamepad2.square && flagElevatorHorizontalSquare){
 ////                elevators.setHorizontalPosition(Elevators.HorizontalState.HORIZONTAL_DROP.state);
