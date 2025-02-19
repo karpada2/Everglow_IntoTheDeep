@@ -51,7 +51,7 @@ public class LeftPath extends LinearOpMode {
     public static double VelConstraint = 5;
 
     @Override
-    public void runOpMode()  throws InterruptedException{
+    public void runOpMode() throws InterruptedException{
         // Init Poses
         Pose2d beginPose = new Pose2d(-31.1, -63,   Math.PI);
         Pose2d basketPose = new Pose2d(-57,-55.3,1.25*Math.PI);
@@ -200,31 +200,31 @@ public class LeftPath extends LinearOpMode {
                                 elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN),
                                 sample2pickup //movement
                         ),
-                        pickup2,
-                        new ParallelAction(
-                                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HIGH),
-                                sample2basket  //movement
-                        ),
-                        unload3,
-
-
-                        new ParallelAction(
-                                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN),
-                                sample3pickup //movement
-                        ),
-
-                        pickup3,
-
-                        new ParallelAction(
-                                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_HIGH),
-                                sample3basket  //movement
-                        ),
-                        unload4,
-                        new ParallelAction(
-                                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_LOW),
-                                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750),
-                                Park  //movement
-                        )
+                        pickup2//,
+//                        new ParallelAction(
+//                                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HIGH),
+//                                sample2basket  //movement
+//                        ),
+//                        unload3,
+//
+//
+//                        new ParallelAction(
+//                                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN),
+//                                sample3pickup //movement
+//                        ),
+//
+//                        pickup3,
+//
+//                        new ParallelAction(
+//                                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_HIGH),
+//                                sample3basket  //movement
+//                        ),
+//                        unload4,
+//                        new ParallelAction(
+//                                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_LOW),
+//                                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750),
+//                                Park  //movement
+//                        )
                 )
         );
     }

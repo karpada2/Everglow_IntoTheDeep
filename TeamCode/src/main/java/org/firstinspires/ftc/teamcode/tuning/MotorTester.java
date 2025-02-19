@@ -1,36 +1,35 @@
 package org.firstinspires.ftc.teamcode.tuning;
 
+import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.Systems.ColorSensorSystem;
+import org.firstinspires.ftc.teamcode.Systems.DifferentialClaws;
 import org.firstinspires.ftc.teamcode.Systems.Elevators;
 
-@Disabled
 @TeleOp(name = "Motor test", group="Tests")
 public class MotorTester extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
-        Elevators elevators = new Elevators(this);
-        double horPosition = elevators.motorGetHorizontalPosition();
-        double vertPosition = elevators.getVerticalCurrentPosition();
+        DifferentialClaws differentialClaws = new DifferentialClaws(this);
+        ColorSensorSystem colorSensorSystem = new ColorSensorSystem(this, true);
 
         waitForStart();
 
         while (opModeIsActive()) {
             //horPosition += -gamepad2.left_stick_x*10;
-            vertPosition += -gamepad2.left_stick_y*10;
+            if(gamepad2.square)
+                Actions.runBlocking(differentialClaws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, colorSensorSystem));
+            differentialClaws.rotateWheels(DifferentialClaws.ClawPowerState.OFF);
+            telemetry.addData("Distance:", colorSensorSystem.getDistance(DistanceUnit.CM));
+            telemetry.addData("Color detected:", colorSensorSystem.getSpecimenColor());
+            telemetry.addData("Claw contain specimen?", colorSensorSystem.isSpecimenIn());
 
-            telemetry.addData("horizontal elevator's position", elevators.motorGetHorizontalPosition());
-            telemetry.addData("vertical elevator's position", elevators.getVerticalCurrentPosition());
-            telemetry.addData("horizontal elevator's wanted pos", horPosition);
-            telemetry.addData("vertical elevator's wanted pos", vertPosition);
-
-            elevators.motorSetHorizontalDestination((int)horPosition);
-            elevators.setVerticalDestination((int)vertPosition);
-
+            colorSensorSystem.updateAlert();
             telemetry.update();
-
         }
     }
 }

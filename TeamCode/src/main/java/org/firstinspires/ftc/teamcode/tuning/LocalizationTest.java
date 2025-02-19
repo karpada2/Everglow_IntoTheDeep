@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.Drawing;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.TankDrive;
 
-@Disabled
+
 @TeleOp(name="LocalizationTest", group="Tests")
 public class LocalizationTest extends LinearOpMode {
     @Override

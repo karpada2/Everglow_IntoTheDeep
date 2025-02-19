@@ -31,6 +31,7 @@ public class LeftPathHang extends LinearOpMode {
     public static double collectLine = -50;
     public static double collectLineSampleThree = -40;
     public static double sampleOffset = 3.5;
+    public static double addition = 7;
     public static double VelConstraint = 5;
 
     @Override
@@ -73,18 +74,18 @@ public class LeftPathHang extends LinearOpMode {
                 .splineToLinearHeading(new Pose2d(-22,-10, 0),0);
 
         Action BackAndForth1 = drive.actionBuilder(new Pose2d(-50 + sampleOffset,collectLine,0.5*Math.PI))
-                .lineToY(collectLine+10, new TranslationalVelConstraint(VelConstraint))
+                .lineToY(collectLine+addition, new TranslationalVelConstraint(VelConstraint))
                 .waitSeconds(1)
                 .build();
 
         Action BackAndForth2 = drive.actionBuilder(new Pose2d(-60 + sampleOffset,collectLine,0.5*Math.PI))
-                .lineToY(collectLine+10, new TranslationalVelConstraint(VelConstraint))
+                .lineToY(collectLine+addition, new TranslationalVelConstraint(VelConstraint))
                 .waitSeconds(0.1)
                 .build();
 
         Action BackAndForth3 = drive.actionBuilder(new Pose2d(collectLineSampleThree, -25,Math.PI))
                 //   .waitSeconds(0.1)
-                .lineToX(collectLineSampleThree-10, new TranslationalVelConstraint(VelConstraint))
+                .lineToX(collectLineSampleThree-addition, new TranslationalVelConstraint(VelConstraint))
                 .waitSeconds(0.1)
                 .lineToX(collectLineSampleThree, new TranslationalVelConstraint(VelConstraint))
                 .build();
@@ -180,7 +181,6 @@ public class LeftPathHang extends LinearOpMode {
                                 sample2basket  //movement
                         ),
                         unload3,
-
 
                         new ParallelAction(
                                 elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN),

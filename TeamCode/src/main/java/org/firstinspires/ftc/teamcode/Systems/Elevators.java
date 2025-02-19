@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Systems.Token.TokenAction;
 import org.firstinspires.ftc.teamcode.Systems.Token.Tokenable;
 
@@ -115,8 +116,8 @@ public class Elevators implements Tokenable {
         leftVert = opMode.hardwareMap.get(DcMotorEx.class, "leftVert");
         horMotor = opMode.hardwareMap.get(DcMotorEx.class, "motorHor");
 
-        rightVert.setDirection(DcMotorSimple.Direction.FORWARD);
-        leftVert.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightVert.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftVert.setDirection(DcMotorSimple.Direction.FORWARD);
         setVerticalDestination(VerticalState.VERTICAL_MIN.state);
         rightVert.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         leftVert.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
@@ -260,6 +261,14 @@ public class Elevators implements Tokenable {
         leftVert.setTargetPosition(dest);
         rightVert.setPower(0.65);
         leftVert.setPower(0.65);
+    }
+
+    public double getLeftVelocity(){
+        return leftVert.getVelocity();
+    }
+
+    public double getRightVelocity(){
+        return rightVert.getVelocity();
     }
 
     @Override

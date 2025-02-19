@@ -61,8 +61,9 @@ public class ActionControl {
         return returnWithDrive(new TokenSequentialAction(
                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750), //up
                 elevators.setVerticalElevatorAction(VerticalState.VERTICAL_HIGH),
-                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 800) // ,mid
-                //claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state) // down
+                claws.clawMovementAction(DifferentialClaws.ClawPositionState.SPIT_STATE.state, 750)
+//                claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,1000),
+//                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750)
         ));
     }
 

@@ -96,7 +96,7 @@ public class DifferentialClaws {
         private double startTime;
         private ColorSensorSystem colorSensorSystem = null;
         boolean isIn = false;
-        boolean isToInsert = true;
+        boolean isToInsert;
 
         private ClawSampleInteractionAction(ClawPowerState state, double timeToStop) {
             assert timeToStop >= 0;
@@ -132,7 +132,7 @@ public class DifferentialClaws {
         }
 
         private boolean isFinished(){
-            return (colorSensorSystem.isSpecimenIn() == isToInsert);
+            return colorSensorSystem.isSpecimenIn() == isToInsert;
         }
     }
 

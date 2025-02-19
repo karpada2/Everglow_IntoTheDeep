@@ -5,11 +5,13 @@ import android.graphics.Path;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.teamcode.Systems.ActionControl;
 import org.firstinspires.ftc.teamcode.Systems.ColorSensorSystem;
 import org.firstinspires.ftc.teamcode.Systems.DifferentialClaws;
 import org.firstinspires.ftc.teamcode.Systems.Elevators;
@@ -27,16 +29,16 @@ public class DriversOpMode {
     public void run(boolean isBlue){
         DifferentialClaws claws = new DifferentialClaws(opMode);
         MecanumDrive drive = new MecanumDrive(opMode.hardwareMap, new Pose2d(0, 0, 0));
-
+        ColorSensorSystem colorSensorSystem = new ColorSensorSystem(opMode, isBlue);
         Elevators elevators = new Elevators(opMode);
         elevators.setVerticalPower(0.0);
         boolean isInitialized = false;
         boolean secondery = false;
-
+        ActionControl control = new ActionControl(elevators, claws, colorSensorSystem, drive, gamepad1, gamepad2);
         opMode.waitForStart();
         //LynxModule controlHub = hardwareMap.get(LynxModule.class, "Control Hub");
         //LynxModule expansionHub = hardwareMap.get(LynxModule.class, "Expansion Hub 2");
-        ColorSensorSystem colorSensorSystem = new ColorSensorSystem(opMode, isBlue);
+
 
         elevators.motorSetHorizontalPower(1);
 
@@ -53,18 +55,21 @@ public class DriversOpMode {
         boolean flagElevatorHorizontalSquare = true;
 
         boolean flagClawTakeIn = true;
-        boolean ClawState = true;
-        boolean flagClawSpit = true;
+        boolean leftBumper = true;
+        boolean rightBumper = true;
         double lastPIDPower = 0;
         double virtualClawPose = claws.maxPoint;
 
         double horElevatorPosition = 0;
+
+        double startTime = 0;
 
         double AnalogueExtensionVertical;
         double VerticalAnalogueFactor = 1;
 
         double HorizontalAnalogueFactor = 1;
         double AnalogueExtensionHorizontal;
+        boolean isRunPID = false;
 
         while (opMode.opModeIsActive()) {
             //driving
@@ -81,28 +86,37 @@ public class DriversOpMode {
             claws.updateRightClawServoRotation();
             claws.updateLeftClawServoRotation();
 
+            if(gamepad2.triangle && flagElevatorHorizontalTriangle){
+                virtualClawPose = DifferentialClaws.ClawPositionState.SPIT_STATE.state-10;
+                claws.setArmTargetPosition(virtualClawPose);
+                startTime = System.currentTimeMillis();
+            }
+            flagElevatorHorizontalTriangle = !gamepad2.triangle;
+
             if (gamepad2.right_trigger >= 0.4) { //split
-                claws.rotateWheels(gamepad2.right_trigger);
+                claws.rotateWheels(DifferentialClaws.ClawPowerState.TAKE_IN);
             }
             else if (gamepad2.left_trigger >= 0.4) {
-                claws.rotateWheels(-1);
+                claws.rotateWheels(gamepad2.left_trigger);
             }
-            else if (gamepad2.right_bumper) {
-                virtualClawPose = 90;
-                lastPIDPower = claws.getPIDArmPower();
-                claws.rotateArm(lastPIDPower);
+            else if (gamepad2.right_bumper && rightBumper) {
+                virtualClawPose = 68;
                 claws.setArmTargetPosition(virtualClawPose);
+                startTime = System.currentTimeMillis();
             }
-            else if (gamepad2.left_bumper) {
+            else if (gamepad2.left_bumper && leftBumper) {
                 virtualClawPose = 0;
-                lastPIDPower = claws.getPIDArmPower();
-                claws.rotateArm(lastPIDPower);
                 claws.setArmTargetPosition(virtualClawPose);
+//                claws.rotateArm(1);
+                startTime = System.currentTimeMillis();
             }
             else {
-                claws.rotateArm(DifferentialClaws.ClawPowerState.OFF.state);
-                claws.rotateArm(-gamepad2.left_stick_y); //- Math.cos(Math.toRadians((claws.getActualArmRotation()/claws.maxPoint)*120. - 30.)) * claws.f
+                claws.rotateArm(lastPIDPower);
+                //claws.rotateArm(-gamepad2.left_stick_y); //- Math.cos(Math.toRadians((claws.getActualArmRotation()/claws.maxPoint)*120. - 30.)) * claws.f
             }
+
+            leftBumper = !gamepad2.left_bumper;
+            rightBumper = !gamepad2.right_bumper;
 
             if (Math.abs(gamepad2.right_stick_y) > joystickTolerance) {
                 if(horElevatorPosition < 0){
@@ -110,9 +124,8 @@ public class DriversOpMode {
                 }else if(horElevatorPosition >= Elevators.MotorHorizontalState.HORIZONTAL_EXTENDED.state){
                     horElevatorPosition =  Elevators.MotorHorizontalState.HORIZONTAL_EXTENDED.state;
                 }
-                //horElevatorPosition += -gamepad2.right_stick_y*40*3;
-                //elevators.motorSetHorizontalDestination((int)(horElevatorPosition));
-                elevators.motorSetHorizontalPower(-gamepad2.right_stick_y);
+                horElevatorPosition += -gamepad2.right_stick_y*40*3;
+                elevators.motorSetHorizontalDestination((int)(horElevatorPosition));
             }
             opMode.telemetry.addData("hor motor: ", elevators.horMotor.getPower());
             opMode.telemetry.addData("virtual Pos:", virtualClawPose);
@@ -146,33 +159,6 @@ public class DriversOpMode {
 
             opMode.telemetry.addData("vert pos:", elevators.getVerticalCurrentPosition());
 
-            // Read line 105
-//            AnalogueExtensionVertical = -gamepad2.left_stick_y;
-//            elevators.setVerticalDestination((int)(elevators.getVerticalDestination() + AnalogueExtensionVertical * VerticalAnalogueFactor));
-//
-            if(gamepad2.cross && flagElevatorHorizontalX) {
-                elevators.motorSetHorizontalDestination(Elevators.MotorHorizontalState.HORIZONTAL_EXTENDED.state);
-                horElevatorPosition = Elevators.MotorHorizontalState.HORIZONTAL_EXTENDED.state;
-            }
-            flagElevatorHorizontalX = !gamepad2.cross;
-//
-            if(gamepad2.triangle && flagElevatorHorizontalTriangle){
-                elevators.motorSetHorizontalDestination(Elevators.MotorHorizontalState.HORIZONTAL_RETRACTED.state);
-                horElevatorPosition = Elevators.MotorHorizontalState.HORIZONTAL_RETRACTED.state;
-            }
-            flagElevatorHorizontalTriangle = !gamepad2.triangle;
-//
-//            if(gamepad2.square && flagElevatorHorizontalSquare){
-//                elevators.setHorizontalPosition(Elevators.HorizontalState.HORIZONTAL_DROP.state);
-//            }
-//            flagElevatorHorizontalSquare = !gamepad2.square;
-//
-//
-            if(gamepad2.circle && flagElevatorHorizontalCircle){
-                elevators.motorSetHorizontalDestination(Elevators.MotorHorizontalState.HORIZONTAL_HALFWAY.state);
-                horElevatorPosition = Elevators.MotorHorizontalState.HORIZONTAL_HALFWAY.state;
-            }
-            flagElevatorHorizontalCircle = !gamepad2.circle;
             if(isInitialized && secondery)
                 elevators.updateVert();
             colorSensorSystem.updateAlert();
@@ -190,38 +176,23 @@ public class DriversOpMode {
             }
             flagElevatorHorizontalSquare = !gamepad2.square;
 
+            if(System.currentTimeMillis()-startTime <3000) {
+                if(claws.getArmTargetPosition() == 0)
+                {
+                    if(claws.getActualArmRotation() >58)
+                        lastPIDPower = 0.2;
+                    else
+                        lastPIDPower = -Math.cos(Math.toRadians(
+                                ((int)(claws.getActualArmRotation())/DifferentialClaws.maxPoint)*120. - 30.)) * -0.05;
+                }
+                else
+                    lastPIDPower = claws.getPIDArmPower();
 
-//            Currently Broken, might cause damage to robot
-//            AnalogueExtensionHorizontal = -gamepad2.right_stick_x;
-//            elevators.setHorizontalPosition(elevators.getHorizontalState() + AnalogueExtensionHorizontal * HorizontalAnalogueFactor);
-//
-//            telemetry.addData("Epsilon: ", epsilon);
-//            telemetry.addData("Right trigger thing: ", gamepad2.right_trigger);
-//            telemetry.addData("flag claw take in: ", flagClawTakeIn);
-//
-//            // take in trigger
-//            if(gamepad2.right_trigger > epsilon  && flagClawTakeIn){
-//                telemetry.addLine("Should be taking in ");
-//                claw.setState(Claws.ClawState.TAKE_IN);
-//            }
-//            flagClawTakeIn = !(gamepad2.right_trigger > epsilon);
-//
-//            // spit trigger
-//            if(gamepad2.right_bumper && flagClawSpit){
-//                claw.setState(Claws.ClawState.SPIT);
-//            }
-//            flagClawSpit = !gamepad2.right_bumper;
-//
-//            // claw off
-//            if(!gamepad2.right_bumper && !(gamepad2.right_trigger > epsilon)){
-//                claw.setState(Claws.ClawState.OFF);
-//            }
-//
-//
-//            telemetry.addData("position:", drive.pose);
-//            telemetry.addData("right_bumper:", gamepad2.right_trigger);
-//            telemetry.addData("right_trigger:", gamepad2.right_bumper);
-//            telemetry.update();
+                claws.rotateArm(lastPIDPower);
+                if ((claws.getActualArmRotation() <= 5 && claws.getArmTargetPosition() ==0)
+                        || (claws.getActualArmRotation() >= 67 && claws.getArmTargetPosition() == 68))
+                    lastPIDPower = 0;
+            }
         }
 
     }
