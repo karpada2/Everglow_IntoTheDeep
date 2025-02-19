@@ -1,30 +1,28 @@
 package org.firstinspires.ftc.teamcode.OpMode;
 
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.PoseVelocity2d;
-import com.acmerobotics.roadrunner.Vector2d;
-import com.acmerobotics.roadrunner.ftc.Actions;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
-import org.firstinspires.ftc.teamcode.Systems.ColorSensorSystem;
 import org.firstinspires.ftc.teamcode.Systems.DifferentialClaws;
 import org.firstinspires.ftc.teamcode.Systems.Elevators;
+import org.firstinspires.ftc.teamcode.Systems.Sweeper;
 
-@Disabled
 @TeleOp(name = "TestOpMode!!")
 public class TestOpMode extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         DifferentialClaws claws = new DifferentialClaws(this);
         MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
+        Sweeper sweeper = new Sweeper(this);
 
         Elevators elevators = new Elevators(this);
         //elevators.setVerticalPower(0.0);
         boolean isInitialized = false;
         boolean secondery = false;
+
+
 
         waitForStart();
         //LynxModule controlHub = hardwareMap.get(LynxModule.class, "Control Hub");
@@ -32,6 +30,8 @@ public class TestOpMode extends LinearOpMode {
         //ColorSensorSystem colorSensorSystem = new ColorSensorSystem(this, false);
 
         //elevators.motorSetHorizontalPower(1);
+
+        double currAngle = 0;
 
         double epsilon = 0.4;
         double joystickTolerance = 0.05;
@@ -42,12 +42,6 @@ public class TestOpMode extends LinearOpMode {
 
         boolean flagElevatorHorizontalX = true;
         boolean flagElevatorHorizontalTriangle = true;
-        boolean flagElevatorHorizontalCircle = true;
-        boolean flagElevatorHorizontalSquare = true;
-
-        boolean flagClawTakeIn = true;
-        boolean ClawState = true;
-        boolean flagClawSpit = true;
 
         double horElevatorPosition = 0;
 
@@ -57,86 +51,99 @@ public class TestOpMode extends LinearOpMode {
         double HorizontalAnalogueFactor = 1;
         double AnalogueExtensionHorizontal;
 
+
         while (opModeIsActive()) {
-            //driving
-            drive.setDrivePowers(new PoseVelocity2d(
-                    new Vector2d(
-                            -gamepad1.left_stick_y,
-                            -gamepad1.left_stick_x
-                    ),
-                    -gamepad1.right_stick_x
-            ));
-            drive.updatePoseEstimate();
-//
-//
-            if (gamepad2.right_trigger >= 0.4) { //split
-                claws.rotateWheels(gamepad2.right_trigger);
-            }
-            else if (gamepad2.left_trigger >= 0.4) {
-                claws.rotateWheels(-1);
-            }
-            else {
-                claws.rotateArm(DifferentialClaws.ClawPowerState.OFF.state);
-                claws.rotateArm(gamepad2.left_stick_y);
-            }
-//
-            if (Math.abs(gamepad2.right_stick_y) > joystickTolerance) {
-                if(horElevatorPosition < 0){
-                    horElevatorPosition = 0;
-                }else if(horElevatorPosition >= Elevators.MotorHorizontalState.HORIZONTAL_EXTENDED.state){
-                    horElevatorPosition =  Elevators.MotorHorizontalState.HORIZONTAL_EXTENDED.state;
-                }
-                horElevatorPosition += -gamepad2.right_stick_y*40*3;
-                elevators.motorSetHorizontalDestination((int)(horElevatorPosition));
-            }
-//            telemetry.addData("Right Stick y: ", gamepad2.right_stick_y);
-//            telemetry.addData("precieved hor position: ", horElevatorPosition);
-//            telemetry.addData("hor position: ", elevators.motorGetHorizontalPosition());
-////            telemetry.addData("Control Hub auxillary volts: ", controlHub.getAuxiliaryVoltage(VoltageUnit.VOLTS));
-////            telemetry.addData("Expansion Hub auxillary volts: ", expansionHub.getAuxiliaryVoltage(VoltageUnit.VOLTS));
-////            telemetry.addData("Control Hub used volts: ", controlHub.getInputVoltage(VoltageUnit.VOLTS));
-////            telemetry.addData("Expansion Hub used volts: ", expansionHub.getInputVoltage(VoltageUnit.VOLTS));
-//            telemetry.update();
-//
-//
-//
-            if(gamepad2.dpad_down && flagElevatorVerticalDpadDown) {
-                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_PICKUP.state);
-            }
-            flagElevatorVerticalDpadDown = !gamepad2.dpad_down;
-
-            if(gamepad2.dpad_left && flagElevatorVerticalDpadLeft){
-                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_HURDLE.state);
-            }
-            flagElevatorVerticalDpadLeft = !gamepad2.dpad_left;
-
-            if(gamepad2.dpad_up && flagElevatorVerticalDpadUp){
-                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_LOW.state);
-            }
-            flagElevatorVerticalDpadUp = !gamepad2.dpad_up;
-
-            if(gamepad2.dpad_right && flagElevatorVerticalDpadRight){
-                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_HIGH.state);
-            }
-            flagElevatorVerticalDpadRight = !gamepad2.dpad_right;
-
-//            telemetry.addData("vert pos:", elevators.getVerticalCurrentPosition());
-//
-//            // Read line 105
-////            AnalogueExtensionVertical = -gamepad2.left_stick_y;
-////            elevators.setVerticalDestination((int)(elevators.getVerticalDestination() + AnalogueExtensionVertical * VerticalAnalogueFactor));
+//            //driving
+//            drive.setDrivePowers(new PoseVelocity2d(
+//                    new Vector2d(
+//                            -gamepad1.left_stick_y,
+//                            -gamepad1.left_stick_x
+//                    ),
+//                    -gamepad1.right_stick_x
+//            ));
+//            drive.updatePoseEstimate();
 ////
-            if(gamepad2.cross && flagElevatorHorizontalX) {
-                elevators.motorSetHorizontalDestination(Elevators.MotorHorizontalState.HORIZONTAL_EXTENDED.state);
-                horElevatorPosition = Elevators.MotorHorizontalState.HORIZONTAL_EXTENDED.state;
-            }
-            flagElevatorHorizontalX = !gamepad2.cross;
+////
+//            if (gamepad2.right_trigger >= 0.4) { //split
+//                claws.rotateWheels(gamepad2.right_trigger);
+//            }
+//            else if (gamepad2.left_trigger >= 0.4) {
+//                claws.rotateWheels(-1);
+//            }
+//            else {
+//                claws.rotateArm(DifferentialClaws.ClawPowerState.OFF.state);
+//                claws.rotateArm(gamepad2.left_stick_y);
+//            }
+////
+//            if (Math.abs(gamepad2.right_stick_y) > joystickTolerance) {
+//                if(horElevatorPosition < 0){
+//                    horElevatorPosition = 0;
+//                }else if(horElevatorPosition >= Elevators.MotorHorizontalState.HORIZONTAL_EXTENDED.state){
+//                    horElevatorPosition =  Elevators.MotorHorizontalState.HORIZONTAL_EXTENDED.state;
+//                }
+//                horElevatorPosition += -gamepad2.right_stick_y*40*3;
+//                elevators.motorSetHorizontalDestination((int)(horElevatorPosition));
+//            }
+////            telemetry.addData("Right Stick y: ", gamepad2.right_stick_y);
+////            telemetry.addData("precieved hor position: ", horElevatorPosition);
+////            telemetry.addData("hor position: ", elevators.motorGetHorizontalPosition());
+//////            telemetry.addData("Control Hub auxillary volts: ", controlHub.getAuxiliaryVoltage(VoltageUnit.VOLTS));
+//////            telemetry.addData("Expansion Hub auxillary volts: ", expansionHub.getAuxiliaryVoltage(VoltageUnit.VOLTS));
+//////            telemetry.addData("Control Hub used volts: ", controlHub.getInputVoltage(VoltageUnit.VOLTS));
+//////            telemetry.addData("Expansion Hub used volts: ", expansionHub.getInputVoltage(VoltageUnit.VOLTS));
+////            telemetry.update();
+////
+////
+////
+//            if(gamepad2.dpad_down && flagElevatorVerticalDpadDown) {
+//                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_PICKUP.state);
+//            }
+//            flagElevatorVerticalDpadDown = !gamepad2.dpad_down;
 //
-            if(gamepad2.triangle && flagElevatorHorizontalTriangle){
-                elevators.motorSetHorizontalDestination(Elevators.MotorHorizontalState.HORIZONTAL_RETRACTED.state);
-                horElevatorPosition = Elevators.MotorHorizontalState.HORIZONTAL_RETRACTED.state;
+//            if(gamepad2.dpad_left && flagElevatorVerticalDpadLeft){
+//                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_HURDLE.state);
+//            }
+//            flagElevatorVerticalDpadLeft = !gamepad2.dpad_left;
+//
+//            if(gamepad2.dpad_up && flagElevatorVerticalDpadUp){
+//                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_LOW.state);
+//            }
+//            flagElevatorVerticalDpadUp = !gamepad2.dpad_up;
+//
+//            if(gamepad2.dpad_right && flagElevatorVerticalDpadRight){
+//                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_HIGH.state);
+//            }
+//            flagElevatorVerticalDpadRight = !gamepad2.dpad_right;
+//
+////            telemetry.addData("vert pos:", elevators.getVerticalCurrentPosition());
+////
+////            // Read line 105
+//////            AnalogueExtensionVertical = -gamepad2.left_stick_y;
+//////            elevators.setVerticalDestination((int)(elevators.getVerticalDestination() + AnalogueExtensionVertical * VerticalAnalogueFactor));
+//////
+//            if(gamepad2.cross && flagElevatorHorizontalX) {
+//                elevators.motorSetHorizontalDestination(Elevators.MotorHorizontalState.HORIZONTAL_EXTENDED.state);
+//                horElevatorPosition = Elevators.MotorHorizontalState.HORIZONTAL_EXTENDED.state;
+//            }
+//            flagElevatorHorizontalX = !gamepad2.cross;
+////
+//            if(gamepad2.triangle && flagElevatorHorizontalTriangle){
+//                elevators.motorSetHorizontalDestination(Elevators.MotorHorizontalState.HORIZONTAL_RETRACTED.state);
+//                horElevatorPosition = Elevators.MotorHorizontalState.HORIZONTAL_RETRACTED.state;
+//            }
+//            flagElevatorHorizontalTriangle = !gamepad2.triangle;
+
+            if (gamepad2.right_bumper) {
+                sweeper.setAngle(Sweeper.SweeperAngle.SWEEPER_EXTENDED);
             }
-            flagElevatorHorizontalTriangle = !gamepad2.triangle;
+            else if (gamepad2.left_bumper) {
+                sweeper.setAngle(Sweeper.SweeperAngle.SWEEPER_RETRACTED);
+            }
+
+            telemetry.addData("currAngle", currAngle);
+            telemetry.addData("pos", sweeper.getPosition());
+            telemetry.addData("angle", sweeper.getAngle());
+            telemetry.update();
 ////
 ////            if(gamepad2.square && flagElevatorHorizontalSquare){
 ////                elevators.setHorizontalPosition(Elevators.HorizontalState.HORIZONTAL_DROP.state);
@@ -198,6 +205,5 @@ public class TestOpMode extends LinearOpMode {
 //            telemetry.addData("right_trigger:", gamepad2.right_bumper);
 //            telemetry.update();
         }
-
     }
 }
