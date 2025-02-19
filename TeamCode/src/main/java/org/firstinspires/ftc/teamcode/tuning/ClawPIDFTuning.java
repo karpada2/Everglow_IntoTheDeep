@@ -1,19 +1,9 @@
 package org.firstinspires.ftc.teamcode.tuning;
 
-import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.ftc.Actions;
-import com.arcrobotics.ftclib.controller.PIDController;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.AnalogInput;
-import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Systems.DifferentialClaws;
 
 @Config
@@ -59,7 +49,7 @@ public class ClawPIDFTuning extends LinearOpMode {
                 if (x <= 4000) {
                     claws.setArmTargetPosition(68);
                 } else {
-                    claws.setArmTargetPosition(58);
+                    claws.setArmTargetPosition(48);
                 }
             }
         }

@@ -1,13 +1,9 @@
 package org.firstinspires.ftc.teamcode.OpMode;
 
-import android.graphics.Path;
-
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
-import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
@@ -15,6 +11,7 @@ import org.firstinspires.ftc.teamcode.Systems.ActionControl;
 import org.firstinspires.ftc.teamcode.Systems.ColorSensorSystem;
 import org.firstinspires.ftc.teamcode.Systems.DifferentialClaws;
 import org.firstinspires.ftc.teamcode.Systems.Elevators;
+import org.firstinspires.ftc.teamcode.Systems.Sweeper;
 
 public class DriversOpMode {
     private final LinearOpMode opMode;
@@ -27,6 +24,7 @@ public class DriversOpMode {
     }
 
     public void run(boolean isBlue){
+        Sweeper sweeper = new Sweeper(opMode);
         DifferentialClaws claws = new DifferentialClaws(opMode);
         MecanumDrive drive = new MecanumDrive(opMode.hardwareMap, new Pose2d(0, 0, 0));
         ColorSensorSystem colorSensorSystem = new ColorSensorSystem(opMode, isBlue);
@@ -54,7 +52,7 @@ public class DriversOpMode {
         boolean flagElevatorHorizontalCircle = true;
         boolean flagElevatorHorizontalSquare = true;
 
-        boolean flagClawTakeIn = true;
+        boolean flagSweeper = true;
         boolean leftBumper = true;
         boolean rightBumper = true;
         double lastPIDPower = 0;
@@ -81,6 +79,10 @@ public class DriversOpMode {
                     -gamepad1.right_stick_x
             ));
             drive.updatePoseEstimate();
+
+            if (gamepad1.right_trigger >0.4 && flagSweeper)
+                sweeper.toggle();
+            flagSweeper = !(gamepad1.right_trigger>0.4);
 
 
             claws.updateRightClawServoRotation();
@@ -111,8 +113,8 @@ public class DriversOpMode {
                 startTime = System.currentTimeMillis();
             }
             else {
-                claws.rotateArm(lastPIDPower);
-                //claws.rotateArm(-gamepad2.left_stick_y); //- Math.cos(Math.toRadians((claws.getActualArmRotation()/claws.maxPoint)*120. - 30.)) * claws.f
+                //claws.rotateArm(lastPIDPower);
+                claws.rotateArm(-gamepad2.left_stick_y); //- Math.cos(Math.toRadians((claws.getActualArmRotation()/claws.maxPoint)*120. - 30.)) * claws.f
             }
 
             leftBumper = !gamepad2.left_bumper;
@@ -136,6 +138,7 @@ public class DriversOpMode {
 //            telemetry.addData("Control Hub used volts: ", controlHub.getInputVoltage(VoltageUnit.VOLTS));
 //            telemetry.addData("Expansion Hub used volts: ", expansionHub.getInputVoltage(VoltageUnit.VOLTS));
             opMode.telemetry.update();
+            elevators.updateVert();
 
             if(gamepad2.dpad_down && flagElevatorVerticalDpadDown) {
                 elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_PICKUP.state);
@@ -153,7 +156,7 @@ public class DriversOpMode {
             flagElevatorVerticalDpadUp = !gamepad2.dpad_up;
 
             if(gamepad2.dpad_right && flagElevatorVerticalDpadRight){
-                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_HIGH.state);
+                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_HIGH.state+500);
             }
             flagElevatorVerticalDpadRight = !gamepad2.dpad_right;
 

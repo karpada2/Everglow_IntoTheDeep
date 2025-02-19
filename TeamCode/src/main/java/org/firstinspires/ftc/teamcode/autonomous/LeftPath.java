@@ -115,23 +115,23 @@ public class LeftPath extends LinearOpMode {
 
         Action unload1 = new SequentialAction(
                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.SPIT_STATE.state, 750),
-                claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,1000),
+                claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,colorSensorSystem),
                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, DownTime)
         );
         Action unload2 =
                 new SequentialAction(
                         claws.clawMovementAction(DifferentialClaws.ClawPositionState.SPIT_STATE.state, 750),
-                        claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,1000),
+                        claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,colorSensorSystem),
                         claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750)
                 );
         Action unload3 = new SequentialAction(
                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.SPIT_STATE.state, 750),
-                claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,1000),
+                claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,colorSensorSystem),
                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750)
         );
         Action unload4 = new SequentialAction(
                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.SPIT_STATE.state, 750),
-                claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,1000),
+                claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,colorSensorSystem),
                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750)
         );
         Action pickup1 = new ParallelAction(BackAndForth1,
@@ -200,6 +200,7 @@ public class LeftPath extends LinearOpMode {
                                 elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN),
                                 sample2pickup //movement
                         ),
+                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, DownTime),
                         pickup2//,
 //                        new ParallelAction(
 //                                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HIGH),

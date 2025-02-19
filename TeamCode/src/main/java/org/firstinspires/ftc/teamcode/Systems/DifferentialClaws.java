@@ -121,10 +121,13 @@ public class DifferentialClaws {
                 isInitialized = true;
             }
 
-            if(colorSensorSystem != null && colorSensorSystem.isSpecimenIn() && !isIn)
+            if(colorSensorSystem != null && colorSensorSystem.isSpecimenIn() == isToInsert && !isIn)
             {
                 startTime = System.currentTimeMillis();
-                timeUntilFinished = 400;
+                if(isToInsert)
+                    timeUntilFinished = 450;
+                else
+                    timeUntilFinished = 700;
                 isIn = true;
             }
 
@@ -132,7 +135,7 @@ public class DifferentialClaws {
         }
 
         private boolean isFinished(){
-            return colorSensorSystem.isSpecimenIn() == isToInsert;
+            return (System.currentTimeMillis() - startTime > timeUntilFinished);
         }
     }
 
@@ -204,7 +207,7 @@ public class DifferentialClaws {
     public enum ClawPositionState {
         MIN(0.0),
         MID(maxPoint/2),
-        SPIT_STATE(maxPoint-10),
+        SPIT_STATE(maxPoint-15),
         HANG_SPECIMEN(maxPoint-30),
         MAX(maxPoint);
 

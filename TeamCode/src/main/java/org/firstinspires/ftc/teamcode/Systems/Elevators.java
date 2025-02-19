@@ -9,7 +9,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Systems.Token.TokenAction;
 import org.firstinspires.ftc.teamcode.Systems.Token.Tokenable;
 
@@ -167,7 +166,7 @@ public class Elevators implements Tokenable {
     }
 
     public void updateVert(){
-        if (Math.abs(verticalDestination-getVerticalCurrentPosition())<=100 && verticalDestination == 0) {
+        if (Math.abs(verticalDestination-getVerticalCurrentPosition())<=200 && verticalDestination == 0) {
             setVerticalPower(0);
             double innerEps = 10;
             if(Math.abs(verticalDestination-getVerticalCurrentPosition())>= innerEps) {
