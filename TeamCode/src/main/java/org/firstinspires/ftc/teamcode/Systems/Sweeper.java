@@ -45,6 +45,19 @@ public class Sweeper {
         sweeper.setPosition(position);
     }
 
+    // returns the position it is now set to
+    public SweeperAngle toggle() {
+        if (getAngle() == SweeperAngle.SWEEPER_RETRACTED.angle) {
+            setAngle(SweeperAngle.SWEEPER_EXTENDED);
+            return SweeperAngle.SWEEPER_RETRACTED;
+        }
+        else {
+            setAngle(SweeperAngle.SWEEPER_RETRACTED);
+            return SweeperAngle.SWEEPER_EXTENDED;
+        }
+
+    }
+
 
     public double getPosition() {
         return sweeper.getPosition();
