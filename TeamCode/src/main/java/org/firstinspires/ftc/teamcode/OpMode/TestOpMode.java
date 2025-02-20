@@ -134,15 +134,15 @@ public class TestOpMode extends LinearOpMode {
 //            flagElevatorHorizontalTriangle = !gamepad2.triangle;
 
             if (gamepad2.right_bumper) {
-                sweeper.setAngle(Sweeper.SweeperAngle.SWEEPER_EXTENDED);
+                sweeper.setPosition(Sweeper.SweeperAngle.SWEEPER_EXTENDED);
             }
             else if (gamepad2.left_bumper) {
-                sweeper.setAngle(Sweeper.SweeperAngle.SWEEPER_RETRACTED);
+                sweeper.setPosition(Sweeper.SweeperAngle.SWEEPER_RETRACTED);
             }
 
             telemetry.addData("currAngle", currAngle);
             telemetry.addData("pos", sweeper.getPosition());
-            telemetry.addData("angle", sweeper.getAngle());
+            telemetry.addData("angle", sweeper.getPosition());
             telemetry.update();
 ////
 ////            if(gamepad2.square && flagElevatorHorizontalSquare){

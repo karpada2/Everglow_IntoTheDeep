@@ -80,9 +80,13 @@ public class DriversOpMode {
             ));
             drive.updatePoseEstimate();
 
-            if (gamepad1.right_trigger >0.4 && flagSweeper)
-                sweeper.toggle();
-            flagSweeper = !(gamepad1.right_trigger>0.4);
+
+            if (gamepad1.circle) {
+                sweeper.setPosition(Sweeper.SweeperAngle.SWEEPER_EXTENDED);
+            }
+            else {
+                sweeper.setPosition(Sweeper.SweeperAngle.SWEEPER_RETRACTED);
+            }
 
 
             claws.updateRightClawServoRotation();
@@ -130,7 +134,7 @@ public class DriversOpMode {
                 elevators.motorSetHorizontalDestination((int)(horElevatorPosition));
             }
             opMode.telemetry.addData("hor motor: ", elevators.horMotor.getPower());
-            opMode.telemetry.addData("virtual Pos:", virtualClawPose);
+            opMode.telemetry.addData("sweeper:", virtualClawPose);
             opMode.telemetry.addData("precieved hor position: ", horElevatorPosition);
             opMode.telemetry.addData("hor position: ", elevators.motorGetHorizontalPosition());
 //            telemetry.addData("Control Hub auxillary volts: ", controlHub.getAuxiliaryVoltage(VoltageUnit.VOLTS));

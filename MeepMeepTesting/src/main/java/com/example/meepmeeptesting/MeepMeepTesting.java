@@ -71,7 +71,8 @@ public class MeepMeepTesting {
                 .strafeToSplineHeading(hanging_pose.position,hanging_pose.heading)
                 // goes to basket
                 .waitSeconds(1) //puts sample in basket
-                .strafeToSplineHeading(new Vector2d(-50,-50),0.5*Math.PI)
+                .setTangent(-0.5*Math.PI)
+                .splineToConstantHeading(new Vector2d(-50,-50),-Math.PI)
                 .waitSeconds(1)
                 .lineToY(-40)
                 .waitSeconds(0.2)

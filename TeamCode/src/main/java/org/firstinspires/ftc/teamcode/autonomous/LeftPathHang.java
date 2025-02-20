@@ -1,9 +1,6 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
-import androidx.annotation.NonNull;
-
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.AngularVelConstraint;
 import com.acmerobotics.roadrunner.ParallelAction;
@@ -16,7 +13,6 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Systems.ActionControl;
 import org.firstinspires.ftc.teamcode.Systems.ColorSensorSystem;
@@ -53,6 +49,8 @@ public class LeftPathHang extends LinearOpMode {
 
         TrajectoryActionBuilder B_sample1pickup = B_preload.endTrajectory().fresh()
                 .strafeToSplineHeading(new Vector2d(-50 + sampleOffset,collectLine),0.5*Math.PI, new AngularVelConstraint(Math.PI/2));
+//                .setTangent(-0.5*Math.PI) //replace the above with this to not hit the sub
+//                .splineToConstantHeading(new Vector2d(-50 + sampleOffset,collectLine),-Math.PI);
 
         TrajectoryActionBuilder B_sample1basket = drive.actionBuilder(new Pose2d(-50 + sampleOffset,collectLine+10,0.5*Math.PI))
                 .strafeToSplineHeading(basketPose.position,basketPose.heading);
