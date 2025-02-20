@@ -20,6 +20,8 @@ public class Elevators implements Tokenable {
     DcMotorEx leftVert;
     public DcMotorEx horMotor;
 
+    private static Elevators instance = null;
+
     int verticalDestination;
     int motorHorizontalDestination;
 
@@ -139,6 +141,14 @@ public class Elevators implements Tokenable {
 
 
     }
+
+    public static Elevators getInstance(OpMode opMode) {
+        if (instance == null) {
+            instance = new Elevators(opMode);
+        }
+        return instance;
+    }
+
 
     public int getVerticalDestination() {
         return verticalDestination;

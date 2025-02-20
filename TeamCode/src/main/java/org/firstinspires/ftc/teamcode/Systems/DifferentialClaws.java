@@ -28,6 +28,8 @@ public class DifferentialClaws {
     AnalogInput clawInput1;
     AnalogInput clawInput2;
 
+    private static DifferentialClaws instance = null;
+
     public static final double maxPoint = 68;
 
     double armPosition = 0;
@@ -181,7 +183,7 @@ public class DifferentialClaws {
         }
     }
 
-    public DifferentialClaws(OpMode opMode) {
+    private DifferentialClaws(OpMode opMode) {
         leftClawServo = opMode.hardwareMap.get(CRServo.class, "leftClawServo");
         rightClawServo = opMode.hardwareMap.get(CRServo.class, "rightClawServo");
         clawInput1 = opMode.hardwareMap.get(AnalogInput.class, "clawInput1");
@@ -202,6 +204,14 @@ public class DifferentialClaws {
         rightClawOldPos = rightClawStart;
         armStartingPosition = getArmPosition() + maxPoint;
 
+    }
+
+    public static DifferentialClaws get_instance(OpMode opMode) {
+        if (instance == null) {
+            instance = new DifferentialClaws(opMode);
+        }
+
+        return instance;
     }
 
     public enum ClawPositionState {
