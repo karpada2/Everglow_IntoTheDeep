@@ -13,11 +13,11 @@ import org.firstinspires.ftc.teamcode.Systems.Sweeper;
 public class TestOpMode extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
-        DifferentialClaws claws = new DifferentialClaws(this);
+        DifferentialClaws claws = DifferentialClaws.getInstance(this);
         MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
         Sweeper sweeper = new Sweeper(this);
 
-        Elevators elevators = new Elevators(this);
+        Elevators elevators = Elevators.getInstance(this);
         //elevators.setVerticalPower(0.0);
         boolean isInitialized = false;
         boolean secondery = false;
@@ -64,12 +64,12 @@ public class TestOpMode extends LinearOpMode {
 //            drive.updatePoseEstimate();
 ////
 ////
-//            if (gamepad2.right_trigger >= 0.4) { //split
-//                claws.rotateWheels(gamepad2.right_trigger);
-//            }
-//            else if (gamepad2.left_trigger >= 0.4) {
-//                claws.rotateWheels(-1);
-//            }
+            if (gamepad2.right_trigger >= 0.4) { //split
+                claws.rotateWheels(gamepad2.right_trigger);
+            }
+            else if (gamepad2.left_trigger >= 0.4) {
+                claws.rotateWheels(-1);
+            }
 //            else {
 //                claws.rotateArm(DifferentialClaws.ClawPowerState.OFF.state);
 //                claws.rotateArm(gamepad2.left_stick_y);
@@ -95,25 +95,25 @@ public class TestOpMode extends LinearOpMode {
 ////
 ////
 ////
-//            if(gamepad2.dpad_down && flagElevatorVerticalDpadDown) {
-//                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_PICKUP.state);
-//            }
-//            flagElevatorVerticalDpadDown = !gamepad2.dpad_down;
-//
-//            if(gamepad2.dpad_left && flagElevatorVerticalDpadLeft){
-//                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_HURDLE.state);
-//            }
-//            flagElevatorVerticalDpadLeft = !gamepad2.dpad_left;
-//
-//            if(gamepad2.dpad_up && flagElevatorVerticalDpadUp){
-//                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_LOW.state);
-//            }
-//            flagElevatorVerticalDpadUp = !gamepad2.dpad_up;
-//
-//            if(gamepad2.dpad_right && flagElevatorVerticalDpadRight){
-//                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_HIGH.state);
-//            }
-//            flagElevatorVerticalDpadRight = !gamepad2.dpad_right;
+            if(gamepad2.dpad_down && flagElevatorVerticalDpadDown) {
+                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_PICKUP.state);
+            }
+            flagElevatorVerticalDpadDown = !gamepad2.dpad_down;
+
+            if(gamepad2.dpad_left && flagElevatorVerticalDpadLeft){
+                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_HURDLE.state);
+            }
+            flagElevatorVerticalDpadLeft = !gamepad2.dpad_left;
+
+            if(gamepad2.dpad_up && flagElevatorVerticalDpadUp){
+                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_LOW.state);
+            }
+            flagElevatorVerticalDpadUp = !gamepad2.dpad_up;
+
+            if(gamepad2.dpad_right && flagElevatorVerticalDpadRight){
+                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_HIGH.state);
+            }
+            flagElevatorVerticalDpadRight = !gamepad2.dpad_right;
 //
 ////            telemetry.addData("vert pos:", elevators.getVerticalCurrentPosition());
 ////

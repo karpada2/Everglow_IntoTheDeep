@@ -183,7 +183,7 @@ public class DifferentialClaws {
         }
     }
 
-    private DifferentialClaws(OpMode opMode) {
+    public DifferentialClaws(OpMode opMode) {
         leftClawServo = opMode.hardwareMap.get(CRServo.class, "leftClawServo");
         rightClawServo = opMode.hardwareMap.get(CRServo.class, "rightClawServo");
         clawInput1 = opMode.hardwareMap.get(AnalogInput.class, "clawInput1");

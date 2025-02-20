@@ -57,9 +57,9 @@ public class LeftPath extends LinearOpMode {
         Pose2d basketPose = new Pose2d(-57,-55.3,1.25*Math.PI);
 
         // Init Systems
-        DifferentialClaws claws  = new DifferentialClaws(this);
+        DifferentialClaws claws  = DifferentialClaws.getInstance(this);
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
-        Elevators elevators  = new Elevators(this);
+        Elevators elevators  = Elevators.getInstance(this);
         ColorSensorSystem colorSensorSystem = new ColorSensorSystem(this, true);
         //Init Trajectories
         TrajectoryActionBuilder B_preload = drive.actionBuilder(beginPose)

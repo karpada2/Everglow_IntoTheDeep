@@ -112,7 +112,7 @@ public class Elevators implements Tokenable {
         }
     }
 
-    private Elevators(OpMode opMode) {
+    public Elevators(OpMode opMode) {
         rightVert = opMode.hardwareMap.get(DcMotorEx.class, "rightVert");
         leftVert = opMode.hardwareMap.get(DcMotorEx.class, "leftVert");
         horMotor = opMode.hardwareMap.get(DcMotorEx.class, "motorHor");
