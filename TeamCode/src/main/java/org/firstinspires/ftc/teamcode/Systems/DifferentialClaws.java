@@ -206,7 +206,7 @@ public class DifferentialClaws {
 
     }
 
-    public static DifferentialClaws get_instance(OpMode opMode) {
+    public static DifferentialClaws getInstance(OpMode opMode) {
         if (instance == null) {
             instance = new DifferentialClaws(opMode);
         }
