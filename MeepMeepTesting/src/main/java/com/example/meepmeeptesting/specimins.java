@@ -22,9 +22,12 @@ public class specimins {
         double firstSpeciminX = 48;
         double secondSpeciminX = 60;
         double PickSpeciminY = -12;
+
         Pose2d specimins_dropPose = new Pose2d(27, -62,   Math.PI/2);
         Pose2d specimins_basketPose = new Pose2d(0,-34,Math.PI/2);
         Pose2d specimins_endPose = new Pose2d(23,-10,0);
+        Pose2d specimins_pickupPose = new Pose2d(48,-55,-Math.PI/2);
+
 
 
         // Start with the vertical elevator extended to the required height
@@ -50,9 +53,8 @@ public class specimins {
                 .setTangent(-Math.PI/4)
 //                .strafeToSplineHeading(specimins_dropPose.position, specimins_dropPose.heading)
 
-                .splineToSplineHeading(new Pose2d(60,-60,Math.PI),0)
-                .waitSeconds(1)
-                /*.splineToSplineHeading(new Pose2d(firstSpeciminX-7,PickSpeciminY,Math.PI/2),0)
+                .splineToConstantHeading(new Vector2d(33,-33),Math.PI/2)
+                .splineToSplineHeading(new Pose2d(firstSpeciminX-7,PickSpeciminY,Math.PI/2),0)
 //                .setTangent(-Math.PI/2)
 //                .splineToConstantHeading(new Vector2d(firstSpeciminX,PickSpeciminY-50),-Math.PI/2)
 //                .waitSeconds(0.01)
@@ -64,43 +66,22 @@ public class specimins {
                 .waitSeconds(1)
                 .setTangent(-Math.PI/2)
                 .strafeTo(new Vector2d(secondSpeciminX,dropSpeciminY))
+                .setTangent(Math.PI/2)
+//                .splineToSplineHeading(new Pose2d(specimins_pickupPose.position.x,specimins_pickupPose.position.y+10, -Math.PI/2),Math.PI)
+                .splineToLinearHeading(new Pose2d(specimins_pickupPose.position,-Math.PI/2),-Math.PI/2)
 
                 // Goes to the basket
                 .setTangent((1) * Math.PI)
                 .strafeToSplineHeading(specimins_basketPose.position, specimins_basketPose.heading)
                 .strafeTo(new Vector2d(specimins_basketPose.position.x, specimins_basketPose.position.y + 10))
                 .strafeTo(specimins_basketPose.position)
-                // Dropping the sample -Lowering the vertical elevator
-                .strafeToSplineHeading(specimins_dropPose.position, specimins_dropPose.heading)
-                // Dropping the sample - Lowering the vertical elevator
-                // Dropping the sample - releasing the sample
+                //Hangs Specimin
 
-                // Waits for player to pick up the sample
-                .strafeTo(new Vector2d(specimins_dropPose.position.x + 10, specimins_dropPose.position.y))
-                .strafeTo(specimins_dropPose.position)
-                // Picks up the sample
-                // While moving extending the vertical elevator
-                .splineToLinearHeading(new Pose2d(0,-34, Math.PI/2),Math.PI/2)
-                .strafeToSplineHeading(specimins_basketPose.position, specimins_basketPose.heading)
-                .strafeTo(new Vector2d(specimins_basketPose.position.x, specimins_basketPose.position.y + 10))
-                .strafeTo(specimins_basketPose.position)
-                // Goes to to drop the specimen
-                .strafeToSplineHeading(specimins_dropPose.position, specimins_dropPose.heading)
-                // Dropping the sample - Lowering the vertical elevator
-                // Dropping the sample - releasing the sample
-                // Waits for player to pick up the sample
-                .strafeTo(new Vector2d(specimins_dropPose.position.x + 10, specimins_dropPose.position.y))
-                .strafeTo(specimins_dropPose.position)
-                // Goes to the basket
-                .waitSeconds(0.1)
-                .setTangent((1) * Math.PI)
-                .strafeToSplineHeading(specimins_basketPose.position, specimins_basketPose.heading)
-                .strafeTo(new Vector2d(specimins_basketPose.position.x, specimins_basketPose.position.y + 10))
-                .strafeTo(specimins_basketPose.position)
-                // Dropping the sample -Lowering the vertical elevator
-                .strafeTo(new Vector2d(38, -34))
-                .splineToLinearHeading((specimins_endPose),Math.PI)*/
-                ;
+                .strafeToLinearHeading(specimins_pickupPose.position,-Math.PI/2)
+                // Hangs Specimin
+                .strafeToLinearHeading(specimins_basketPose.position,Math.PI/2)
+                // Park
+                .strafeToLinearHeading(new Vector2d(60,-60),Math.PI);
 
         myBot.runAction(specimins_path.build());
 
