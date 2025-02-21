@@ -175,6 +175,9 @@ public class LeftPath extends LinearOpMode {
 
         waitForStart();
 
+        telemetry.addData("claws", claws);
+        telemetry.addData("elevators", elevators);
+        telemetry.update();
         Actions.runBlocking(
                 new SequentialAction(
                         new ParallelAction(

@@ -143,6 +143,8 @@ public class TestOpMode extends LinearOpMode {
             telemetry.addData("currAngle", currAngle);
             telemetry.addData("pos", sweeper.getPosition());
             telemetry.addData("angle", sweeper.getPosition());
+            telemetry.addData("claws", claws);
+            telemetry.addData("elevators", elevators);
             telemetry.update();
 ////
 ////            if(gamepad2.square && flagElevatorHorizontalSquare){
