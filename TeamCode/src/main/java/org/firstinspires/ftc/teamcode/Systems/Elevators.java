@@ -16,8 +16,8 @@ public class Elevators implements Tokenable {
     final int epsilon = 100;
 
 
-    DcMotorEx rightVert;
-    DcMotorEx leftVert;
+    static DcMotorEx rightVert;
+    static DcMotorEx leftVert;
     public DcMotorEx horMotor;
 
     private static Elevators instance = null;
@@ -147,6 +147,16 @@ public class Elevators implements Tokenable {
             instance = new Elevators(opMode);
         }
         return instance;
+    }
+
+    public void setVertMode(DcMotor.RunMode runMode) {
+        rightVert.setMode(runMode);
+        leftVert.setMode(runMode);
+    }
+
+    public void resetDirections() {
+        rightVert.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftVert.setDirection(DcMotorSimple.Direction.FORWARD);
     }
 
 
