@@ -23,10 +23,10 @@ import org.firstinspires.ftc.teamcode.Systems.Token.TokenAction;
 
 public class DifferentialClaws {
 
-    CRServo leftClawServo;
-    CRServo rightClawServo;
-    AnalogInput clawInput1;
-    AnalogInput clawInput2;
+    static CRServo leftClawServo;
+    static CRServo rightClawServo;
+    static AnalogInput clawInput1;
+    static AnalogInput clawInput2;
 
     private static DifferentialClaws instance = null;
 
@@ -50,7 +50,7 @@ public class DifferentialClaws {
     private double trueLeftRotation = 0;
     private double trueRightRotation = 0;
 
-    public PIDController controller;
+    public static PIDController controller;
 
     public final double p = 0.009,//.008,
             i = 0,
@@ -209,6 +209,10 @@ public class DifferentialClaws {
     public static DifferentialClaws getInstance(OpMode opMode) {
         if (instance == null) {
             instance = new DifferentialClaws(opMode);
+        }
+        else {
+            instance.rotateArm(0.01);
+            instance.rotateArm(0);
         }
 
         return instance;
