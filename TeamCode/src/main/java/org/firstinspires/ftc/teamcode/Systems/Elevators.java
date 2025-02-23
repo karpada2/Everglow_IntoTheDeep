@@ -146,6 +146,10 @@ public class Elevators implements Tokenable {
         if (instance == null) {
             instance = new Elevators(opMode);
         }
+        else {
+            instance.setVertMode(DcMotor.RunMode.RUN_TO_POSITION);
+            instance.resetDirections();
+        }
         return instance;
     }
 
