@@ -18,7 +18,7 @@ public class Elevators implements Tokenable {
 
     static DcMotorEx rightVert;
     static DcMotorEx leftVert;
-    public DcMotorEx horMotor;
+    static DcMotorEx horMotor;
 
     private static Elevators instance = null;
 
@@ -149,6 +149,11 @@ public class Elevators implements Tokenable {
         else {
             instance.setVertMode(DcMotor.RunMode.RUN_TO_POSITION);
             instance.resetDirections();
+            instance.setVerticalDestination(instance.getVerticalCurrentPosition());
+
+            instance.motorSetHorizontalCorrectDirection();
+            instance.motorSetHorizontalMode(DcMotor.RunMode.RUN_TO_POSITION);
+            instance.motorSetHorizontalDestination(instance.motorGetHorizontalPosition());
         }
         return instance;
     }
@@ -161,6 +166,14 @@ public class Elevators implements Tokenable {
     public void resetDirections() {
         rightVert.setDirection(DcMotorSimple.Direction.REVERSE);
         leftVert.setDirection(DcMotorSimple.Direction.FORWARD);
+    }
+
+    public void motorSetHorizontalMode(DcMotor.RunMode runMode) {
+        horMotor.setMode(runMode);
+    }
+
+    public void motorSetHorizontalCorrectDirection() {
+        horMotor.setDirection(DcMotorSimple.Direction.FORWARD);
     }
 
 
