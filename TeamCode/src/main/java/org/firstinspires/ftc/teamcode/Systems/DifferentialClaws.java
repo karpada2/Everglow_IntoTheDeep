@@ -213,6 +213,8 @@ public class DifferentialClaws {
         else {
             instance.rotateArm(0.01);
             instance.rotateArm(0);
+
+            instance.setCorrectDirections();
         }
 
         return instance;
@@ -238,6 +240,12 @@ public class DifferentialClaws {
 
         ClawPowerState(double state) {this.state = state;}
     }
+
+    public void setCorrectDirections() {
+        leftClawServo.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightClawServo.setDirection(DcMotorSimple.Direction.FORWARD);
+    }
+
 
     public double getArmPosition() {
         double leftDiff = trueLeftRotation - leftClawStart;
