@@ -1,21 +1,16 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
-import androidx.annotation.NonNull;
-
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
-import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Systems.ActionControl;
 import org.firstinspires.ftc.teamcode.Systems.ColorSensorSystem;
@@ -35,7 +30,7 @@ public class RightPath extends LinearOpMode {
 
         double dropSpeciminY = -52;
         double firstSpeciminX = 46;
-        double secondSpeciminX = 60;
+        double secondSpeciminX = 56;
         double PickSpeciminY = -12;
 
         Pose2d specimins_basketPose = new Pose2d(0,-34,Math.PI/2);
@@ -50,67 +45,152 @@ public class RightPath extends LinearOpMode {
         ActionControl actionControl = new ActionControl(elevators,claws,colorSensorSystem,drive,gamepad1,gamepad2);
         //Init Trajectories
 
-        TrajectoryActionBuilder B_temp = drive.actionBuilder(specimins_beginPose)
+
+        TrajectoryActionBuilder B_preload = drive.actionBuilder(specimins_beginPose)
+                //starts at hanging height
                 .strafeTo(specimins_basketPose.position)
-                // Lower the vertical elevator
-                .waitSeconds(1)
+                //* Hangs
+                ;
+
+
+        TrajectoryActionBuilder B_push = B_preload.endTrajectory().fresh()
+                // Goes to basket
+                // Pushes Both Specimins into place
                 .setTangent(-Math.PI/4)
-//                .strafeToSplineHeading(specimins_dropPose.position, specimins_dropPose.heading)
-
                 .splineToConstantHeading(new Vector2d(33,-33),Math.PI/2)
-                .splineToSplineHeading(new Pose2d(firstSpeciminX,PickSpeciminY,Math.PI),0)
-//                .setTangent(-Math.PI/2)
-//                .splineToConstantHeading(new Vector2d(firstSpeciminX,PickSpeciminY-50),-Math.PI/2)
-//                .waitSeconds(0.01)
-//                .waitSeconds(0.001)
-                .strafeToConstantHeading(new Vector2d(firstSpeciminX,dropSpeciminY),new TranslationalVelConstraint(VelConstraint))
-                // Moves the second sample
-//                .setTangent(Math.PI * 0.3)
-                .splineToConstantHeading(new Vector2d(secondSpeciminX-4,PickSpeciminY),0)
+                .splineToSplineHeading(new Pose2d(firstSpeciminX-10,PickSpeciminY,Math.PI),0)
+                .splineToConstantHeading(new Vector2d(firstSpeciminX,dropSpeciminY),-Math.PI/2)
+                // Moves to the second specimin
+                .splineToConstantHeading(new Vector2d(secondSpeciminX,PickSpeciminY),0)
+                // Waits for human player
                 .waitSeconds(1)
-//                .setTangent(-Math.PI/2)
-                .strafeTo(new Vector2d(secondSpeciminX,dropSpeciminY),new TranslationalVelConstraint(VelConstraint))
-                .setTangent(Math.PI/2)
-//                .splineToSplineHeading(new Pose2d(specimins_pickupPose.position.x,specimins_pickupPose.position.y+10, -Math.PI/2),Math.PI)
-                .splineToLinearHeading(new Pose2d(specimins_pickupPose.position,-Math.PI/2),-Math.PI/2)
+                // Pushes the second specimin
+                .strafeTo(new Vector2d(secondSpeciminX,dropSpeciminY))
+                //* Raises Elevator to picking up height
+                ;
 
-                // Goes to the basket
+        TrajectoryActionBuilder B_pickup1 = B_push.endTrajectory().fresh()
+                //* Raises Elevator to picking up height
+                // Goes to pickup first specimin
+                .setTangent(Math.PI/2)
+                .splineToLinearHeading(new Pose2d(specimins_pickupPose.position,-Math.PI/2),-Math.PI/2)
+                //* Lowers elevator to pickup
+                ;
+
+        TrajectoryActionBuilder B_hang1 = B_pickup1.endTrajectory().fresh()
+                // Goes to basket
+                // *Raises elevator for hang
                 .setTangent((1) * Math.PI)
                 .strafeToSplineHeading(specimins_basketPose.position, specimins_basketPose.heading)
-                //Hangs Specimin
+                //* Hangs Specimen sequentially
+                ;
 
+        TrajectoryActionBuilder B_pickup2 = B_hang1.endTrajectory().fresh()
+                //* Lowers Elevator to picking up height
+                // Goes to pickup second specimen
                 .strafeToLinearHeading(specimins_pickupPose.position,-Math.PI/2)
-                // Hangs Specimin
+                //* Picks up second specimen
+                ;
+
+        TrajectoryActionBuilder B_hang2 = B_pickup2.endTrajectory().fresh()
+                // Goes to hang Specimen
                 .strafeToLinearHeading(specimins_basketPose.position,Math.PI/2)
+                //* Hangs
+                ;
+
+        TrajectoryActionBuilder B_park = B_pickup2.endTrajectory().fresh()
+                //*Lowers elevator
                 // Park
-                .strafeToLinearHeading(new Vector2d(60,-60),Math.PI);;
-
-        ;
-        TrajectoryActionBuilder B_preload = drive.actionBuilder(specimins_beginPose)
-                .strafeTo(hangPose.position);
-
-        TrajectoryActionBuilder B_park = B_preload.endTrajectory().fresh()
                 .setTangent(-Math.PI/4)
                 .splineToSplineHeading(new Pose2d(60,-60,Math.PI),0);
 
-        Action temp = B_temp.build();
 
-        Action preload = B_preload.build();
+        Action m_preload = B_preload.build();
 
-        Action park = B_park.build();
+        Action m_push = B_push.build();
+
+        Action m_pickup1 = B_pickup1.build();
+        Action m_hang1 = B_hang1.build();
+
+        Action m_pickup2 = B_pickup2.build();
+        Action m_hang2 = B_hang2.build();
+
+        Action m_park = B_park.build();
+
+        Action preload   = new SequentialAction(
+                m_preload,
+                actionControl.hangSpecimenHigh()
+        );
+
+        Action push   = new ParallelAction(
+                m_push,
+                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, 750)
+        );
+
+        Action pickup1 = new SequentialAction(
+                new ParallelAction(
+                    m_pickup1,
+                    elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_PICKUP),
+                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, 750)
+        ),
+                new ParallelAction(
+                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN),
+                        claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, 200)
+                )
+        );
+
+        Action hang1 = new SequentialAction(
+                new ParallelAction(
+                        m_hang1,
+                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750),
+                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_HIGH)
+                        ),
+                actionControl.hangSpecimenHigh()
+        );
+
+        Action pickup2 = new SequentialAction(
+                new ParallelAction(
+                        m_pickup2,
+                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, 750),
+                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_PICKUP)
+                ),
+                new ParallelAction(
+                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN),
+                        claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, 200)
+                )
+        );
+
+        Action hang2 = new SequentialAction(
+                new ParallelAction(
+                        m_hang2,
+                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750),
+                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_HIGH)
+                ),
+                actionControl.hangSpecimenHigh()
+        );
+
+        Action park = new ParallelAction(
+                m_park,
+                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, 750),
+                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN)
+        );
+
+
+        //initialization
+//        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_HIGH);
 
         waitForStart();
 
         Actions.runBlocking(
-//                new SequentialAction(
-//                        new ParallelAction(
-//                                preload,
-//                                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_HIGH)
-//                        ),
-//                        actionControl.hangSpecimenHigh(),
-//                        park
-//                )
-                temp
+                new SequentialAction(
+                        preload,
+                        push,
+                        pickup1,
+                        hang1,
+                        pickup2,
+                        hang2,
+                        park
+                )
         );
     }
 }
