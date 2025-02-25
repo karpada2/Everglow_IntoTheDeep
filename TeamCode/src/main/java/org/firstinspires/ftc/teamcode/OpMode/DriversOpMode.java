@@ -155,7 +155,7 @@ public class DriversOpMode {
             flagElevatorVerticalDpadLeft = !gamepad2.dpad_left;
 
             if(gamepad2.dpad_up && flagElevatorVerticalDpadUp){
-                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_LOW.state);
+                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_SPECIMEN_HIGH.state);
             }
             flagElevatorVerticalDpadUp = !gamepad2.dpad_up;
 

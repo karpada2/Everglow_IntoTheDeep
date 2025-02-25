@@ -85,6 +85,7 @@ public class Elevators implements Tokenable {
         VERTICAL_MIN(0),
         VERTICAL_PICKUP(0),
         VERTICAL_HURDLE(970),
+        VERTICAL_SPECIMEN_PICKUP(1518),
         VERTICAL_SPECIMEN_HIGH(4553),
         VERTICAL_LOW(7643),
         VERTICAL_HIGH(9000),
@@ -154,7 +155,7 @@ public class Elevators implements Tokenable {
             setVerticalPower(0);
         }
         else {
-            setVerticalPower(0.8);
+            setVerticalPower(1);
         }
         rightVert.setTargetPosition(destination);
         leftVert.setTargetPosition(destination);
