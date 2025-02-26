@@ -23,10 +23,12 @@ import org.firstinspires.ftc.teamcode.Systems.Token.TokenAction;
 
 public class DifferentialClaws {
 
-    CRServo leftClawServo;
-    CRServo rightClawServo;
-    AnalogInput clawInput1;
-    AnalogInput clawInput2;
+    static CRServo leftClawServo;
+    static CRServo rightClawServo;
+    static AnalogInput clawInput1;
+    static AnalogInput clawInput2;
+
+    private static DifferentialClaws instance = null;
 
     public static final double maxPoint = 68;
 
@@ -48,7 +50,7 @@ public class DifferentialClaws {
     private double trueLeftRotation = 0;
     private double trueRightRotation = 0;
 
-    public PIDController controller;
+    public static PIDController controller;
 
     public final double p = 0.009,//.008,
             i = 0,
@@ -181,7 +183,7 @@ public class DifferentialClaws {
         }
     }
 
-    public DifferentialClaws(OpMode opMode) {
+    private DifferentialClaws(OpMode opMode) {
         leftClawServo = opMode.hardwareMap.get(CRServo.class, "leftClawServo");
         rightClawServo = opMode.hardwareMap.get(CRServo.class, "rightClawServo");
         clawInput1 = opMode.hardwareMap.get(AnalogInput.class, "clawInput1");
@@ -204,6 +206,20 @@ public class DifferentialClaws {
 
     }
 
+    public static DifferentialClaws getInstance(OpMode opMode) {
+        if (instance == null) {
+            instance = new DifferentialClaws(opMode);
+        }
+        else {
+            instance.rotateArm(0.01);
+            instance.rotateArm(0);
+
+            instance.setCorrectDirections();
+        }
+
+        return instance;
+    }
+
     public enum ClawPositionState {
         MIN(0.0),
         MID(maxPoint/2),
@@ -224,6 +240,12 @@ public class DifferentialClaws {
 
         ClawPowerState(double state) {this.state = state;}
     }
+
+    public void setCorrectDirections() {
+        leftClawServo.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightClawServo.setDirection(DcMotorSimple.Direction.FORWARD);
+    }
+
 
     public double getArmPosition() {
         double leftDiff = trueLeftRotation - leftClawStart;

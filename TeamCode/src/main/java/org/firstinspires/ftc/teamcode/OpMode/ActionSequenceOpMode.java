@@ -31,10 +31,10 @@ public class ActionSequenceOpMode extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        DifferentialClaws claws = new DifferentialClaws(this);
+        DifferentialClaws claws = DifferentialClaws.getInstance(this);
         MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
         ColorSensorSystem colorSensorSystem = new ColorSensorSystem(this, true);
-        elevators = new Elevators(this);
+        elevators = Elevators.getInstance(this);
         elevators.setVerticalPower(0.0);
         control = new ActionControl(elevators, claws, colorSensorSystem, drive, gamepad1, gamepad2);
         claws.setArmTargetPosition(290);

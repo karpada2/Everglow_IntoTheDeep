@@ -25,10 +25,10 @@ public class DriversOpMode {
 
     public void run(boolean isBlue){
         Sweeper sweeper = new Sweeper(opMode);
-        DifferentialClaws claws = new DifferentialClaws(opMode);
+        DifferentialClaws claws = DifferentialClaws.getInstance(opMode);
         MecanumDrive drive = new MecanumDrive(opMode.hardwareMap, new Pose2d(0, 0, 0));
         ColorSensorSystem colorSensorSystem = new ColorSensorSystem(opMode, isBlue);
-        Elevators elevators = new Elevators(opMode);
+        Elevators elevators = Elevators.getInstance(opMode);
         elevators.setVerticalPower(0.0);
         boolean isInitialized = false;
         boolean secondery = false;
@@ -133,7 +133,6 @@ public class DriversOpMode {
                 horElevatorPosition += -gamepad2.right_stick_y*40*3;
                 elevators.motorSetHorizontalDestination((int)(horElevatorPosition));
             }
-            opMode.telemetry.addData("hor motor: ", elevators.horMotor.getPower());
             opMode.telemetry.addData("sweeper:", virtualClawPose);
             opMode.telemetry.addData("precieved hor position: ", horElevatorPosition);
             opMode.telemetry.addData("hor position: ", elevators.motorGetHorizontalPosition());

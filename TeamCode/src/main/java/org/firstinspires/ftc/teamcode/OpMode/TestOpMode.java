@@ -1,23 +1,22 @@
 package org.firstinspires.ftc.teamcode.OpMode;
 
-import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.teamcode.MecanumDrive;
-import org.firstinspires.ftc.teamcode.Systems.DifferentialClaws;
 import org.firstinspires.ftc.teamcode.Systems.Elevators;
-import org.firstinspires.ftc.teamcode.Systems.Sweeper;
 
 @TeleOp(name = "TestOpMode!!")
 public class TestOpMode extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
-        DifferentialClaws claws = new DifferentialClaws(this);
-        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
-        Sweeper sweeper = new Sweeper(this);
+//        DifferentialClaws claws = DifferentialClaws.getInstance(this);
+//        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
+//        Sweeper sweeper = new Sweeper(this);
 
-        Elevators elevators = new Elevators(this);
+        Elevators elevators = Elevators.getInstance(this);
+        elevators.setVertMode(DcMotor.RunMode.RUN_TO_POSITION);
+        elevators.resetDirections();
         //elevators.setVerticalPower(0.0);
         boolean isInitialized = false;
         boolean secondery = false;
@@ -95,25 +94,25 @@ public class TestOpMode extends LinearOpMode {
 ////
 ////
 ////
-//            if(gamepad2.dpad_down && flagElevatorVerticalDpadDown) {
-//                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_PICKUP.state);
-//            }
-//            flagElevatorVerticalDpadDown = !gamepad2.dpad_down;
-//
-//            if(gamepad2.dpad_left && flagElevatorVerticalDpadLeft){
-//                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_HURDLE.state);
-//            }
-//            flagElevatorVerticalDpadLeft = !gamepad2.dpad_left;
-//
-//            if(gamepad2.dpad_up && flagElevatorVerticalDpadUp){
-//                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_LOW.state);
-//            }
-//            flagElevatorVerticalDpadUp = !gamepad2.dpad_up;
-//
-//            if(gamepad2.dpad_right && flagElevatorVerticalDpadRight){
-//                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_HIGH.state);
-//            }
-//            flagElevatorVerticalDpadRight = !gamepad2.dpad_right;
+            if(gamepad2.dpad_down && flagElevatorVerticalDpadDown) {
+                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_PICKUP.state);
+            }
+            flagElevatorVerticalDpadDown = !gamepad2.dpad_down;
+
+            if(gamepad2.dpad_left && flagElevatorVerticalDpadLeft){
+                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_HURDLE.state);
+            }
+            flagElevatorVerticalDpadLeft = !gamepad2.dpad_left;
+
+            if(gamepad2.dpad_up && flagElevatorVerticalDpadUp){
+                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_LOW.state);
+            }
+            flagElevatorVerticalDpadUp = !gamepad2.dpad_up;
+
+            if(gamepad2.dpad_right && flagElevatorVerticalDpadRight){
+                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_HIGH.state);
+            }
+            flagElevatorVerticalDpadRight = !gamepad2.dpad_right;
 //
 ////            telemetry.addData("vert pos:", elevators.getVerticalCurrentPosition());
 ////
@@ -132,17 +131,20 @@ public class TestOpMode extends LinearOpMode {
 //                horElevatorPosition = Elevators.MotorHorizontalState.HORIZONTAL_RETRACTED.state;
 //            }
 //            flagElevatorHorizontalTriangle = !gamepad2.triangle;
-
-            if (gamepad2.right_bumper) {
-                sweeper.setPosition(Sweeper.SweeperAngle.SWEEPER_EXTENDED);
-            }
-            else if (gamepad2.left_bumper) {
-                sweeper.setPosition(Sweeper.SweeperAngle.SWEEPER_RETRACTED);
-            }
-
-            telemetry.addData("currAngle", currAngle);
-            telemetry.addData("pos", sweeper.getPosition());
-            telemetry.addData("angle", sweeper.getPosition());
+//
+//            if (gamepad2.right_bumper) {
+//                sweeper.setPosition(Sweeper.SweeperAngle.SWEEPER_EXTENDED);
+//            }
+//            else if (gamepad2.left_bumper) {
+//                sweeper.setPosition(Sweeper.SweeperAngle.SWEEPER_RETRACTED);
+//            }
+//
+//            telemetry.addData("currAngle", currAngle);
+//            telemetry.addData("pos", sweeper.getPosition());
+//            telemetry.addData("angle", sweeper.getPosition());
+//            telemetry.addData("claws", claws);
+            telemetry.addData("elevator curr pos", elevators.getVerticalCurrentPosition());
+            telemetry.addData("elevators", elevators);
             telemetry.update();
 ////
 ////            if(gamepad2.square && flagElevatorHorizontalSquare){

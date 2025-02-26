@@ -37,9 +37,9 @@ public class RightPath extends LinearOpMode {
         Pose2d specimins_endPose = new Pose2d(23,-10,0);
         Pose2d specimins_pickupPose = new Pose2d(48,-55,-Math.PI/2);
         // Init Systems
-        DifferentialClaws claws  = new DifferentialClaws(this);
+        DifferentialClaws claws  = DifferentialClaws.getInstance(this);
         MecanumDrive drive = new MecanumDrive(hardwareMap, specimins_beginPose);
-        Elevators elevators  = new Elevators(this);
+        Elevators elevators  = Elevators.getInstance(this);
 
         ColorSensorSystem colorSensorSystem = new ColorSensorSystem(this, true);
         ActionControl actionControl = new ActionControl(elevators,claws,colorSensorSystem,drive,gamepad1,gamepad2);

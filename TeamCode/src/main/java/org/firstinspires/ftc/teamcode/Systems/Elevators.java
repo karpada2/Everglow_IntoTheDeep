@@ -16,9 +16,11 @@ public class Elevators implements Tokenable {
     final int epsilon = 100;
 
 
-    DcMotorEx rightVert;
-    DcMotorEx leftVert;
-    public DcMotorEx horMotor;
+    static DcMotorEx rightVert;
+    static DcMotorEx leftVert;
+    static DcMotorEx horMotor;
+
+    private static Elevators instance = null;
 
     int verticalDestination;
     int motorHorizontalDestination;
@@ -111,7 +113,7 @@ public class Elevators implements Tokenable {
         }
     }
 
-    public Elevators(OpMode opMode) {
+    private Elevators(OpMode opMode) {
         rightVert = opMode.hardwareMap.get(DcMotorEx.class, "rightVert");
         leftVert = opMode.hardwareMap.get(DcMotorEx.class, "leftVert");
         horMotor = opMode.hardwareMap.get(DcMotorEx.class, "motorHor");
@@ -140,6 +142,41 @@ public class Elevators implements Tokenable {
 
 
     }
+
+    public static Elevators getInstance(OpMode opMode) {
+        if (instance == null) {
+            instance = new Elevators(opMode);
+        }
+        else {
+            instance.setVertMode(DcMotor.RunMode.RUN_TO_POSITION);
+            instance.resetDirections();
+            instance.setVerticalDestination(instance.getVerticalCurrentPosition());
+
+            instance.motorSetHorizontalCorrectDirection();
+            instance.motorSetHorizontalMode(DcMotor.RunMode.RUN_TO_POSITION);
+            instance.motorSetHorizontalDestination(instance.motorGetHorizontalPosition());
+        }
+        return instance;
+    }
+
+    public void setVertMode(DcMotor.RunMode runMode) {
+        rightVert.setMode(runMode);
+        leftVert.setMode(runMode);
+    }
+
+    public void resetDirections() {
+        rightVert.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftVert.setDirection(DcMotorSimple.Direction.FORWARD);
+    }
+
+    public void motorSetHorizontalMode(DcMotor.RunMode runMode) {
+        horMotor.setMode(runMode);
+    }
+
+    public void motorSetHorizontalCorrectDirection() {
+        horMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+    }
+
 
     public int getVerticalDestination() {
         return verticalDestination;

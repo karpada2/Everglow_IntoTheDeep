@@ -24,7 +24,7 @@ public class DifferentialClawTest extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        DifferentialClaws claws = new DifferentialClaws(this);
+        DifferentialClaws claws = DifferentialClaws.getInstance(this);
 
         waitForStart();
 

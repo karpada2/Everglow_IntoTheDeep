@@ -38,9 +38,9 @@ public class LeftPathHang extends LinearOpMode {
         Pose2d hanging_pose = new Pose2d(-2,-30,0.5*Math.PI);
 
         // Init Systems
-        DifferentialClaws claws  = new DifferentialClaws(this);
+        DifferentialClaws claws  = DifferentialClaws.getInstance(this);
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
-        Elevators elevators  = new Elevators(this);
+        Elevators elevators  = Elevators.getInstance(this);
         ColorSensorSystem colorSensorSystem = new ColorSensorSystem(this, true);
         control = new ActionControl(elevators, claws, colorSensorSystem, drive, gamepad1, gamepad2);
         //Init Trajectories
