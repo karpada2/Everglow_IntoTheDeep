@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.Systems.Elevators;
 public class MotorTester extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
-        DifferentialClaws differentialClaws = new DifferentialClaws(this);
+        DifferentialClaws differentialClaws = DifferentialClaws.getInstance(this);
         ColorSensorSystem colorSensorSystem = new ColorSensorSystem(this, true);
 
         waitForStart();

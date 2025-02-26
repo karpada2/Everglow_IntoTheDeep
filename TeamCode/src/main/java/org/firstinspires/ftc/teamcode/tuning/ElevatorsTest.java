@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.Systems.Elevators;
 public class ElevatorsTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
-        Elevators elevators = new Elevators(this);
+        Elevators elevators = Elevators.getInstance(this);
         boolean flagElevatorVerticalDpadUp = true;
         boolean flagElevatorVerticalDpadDown = true;
 

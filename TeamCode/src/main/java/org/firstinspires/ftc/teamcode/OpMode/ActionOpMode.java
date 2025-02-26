@@ -36,8 +36,8 @@ public class ActionOpMode extends LinearOpMode {
 //        );
 
         drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
-        claw = new DifferentialClaws(this);
-        elevators = new Elevators(this);
+        claw = DifferentialClaws.getInstance(this);
+        elevators = Elevators.getInstance(this);
 
         boolean flagRightBumper = true;
         boolean flagLeftBumper = true;
