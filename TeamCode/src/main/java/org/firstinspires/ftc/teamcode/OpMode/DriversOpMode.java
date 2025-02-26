@@ -73,10 +73,10 @@ public class DriversOpMode {
             //driving
             drive.setDrivePowers(new PoseVelocity2d(
                     new Vector2d(
-                            LinearToExpo(-gamepad1.left_stick_y),
-                            -gamepad1.left_stick_x
+                            LinearToExpo(-gamepad1.left_stick_y)*(1.0/Math.pow(5, gamepad1.right_trigger)),
+                            -gamepad1.left_stick_x*(1.0/Math.pow(5, gamepad1.right_trigger))
                     ),
-                    -gamepad1.right_stick_x
+                    -gamepad1.right_stick_x*(1.0/Math.pow(5, gamepad1.right_trigger))
             ));
             drive.updatePoseEstimate();
 
