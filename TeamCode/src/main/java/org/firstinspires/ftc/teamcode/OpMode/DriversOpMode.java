@@ -37,9 +37,6 @@ public class DriversOpMode {
         //LynxModule controlHub = hardwareMap.get(LynxModule.class, "Control Hub");
         //LynxModule expansionHub = hardwareMap.get(LynxModule.class, "Expansion Hub 2");
 
-
-        elevators.motorSetHorizontalPower(1);
-
         double epsilon = 0.4;
         double joystickTolerance = 0.05;
         boolean flagElevatorVerticalDpadDown = true;
@@ -127,11 +124,11 @@ public class DriversOpMode {
             if (Math.abs(gamepad2.right_stick_y) > joystickTolerance) {
                 if(horElevatorPosition < 0){
                     horElevatorPosition = 0;
-                }else if(horElevatorPosition >= Elevators.MotorHorizontalState.HORIZONTAL_EXTENDED.state){
-                    horElevatorPosition =  Elevators.MotorHorizontalState.HORIZONTAL_EXTENDED.state;
+                }else if(horElevatorPosition >= Elevators.horizontalState.HORIZONTAL_EXTENDED.state){
+                    horElevatorPosition =  Elevators.horizontalState.HORIZONTAL_EXTENDED.state;
                 }
                 horElevatorPosition += -gamepad2.right_stick_y*40*3;
-                elevators.motorSetHorizontalDestination((int)(horElevatorPosition));
+                elevators.setHorizontalDestination((int)(horElevatorPosition));
             }
             opMode.telemetry.addData("sweeper:", virtualClawPose);
             opMode.telemetry.addData("precieved hor position: ", horElevatorPosition);

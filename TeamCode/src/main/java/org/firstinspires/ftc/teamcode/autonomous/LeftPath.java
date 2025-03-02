@@ -136,28 +136,28 @@ public class LeftPath extends LinearOpMode {
         );
         Action pickup1 = new ParallelAction(BackAndForth1,
                 new SequentialAction(
-                        elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_HALFWAY),
+                        elevators.setMotorHorizontalElevatorAction(Elevators.horizontalState.HORIZONTAL_HALFWAY),
                         claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, DownTime),
                         claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, colorSensorSystem),
                         claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 1000),
-                        elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_RETRACTED)
+                        elevators.setMotorHorizontalElevatorAction(Elevators.horizontalState.HORIZONTAL_RETRACTED)
                 ));
         Action pickup2 = new ParallelAction(BackAndForth2,
                 new SequentialAction(
-                        elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_HALFWAY),
+                        elevators.setMotorHorizontalElevatorAction(Elevators.horizontalState.HORIZONTAL_HALFWAY),
                         claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, DownTime),
                         claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, colorSensorSystem),
                         claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 1000),
-                        elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_RETRACTED)
+                        elevators.setMotorHorizontalElevatorAction(Elevators.horizontalState.HORIZONTAL_RETRACTED)
                 ));
 
         Action pickup3 = new ParallelAction(BackAndForth3,
                 new SequentialAction(
-                        elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_HALFWAY),
+                        elevators.setMotorHorizontalElevatorAction(Elevators.horizontalState.HORIZONTAL_HALFWAY),
                         claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, DownTime),
                         claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, colorSensorSystem),
                         claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 1000),
-                        elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_RETRACTED)
+                        elevators.setMotorHorizontalElevatorAction(Elevators.horizontalState.HORIZONTAL_RETRACTED)
                 ));
 
         Action preload = B_preload.build();

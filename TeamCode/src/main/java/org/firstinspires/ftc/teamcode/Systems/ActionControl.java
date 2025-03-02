@@ -2,15 +2,11 @@ package org.firstinspires.ftc.teamcode.Systems;
 
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
-import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.ftc.Actions;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
-import org.firstinspires.ftc.teamcode.Systems.Elevators.MotorHorizontalState;
+import org.firstinspires.ftc.teamcode.Systems.Elevators.horizontalState;
 import org.firstinspires.ftc.teamcode.Systems.Elevators.VerticalState;
-import org.firstinspires.ftc.teamcode.Systems.Token.TokenAction;
 import org.firstinspires.ftc.teamcode.Systems.Token.TokenParallelAction;
 import org.firstinspires.ftc.teamcode.Systems.Token.TokenSequentialAction;
 
@@ -72,7 +68,7 @@ public class ActionControl {
                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, 750),
                 new TokenParallelAction(
                 claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, colorSensorSystem),
-                elevators.setMotorHorizontalElevatorAction(MotorHorizontalState.HORIZONTAL_HALFWAY)
+                elevators.setMotorHorizontalElevatorAction(horizontalState.HORIZONTAL_HALFWAY)
                 )
         ));
     }
@@ -81,7 +77,7 @@ public class ActionControl {
         return returnWithDrive(new TokenSequentialAction(
                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 1000),//mid
                 elevators.setVerticalElevatorAction(VerticalState.VERTICAL_LOW),
-                elevators.setMotorHorizontalElevatorAction(MotorHorizontalState.HORIZONTAL_HALFWAY),
+                elevators.setMotorHorizontalElevatorAction(horizontalState.HORIZONTAL_HALFWAY),
                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 800) // down
         ));
     }
@@ -89,7 +85,7 @@ public class ActionControl {
     public Action returnFromPickUp(){
         return returnWithDrive(new TokenSequentialAction(
                 claws.clawMovementAction(45, 750), //mid
-                elevators.setMotorHorizontalElevatorAction(MotorHorizontalState.HORIZONTAL_RETRACTED),
+                elevators.setMotorHorizontalElevatorAction(horizontalState.HORIZONTAL_RETRACTED),
                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 800) // down
         ));
     }
@@ -97,7 +93,7 @@ public class ActionControl {
     public Action getReadyExtendedPickUp(){
         return returnWithDrive(new TokenSequentialAction(
                 claws.clawMovementAction(45, 750), //mid
-                elevators.setMotorHorizontalElevatorAction(MotorHorizontalState.HORIZONTAL_EXTENDED)
+                elevators.setMotorHorizontalElevatorAction(horizontalState.HORIZONTAL_EXTENDED)
                 //claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 800) // down
         ));
     }
@@ -105,7 +101,7 @@ public class ActionControl {
     public Action getReadyHalfwayPickUp(){
         return returnWithDrive(new TokenSequentialAction(
                 claws.clawMovementAction(45, 750), //mid
-                elevators.setMotorHorizontalElevatorAction(MotorHorizontalState.HORIZONTAL_HALFWAY),
+                elevators.setMotorHorizontalElevatorAction(horizontalState.HORIZONTAL_HALFWAY),
                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 800) // down
         ));
     }

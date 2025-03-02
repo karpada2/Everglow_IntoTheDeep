@@ -128,13 +128,13 @@ public class ActionOpMode extends LinearOpMode {
 
             if (gamepad2.dpad_up && flagDpadUp) {
                 // most extended
-                horizontalAction = elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_EXTENDED);
+                horizontalAction = elevators.setMotorHorizontalElevatorAction(Elevators.horizontalState.HORIZONTAL_EXTENDED);
             } else if (gamepad2.dpad_left && flagDpadLeft) {
                 // halfway extended
-                horizontalAction = elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_HALFWAY);
+                horizontalAction = elevators.setMotorHorizontalElevatorAction(Elevators.horizontalState.HORIZONTAL_HALFWAY);
             } else if (gamepad2.dpad_down && flagDpadDown) {
                 // most retracted
-                horizontalAction = elevators.setMotorHorizontalElevatorAction(Elevators.MotorHorizontalState.HORIZONTAL_RETRACTED);
+                horizontalAction = elevators.setMotorHorizontalElevatorAction(Elevators.horizontalState.HORIZONTAL_RETRACTED);
             }
 
             if (builtAction == null) {

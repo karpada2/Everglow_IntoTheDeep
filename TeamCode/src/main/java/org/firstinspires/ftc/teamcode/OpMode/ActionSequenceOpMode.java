@@ -40,8 +40,6 @@ public class ActionSequenceOpMode extends LinearOpMode {
         claws.setArmTargetPosition(290);
         elevators.setVerticalDestination(0);
 
-        elevators.motorSetHorizontalPower(0.8);
-
         double epsilon = 0.4;
         double joystickTolerance = 0.05;
         boolean flagDpadDown = true;

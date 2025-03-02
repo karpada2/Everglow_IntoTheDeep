@@ -35,9 +35,6 @@ public class SpecimenTesting extends LinearOpMode {
         //LynxModule controlHub = hardwareMap.get(LynxModule.class, "Control Hub");
         //LynxModule expansionHub = hardwareMap.get(LynxModule.class, "Expansion Hub 2");
 
-
-        elevators.motorSetHorizontalPower(1);
-
         double epsilon = 0.4;
         double joystickTolerance = 0.05;
         boolean flagElevatorVerticalDpadDown = true;
@@ -90,15 +87,14 @@ public class SpecimenTesting extends LinearOpMode {
             if (Math.abs(gamepad2.right_stick_y) > joystickTolerance) {
                 if(horElevatorPosition < 0){
                     horElevatorPosition = 0;
-                }else if(horElevatorPosition >= Elevators.MotorHorizontalState.HORIZONTAL_EXTENDED.state){
-                    horElevatorPosition =  Elevators.MotorHorizontalState.HORIZONTAL_EXTENDED.state;
+                }else if(horElevatorPosition >= Elevators.horizontalState.HORIZONTAL_EXTENDED.state){
+                    horElevatorPosition =  Elevators.horizontalState.HORIZONTAL_EXTENDED.state;
                 }
                 horElevatorPosition += -gamepad2.right_stick_y*40*3;
-                elevators.motorSetHorizontalDestination((int)(horElevatorPosition));
+                elevators.setHorizontalDestination((int)(horElevatorPosition));
             }
             telemetry.addData("Right Stick y: ", gamepad2.right_stick_y);
             telemetry.addData("precieved hor position: ", horElevatorPosition);
-            telemetry.addData("hor position: ", elevators.motorGetHorizontalPosition());
 //            telemetry.addData("Control Hub auxillary volts: ", controlHub.getAuxiliaryVoltage(VoltageUnit.VOLTS));
 //            telemetry.addData("Expansion Hub auxillary volts: ", expansionHub.getAuxiliaryVoltage(VoltageUnit.VOLTS));
 //            telemetry.addData("Control Hub used volts: ", controlHub.getInputVoltage(VoltageUnit.VOLTS));
@@ -134,14 +130,14 @@ public class SpecimenTesting extends LinearOpMode {
 //            elevators.setVerticalDestination((int)(elevators.getVerticalDestination() + AnalogueExtensionVertical * VerticalAnalogueFactor));
 //
             if(gamepad2.cross && flagElevatorHorizontalX) {
-                elevators.motorSetHorizontalDestination(Elevators.MotorHorizontalState.HORIZONTAL_EXTENDED.state);
-                horElevatorPosition = Elevators.MotorHorizontalState.HORIZONTAL_EXTENDED.state;
+                elevators.setHorizontalDestination(Elevators.horizontalState.HORIZONTAL_EXTENDED.state);
+                horElevatorPosition = Elevators.horizontalState.HORIZONTAL_EXTENDED.state;
             }
             flagElevatorHorizontalX = !gamepad2.cross;
 //
             if(gamepad2.triangle && flagElevatorHorizontalTriangle){
-                elevators.motorSetHorizontalDestination(Elevators.MotorHorizontalState.HORIZONTAL_RETRACTED.state);
-                horElevatorPosition = Elevators.MotorHorizontalState.HORIZONTAL_RETRACTED.state;
+                elevators.setHorizontalDestination(Elevators.horizontalState.HORIZONTAL_RETRACTED.state);
+                horElevatorPosition = Elevators.horizontalState.HORIZONTAL_RETRACTED.state;
             }
             flagElevatorHorizontalTriangle = !gamepad2.triangle;
 
@@ -152,8 +148,8 @@ public class SpecimenTesting extends LinearOpMode {
 
 
             if(gamepad2.circle && flagElevatorHorizontalCircle){
-                elevators.motorSetHorizontalDestination(Elevators.MotorHorizontalState.HORIZONTAL_HALFWAY.state);
-                horElevatorPosition = Elevators.MotorHorizontalState.HORIZONTAL_HALFWAY.state;
+                elevators.setHorizontalDestination(Elevators.horizontalState.HORIZONTAL_HALFWAY.state);
+                horElevatorPosition = Elevators.horizontalState.HORIZONTAL_HALFWAY.state;
             }
             flagElevatorHorizontalCircle = !gamepad2.circle;
             if(isInitialized && secondery)
