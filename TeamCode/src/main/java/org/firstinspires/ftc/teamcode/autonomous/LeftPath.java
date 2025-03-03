@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
+import static org.firstinspires.ftc.teamcode.Systems.Elevators.HorizontalState.HORIZONTAL_HALFWAY;
+
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.config.Config;
@@ -136,7 +138,7 @@ public class LeftPath extends LinearOpMode {
         );
         Action pickup1 = new ParallelAction(BackAndForth1,
                 new SequentialAction(
-                        elevators.setHorizontalElevatorAction(Elevators.HorizontalState.HORIZONTAL_HALFWAY),
+                        elevators.setHorizontalElevatorAction(HORIZONTAL_HALFWAY),
                         claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, DownTime),
                         claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, colorSensorSystem),
                         claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 1000),
@@ -144,7 +146,7 @@ public class LeftPath extends LinearOpMode {
                 ));
         Action pickup2 = new ParallelAction(BackAndForth2,
                 new SequentialAction(
-                        elevators.setHorizontalElevatorAction(Elevators.HorizontalState.HORIZONTAL_HALFWAY),
+                        elevators.setHorizontalElevatorAction(HORIZONTAL_HALFWAY),
                         claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, DownTime),
                         claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, colorSensorSystem),
                         claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 1000),
@@ -153,7 +155,7 @@ public class LeftPath extends LinearOpMode {
 
         Action pickup3 = new ParallelAction(BackAndForth3,
                 new SequentialAction(
-                        elevators.setHorizontalElevatorAction(Elevators.HorizontalState.HORIZONTAL_HALFWAY),
+                        elevators.setHorizontalElevatorAction(HORIZONTAL_HALFWAY),
                         claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, DownTime),
                         claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, colorSensorSystem),
                         claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 1000),
