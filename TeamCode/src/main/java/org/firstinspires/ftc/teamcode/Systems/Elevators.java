@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.Systems;
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -62,9 +61,10 @@ public class Elevators implements Tokenable {
     public class MotorHorizontalElevatorAction extends TokenAction {
         private final double destination;
 
-        public MotorHorizontalElevatorAction(horizontalState state) {
+        public MotorHorizontalElevatorAction(HorizontalState state) {
             //motorSetHorizontalDestination(state);
             this.destination = state.state;
+
             isDone = Elevators.this::motorIsHorizontalInDestination;
         }
 
@@ -78,6 +78,27 @@ public class Elevators implements Tokenable {
 
             setHorizontalDestination(this.destination);
             return !motorIsHorizontalInDestination();
+        }
+    }
+
+    public class HorizontalElevatorAction extends TokenAction {
+        private boolean hasEnoughTimePassed() {
+            return System.currentTimeMillis() - startTime >= timeUntilDone;
+        }
+        private final double desitnation;
+        private final double timeUntilDone;
+        private double startTime;
+
+        public HorizontalElevatorAction(HorizontalState state, double timeUntilDone) {
+            isDone = HorizontalElevatorAction.this::hasEnoughTimePassed;
+            desitnation = state.state;
+            this.timeUntilDone = timeUntilDone;
+        }
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            setHorizontalDestination(desitnation);
+            return !hasEnoughTimePassed();
         }
     }
 
@@ -102,14 +123,14 @@ public class Elevators implements Tokenable {
         }
     }
 
-    public enum horizontalState {
+    public enum HorizontalState {
         HORIZONTAL_RETRACTED(0),
         HORIZONTAL_HALFWAY(0.5),
         HORIZONTAL_EXTENDED(1);
 
         public final double state;
 
-        horizontalState(double state) {
+        HorizontalState(double state) {
             this.state = state;
         }
     }
@@ -228,29 +249,27 @@ public class Elevators implements Tokenable {
         leftVert.setPower(power);
     }
 
-    public int motorGetHorizontalPosition() {
-        return horMotor.getCurrentPosition();
+    // Does not work anymore since we have no motor
+    @Deprecated
+    public double getHorizontalPosition() {
+        return (leftHor.getPosition() + rightHor.getPosition())/2.0;
     }
 
-    public int motorGetHorizontalDestination() {
-        return motorHorizontalDestination;
+    public double getHorizontalDestination() {
+        return leftHor.getPosition();
     }
 
     public boolean motorIsHorizontalInDestination() {
-        return Math.abs(motorGetHorizontalPosition() - motorGetHorizontalDestination()) < 20;
+        return Math.abs(getHorizontalPosition() - getHorizontalDestination()) < 20;
     }
 
-    public void setHorizontalDestination(horizontalState state) {
+    public void setHorizontalDestination(HorizontalState state) {
         setHorizontalDestination(state.state);
     }
 
     public void setHorizontalDestination(double destination) {
         leftHor.setPosition(Math.abs(destination)%1.0);
         rightHor.setPosition(Math.abs(destination)%1.0);
-    }
-
-    public Action getHorizontalAction(horizontalState state){
-        return new MotorHorizontalElevatorAction(state);
     }
 
     public VerticalElevatorAction setVerticalElevatorAction(VerticalState targetState) {
@@ -268,8 +287,12 @@ public class Elevators implements Tokenable {
         rightVert.setPower(0);
     }
 
-    public MotorHorizontalElevatorAction setMotorHorizontalElevatorAction(horizontalState destinationState) {
-        return new MotorHorizontalElevatorAction(destinationState);
+    public HorizontalElevatorAction setHorizontalElevatorAction(HorizontalState destinationState) {
+        return new HorizontalElevatorAction(destinationState, 0.0);
+    }
+
+    public HorizontalElevatorAction setHorizontalElevatorAction(HorizontalState destinationState, double timeUntilDone) {
+        return new HorizontalElevatorAction(destinationState, timeUntilDone);
     }
     public void setVertDest(int dest){
         rightVert.setTargetPosition(dest);

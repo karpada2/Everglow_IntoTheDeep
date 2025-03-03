@@ -108,24 +108,24 @@ public class LeftPathHang extends LinearOpMode {
         );
         Action pickup1 = new ParallelAction(BackAndForth1,
                 new SequentialAction(
-                        elevators.setMotorHorizontalElevatorAction(Elevators.horizontalState.HORIZONTAL_HALFWAY),
+                        elevators.setHorizontalElevatorAction(Elevators.HorizontalState.HORIZONTAL_HALFWAY),
                         claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, DownTime),
                         claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, colorSensorSystem)
                 ));
         Action pickup2 = new ParallelAction(BackAndForth2,
                 new SequentialAction(
-                        elevators.setMotorHorizontalElevatorAction(Elevators.horizontalState.HORIZONTAL_HALFWAY),
+                        elevators.setHorizontalElevatorAction(Elevators.HorizontalState.HORIZONTAL_HALFWAY),
                         claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, DownTime),
                         claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, colorSensorSystem)
                 ));
 
         Action pickup3 = new ParallelAction(BackAndForth3,
                 new SequentialAction(
-                        elevators.setMotorHorizontalElevatorAction(Elevators.horizontalState.HORIZONTAL_HALFWAY),
+                        elevators.setHorizontalElevatorAction(Elevators.HorizontalState.HORIZONTAL_HALFWAY),
                         claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, DownTime),
                         claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, colorSensorSystem),
                         claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 1000),
-                        elevators.setMotorHorizontalElevatorAction(Elevators.horizontalState.HORIZONTAL_RETRACTED)
+                        elevators.setHorizontalElevatorAction(Elevators.HorizontalState.HORIZONTAL_RETRACTED)
                 ));
 
         Action preload = B_preload.build();
@@ -160,7 +160,7 @@ public class LeftPathHang extends LinearOpMode {
 
                         new ParallelAction(
                                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 1000),
-                                elevators.setMotorHorizontalElevatorAction(Elevators.horizontalState.HORIZONTAL_RETRACTED),
+                                elevators.setHorizontalElevatorAction(Elevators.HorizontalState.HORIZONTAL_RETRACTED),
                                 elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HIGH),
                                 sample1basket //movement
                         ),
@@ -174,7 +174,7 @@ public class LeftPathHang extends LinearOpMode {
 
                         new ParallelAction(
                                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 1000),
-                                elevators.setMotorHorizontalElevatorAction(Elevators.horizontalState.HORIZONTAL_RETRACTED),
+                                elevators.setHorizontalElevatorAction(Elevators.HorizontalState.HORIZONTAL_RETRACTED),
                                 elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HIGH),
                                 sample2basket  //movement
                         ),

@@ -197,7 +197,7 @@ public class ActionSequenceOpMode extends LinearOpMode {
             //telemetry.addData("target: ", claws.getArmTargetPosition());
             telemetry.addData("Right Stick y: ", gamepad2.right_stick_y);
             telemetry.addData("precieved hor position: ", horElevatorPosition);
-            telemetry.addData("hor position: ", elevators.motorGetHorizontalPosition());
+            telemetry.addData("hor position: ", elevators.getHorizontalPosition());
             telemetry.update();
         }
 

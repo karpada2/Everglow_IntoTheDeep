@@ -87,8 +87,8 @@ public class SpecimenTesting extends LinearOpMode {
             if (Math.abs(gamepad2.right_stick_y) > joystickTolerance) {
                 if(horElevatorPosition < 0){
                     horElevatorPosition = 0;
-                }else if(horElevatorPosition >= Elevators.horizontalState.HORIZONTAL_EXTENDED.state){
-                    horElevatorPosition =  Elevators.horizontalState.HORIZONTAL_EXTENDED.state;
+                }else if(horElevatorPosition >= Elevators.HorizontalState.HORIZONTAL_EXTENDED.state){
+                    horElevatorPosition =  Elevators.HorizontalState.HORIZONTAL_EXTENDED.state;
                 }
                 horElevatorPosition += -gamepad2.right_stick_y*40*3;
                 elevators.setHorizontalDestination((int)(horElevatorPosition));
@@ -130,14 +130,14 @@ public class SpecimenTesting extends LinearOpMode {
 //            elevators.setVerticalDestination((int)(elevators.getVerticalDestination() + AnalogueExtensionVertical * VerticalAnalogueFactor));
 //
             if(gamepad2.cross && flagElevatorHorizontalX) {
-                elevators.setHorizontalDestination(Elevators.horizontalState.HORIZONTAL_EXTENDED.state);
-                horElevatorPosition = Elevators.horizontalState.HORIZONTAL_EXTENDED.state;
+                elevators.setHorizontalDestination(Elevators.HorizontalState.HORIZONTAL_EXTENDED.state);
+                horElevatorPosition = Elevators.HorizontalState.HORIZONTAL_EXTENDED.state;
             }
             flagElevatorHorizontalX = !gamepad2.cross;
 //
             if(gamepad2.triangle && flagElevatorHorizontalTriangle){
-                elevators.setHorizontalDestination(Elevators.horizontalState.HORIZONTAL_RETRACTED.state);
-                horElevatorPosition = Elevators.horizontalState.HORIZONTAL_RETRACTED.state;
+                elevators.setHorizontalDestination(Elevators.HorizontalState.HORIZONTAL_RETRACTED.state);
+                horElevatorPosition = Elevators.HorizontalState.HORIZONTAL_RETRACTED.state;
             }
             flagElevatorHorizontalTriangle = !gamepad2.triangle;
 
@@ -148,8 +148,8 @@ public class SpecimenTesting extends LinearOpMode {
 
 
             if(gamepad2.circle && flagElevatorHorizontalCircle){
-                elevators.setHorizontalDestination(Elevators.horizontalState.HORIZONTAL_HALFWAY.state);
-                horElevatorPosition = Elevators.horizontalState.HORIZONTAL_HALFWAY.state;
+                elevators.setHorizontalDestination(Elevators.HorizontalState.HORIZONTAL_HALFWAY.state);
+                horElevatorPosition = Elevators.HorizontalState.HORIZONTAL_HALFWAY.state;
             }
             flagElevatorHorizontalCircle = !gamepad2.circle;
             if(isInitialized && secondery)
