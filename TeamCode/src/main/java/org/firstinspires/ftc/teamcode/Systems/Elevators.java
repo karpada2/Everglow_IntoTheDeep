@@ -86,13 +86,13 @@ public class Elevators implements Tokenable {
     public enum VerticalState {
         VERTICAL_MIN(0),
         VERTICAL_PICKUP(0),
-        VERTICAL_HURDLE(970),
-        VERTICAL_SPECIMEN_PICKUP(1518),
-        VERTICAL_SPECIMEN_HIGH(4553),
-        VERTICAL_LOW(7643),
-        VERTICAL_HIGH(9000),
-        VERTICAL_OPMODE_HIGH(10000),
-        VERTICAL_MAX(11448);
+        VERTICAL_HURDLE(356),
+        VERTICAL_SPECIMEN_PICKUP(557),
+        VERTICAL_SPECIMEN_HIGH(1670),
+        VERTICAL_LOW(2804),
+        VERTICAL_HIGH(3300),
+        VERTICAL_OPMODE_HIGH(3670),
+        VERTICAL_MAX(4200); //4200/11448
 
         public final int state;
 
