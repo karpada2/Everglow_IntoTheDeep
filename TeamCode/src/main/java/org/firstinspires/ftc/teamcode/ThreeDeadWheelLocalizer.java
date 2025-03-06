@@ -20,9 +20,9 @@ import org.firstinspires.ftc.teamcode.messages.ThreeDeadWheelInputsMessage;
 @Config
 public final class ThreeDeadWheelLocalizer implements Localizer {
     public static class Params {
-        public double par0YTicks = -1515.9482524367495; // y position of the first parallel encoder (in tick units)
-        public double par1YTicks = 1267.9200172559867; // y position of the second parallel encoder (in tick units)
-        public double perpXTicks = -2061.928559092433; // x position of the perpendicular encoder (in tick units)
+        public double par0YTicks = -679.5509191897729; // y position of the first parallel encoder (in tick units)
+        public double par1YTicks = 807.0502362574133; // y position of the second parallel encoder (in tick units)
+        public double perpXTicks = -2480.230581916708; // x position of the perpendicular encoder (in tick units)
     }
 
     public static Params PARAMS = new Params();
@@ -39,7 +39,7 @@ public final class ThreeDeadWheelLocalizer implements Localizer {
         //   the encoders should be plugged into the slot matching the named motor
         //   see https://ftc-docs.firstinspires.org/en/latest/hardware_and_software_configuration/configuring/index.html
         par0 = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "frontLeft"))); //right encoder
-        par1 = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "backRight"))); //left encoder
+        par1 = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "frontRight"))); //left encoder
         perp = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "backLeft")));
 
         // TODO: reverse encoder directions if needed
