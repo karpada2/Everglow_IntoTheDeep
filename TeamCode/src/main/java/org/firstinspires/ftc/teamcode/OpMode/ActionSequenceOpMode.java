@@ -40,8 +40,6 @@ public class ActionSequenceOpMode extends LinearOpMode {
         claws.setArmTargetPosition(290);
         elevators.setVerticalDestination(0);
 
-        elevators.motorSetHorizontalPower(0.8);
-
         double epsilon = 0.4;
         double joystickTolerance = 0.05;
         boolean flagDpadDown = true;
@@ -199,7 +197,7 @@ public class ActionSequenceOpMode extends LinearOpMode {
             //telemetry.addData("target: ", claws.getArmTargetPosition());
             telemetry.addData("Right Stick y: ", gamepad2.right_stick_y);
             telemetry.addData("precieved hor position: ", horElevatorPosition);
-            telemetry.addData("hor position: ", elevators.motorGetHorizontalPosition());
+            telemetry.addData("hor position: ", elevators.getHorizontalPosition());
             telemetry.update();
         }
 
