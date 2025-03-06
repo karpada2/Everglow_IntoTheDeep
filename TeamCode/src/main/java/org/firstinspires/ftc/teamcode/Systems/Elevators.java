@@ -189,8 +189,8 @@ public class Elevators implements Tokenable {
     }
 
     public void setHorizontalCorrectDirection() {
-        rightHor.setDirection(Servo.Direction.FORWARD);
-        leftHor.setDirection(Servo.Direction.REVERSE);
+        rightHor.setDirection(Servo.Direction.REVERSE);
+        leftHor.setDirection(Servo.Direction.FORWARD);
     }
     public void setHoriozontalScales() {
         rightHor.scaleRange(0, 0.84);
