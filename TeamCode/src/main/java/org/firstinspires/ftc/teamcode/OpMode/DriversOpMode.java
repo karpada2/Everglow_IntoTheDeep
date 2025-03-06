@@ -16,23 +16,26 @@ import org.firstinspires.ftc.teamcode.Systems.Sweeper;
 public class DriversOpMode {
     private final LinearOpMode opMode;
     private final Gamepad gamepad1, gamepad2;
+    private final MecanumDrive drive;
 
     public DriversOpMode(LinearOpMode opMode, Gamepad gamepad1, Gamepad gamepad2){
         this.opMode = opMode;
         this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;
+        drive = new MecanumDrive(opMode.hardwareMap, new Pose2d(0, 0, 0));
     }
 
     public void run(boolean isBlue){
-        Sweeper sweeper = new Sweeper(opMode);
+
         DifferentialClaws claws = DifferentialClaws.getInstance(opMode);
-        MecanumDrive drive = new MecanumDrive(opMode.hardwareMap, new Pose2d(0, 0, 0));
         ColorSensorSystem colorSensorSystem = new ColorSensorSystem(opMode, isBlue);
         Elevators elevators = Elevators.getInstance(opMode);
         elevators.setVerticalPower(0.0);
         boolean isInitialized = false;
         boolean secondery = false;
         ActionControl control = new ActionControl(elevators, claws, colorSensorSystem, drive, gamepad1, gamepad2);
+        Thread driverThread = new Thread(this::DriverRun);
+        driverThread.start();
         opMode.waitForStart();
         //LynxModule controlHub = hardwareMap.get(LynxModule.class, "Control Hub");
         //LynxModule expansionHub = hardwareMap.get(LynxModule.class, "Expansion Hub 2");
@@ -68,23 +71,6 @@ public class DriversOpMode {
 
         while (opMode.opModeIsActive()) {
             //driving
-            drive.setDrivePowers(new PoseVelocity2d(
-                    new Vector2d(
-                            LinearToExpo(-gamepad1.left_stick_y)*(1.0/Math.pow(4.5, gamepad1.right_trigger)),
-                            -gamepad1.left_stick_x*(1.0/Math.pow(4, gamepad1.right_trigger))
-                    ),
-                    -gamepad1.right_stick_x*(1.0/Math.pow(5, gamepad1.right_trigger))
-            ));
-            drive.updatePoseEstimate();
-
-
-            if (gamepad1.circle) {
-                sweeper.setPosition(Sweeper.SweeperAngle.SWEEPER_EXTENDED);
-            }
-            else {
-                sweeper.setPosition(Sweeper.SweeperAngle.SWEEPER_RETRACTED);
-            }
-
 
             claws.updateRightClawServoRotation();
             claws.updateLeftClawServoRotation();
@@ -103,7 +89,7 @@ public class DriversOpMode {
                 claws.rotateWheels(gamepad2.left_trigger);
             }
             else if (gamepad2.right_bumper && rightBumper) {
-                virtualClawPose = 68;
+                virtualClawPose = DifferentialClaws.ClawPositionState.SPIT_STATE.state;
                 claws.setArmTargetPosition(virtualClawPose);
                 startTime = System.currentTimeMillis();
             }
@@ -127,16 +113,12 @@ public class DriversOpMode {
                 }else if(horElevatorPosition >= Elevators.HorizontalState.HORIZONTAL_EXTENDED.state){
                     horElevatorPosition =  Elevators.HorizontalState.HORIZONTAL_EXTENDED.state;
                 }
-                horElevatorPosition += -gamepad2.right_stick_y*40*3;
+                horElevatorPosition += 2*-gamepad2.right_stick_y/100.;
                 elevators.setHorizontalDestination((int)(horElevatorPosition));
             }
             opMode.telemetry.addData("sweeper:", virtualClawPose);
             opMode.telemetry.addData("precieved hor position: ", horElevatorPosition);
-            opMode.telemetry.addData("hor position: ", elevators.getHorizontalPosition());
-//            telemetry.addData("Control Hub auxillary volts: ", controlHub.getAuxiliaryVoltage(VoltageUnit.VOLTS));
-//            telemetry.addData("Expansion Hub auxillary volts: ", expansionHub.getAuxiliaryVoltage(VoltageUnit.VOLTS));
-//            telemetry.addData("Control Hub used volts: ", controlHub.getInputVoltage(VoltageUnit.VOLTS));
-//            telemetry.addData("Expansion Hub used volts: ", expansionHub.getInputVoltage(VoltageUnit.VOLTS));
+            opMode.telemetry.addData("hor position: ", elevators.getHorizontalDestination());
             opMode.telemetry.update();
             elevators.updateVert();
 
@@ -186,18 +168,42 @@ public class DriversOpMode {
                         lastPIDPower = 0.2;
                     else
                         lastPIDPower = -Math.cos(Math.toRadians(
-                                ((int)(claws.getActualArmRotation())/DifferentialClaws.maxPoint)*120. - 30.)) * -0.05;
+                                ((int)(claws.getActualArmRotation())/DifferentialClaws.maxPoint)*180. - 30.)) * -0.05;
                 }
                 else
                     lastPIDPower = claws.getPIDArmPower();
 
                 claws.rotateArm(lastPIDPower);
                 if ((claws.getActualArmRotation() <= 5 && claws.getArmTargetPosition() ==0)
-                        || (claws.getActualArmRotation() >= 67 && claws.getArmTargetPosition() == 68))
+                        || (claws.getActualArmRotation() >= DifferentialClaws.maxPoint-2 && claws.getArmTargetPosition() == DifferentialClaws.maxPoint))
                     lastPIDPower = 0;
             }
         }
 
+    }
+
+    private void DriverRun(){
+        Sweeper sweeper = new Sweeper(opMode);
+
+        opMode.waitForStart();
+        while (opMode.opModeIsActive()){
+            drive.setDrivePowers(new PoseVelocity2d(
+                    new Vector2d(
+                            LinearToExpo(-gamepad1.left_stick_y)*(1.0/Math.pow(4.5, gamepad1.right_trigger)),
+                            -gamepad1.left_stick_x*(1.0/Math.pow(4, gamepad1.right_trigger))
+                    ),
+                    -gamepad1.right_stick_x*(1.0/Math.pow(5, gamepad1.right_trigger))
+            ));
+            drive.updatePoseEstimate();
+
+
+            if (gamepad1.circle) {
+                sweeper.setPosition(Sweeper.SweeperAngle.SWEEPER_EXTENDED);
+            }
+            else {
+                sweeper.setPosition(Sweeper.SweeperAngle.SWEEPER_RETRACTED);
+            }
+        }
     }
     public static double LinearToExpo(double input) {
         if (input >= 0) return input*input;

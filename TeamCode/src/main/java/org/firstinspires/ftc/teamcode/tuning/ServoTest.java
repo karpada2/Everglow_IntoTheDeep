@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.tuning;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Systems.Elevators;
@@ -15,6 +16,7 @@ public class ServoTest extends LinearOpMode {
         rightHor.setDirection(Servo.Direction.REVERSE);
         leftHor.setDirection(Servo.Direction.FORWARD);
 
+        CRServo right = hardwareMap.get(CRServo.class, "rightClawServo");
         waitForStart();
 
         double pos = 0;
@@ -28,7 +30,7 @@ public class ServoTest extends LinearOpMode {
                 pos -= 0.008;
                 pos = Math.max(0, pos);
             }
-
+            right.setPower(-gamepad1.left_stick_y);
             leftHor.setPosition(pos);
             rightHor.setPosition(pos);
 

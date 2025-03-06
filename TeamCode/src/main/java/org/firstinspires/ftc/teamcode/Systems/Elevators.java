@@ -58,29 +58,6 @@ public class Elevators implements Tokenable {
     -------------------------------------------------------------------
      */
     // moves the horizontal elevators to destination, and is considered finished when they reach the destination
-    public class MotorHorizontalElevatorAction extends TokenAction {
-        private final double destination;
-
-        public MotorHorizontalElevatorAction(HorizontalState state) {
-            //motorSetHorizontalDestination(state);
-            this.destination = state.state;
-
-            isDone = Elevators.this::motorIsHorizontalInDestination;
-        }
-
-        @Override
-        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-
-            if (!isInitialized) {
-                setHorizontalDestination(this.destination);
-                isInitialized = true;
-            }
-
-            setHorizontalDestination(this.destination);
-            return !motorIsHorizontalInDestination();
-        }
-    }
-
     public class HorizontalElevatorAction extends TokenAction {
         private boolean hasEnoughTimePassed() {
             return System.currentTimeMillis() - startTime >= timeUntilDone;
@@ -125,7 +102,8 @@ public class Elevators implements Tokenable {
 
     public enum HorizontalState {
         HORIZONTAL_RETRACTED(0),
-        HORIZONTAL_HALFWAY(0.3),
+        HORIZONTAL_HALFWAY(0.2),
+        //like sin(), its not exacly half pos becouse in the start there is a lot effect and at the end there is the least
         HORIZONTAL_EXTENDED(0.6);
 
         public final double state;
@@ -151,10 +129,8 @@ public class Elevators implements Tokenable {
         rightVert.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         leftVert.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-//        leftHor.setDirection(Servo.Direction.REVERSE);
-//        rightHor.setDirection(Servo.Direction.FORWARD);
-
         setHorizontalCorrectDirection();
+        setHorizontalDestination(0);
 //        setHoriozontalScales();
 
 
@@ -192,11 +168,6 @@ public class Elevators implements Tokenable {
         rightHor.setDirection(Servo.Direction.REVERSE);
         leftHor.setDirection(Servo.Direction.FORWARD);
     }
-    public void setHoriozontalScales() {
-        rightHor.scaleRange(0, 0.84);
-        leftHor.scaleRange(0, 0.84);
-    }
-
 
     public int getVerticalDestination() {
         return verticalDestination;
@@ -244,9 +215,6 @@ public class Elevators implements Tokenable {
 
     // checks whether the elevator is close enough (+- epsilon) to it's destination
     public boolean isElevatorInDestination() {
-//        if (getVerticalCurrentPosition() < getVerticalDestination()) {
-//            return getVerticalCurrentPosition() >= getVerticalDestination() - epsilon;
-//        }
         return Math.abs(getVerticalCurrentPosition() - getVerticalDestination()) <= epsilon;
     }
 
@@ -272,11 +240,6 @@ public class Elevators implements Tokenable {
     public double getHorizontalDestination() {
         return leftHor.getPosition();
     }
-
-    public boolean motorIsHorizontalInDestination() {
-        return Math.abs(getHorizontalPosition() - getHorizontalDestination()) < 20;
-    }
-
     public void setHorizontalDestination(HorizontalState state) {
         setHorizontalDestination(state.state);
     }
@@ -303,16 +266,6 @@ public class Elevators implements Tokenable {
 
     public HorizontalElevatorAction setHorizontalElevatorAction(HorizontalState destinationState) {
         return new HorizontalElevatorAction(destinationState, 0.0);
-    }
-
-    public HorizontalElevatorAction setHorizontalElevatorAction(HorizontalState destinationState, double timeUntilDone) {
-        return new HorizontalElevatorAction(destinationState, timeUntilDone);
-    }
-    public void setVertDest(int dest){
-        rightVert.setTargetPosition(dest);
-        leftVert.setTargetPosition(dest);
-        rightVert.setPower(0.65);
-        leftVert.setPower(0.65);
     }
 
     public double getLeftVelocity(){

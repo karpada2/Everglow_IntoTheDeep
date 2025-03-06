@@ -30,7 +30,7 @@ public class DifferentialClaws {
 
     private static DifferentialClaws instance = null;
 
-    public static final double maxPoint = 68;
+    public static final double maxPoint = 68+46;
 
     double armPosition = 0;
     double lastPosRequest = 0;
@@ -223,8 +223,8 @@ public class DifferentialClaws {
     public enum ClawPositionState {
         MIN(0.0),
         MID(maxPoint/2),
-        SPIT_STATE(maxPoint-15),
-        HANG_SPECIMEN(maxPoint-30),
+        SPIT_STATE(72),
+        HANG_SPECIMEN(53),
         MAX(maxPoint);
 
         public final double state;
@@ -300,7 +300,7 @@ public class DifferentialClaws {
     public double getPIDArmPower(){
         int armPos = (int)(getActualArmRotation());
         double pid = controller.calculate(armPos, target);
-        double ff = Math.cos(Math.toRadians((armPos/maxPoint)*120. - 30.)) * f;
+        double ff = Math.cos(Math.toRadians((armPos/maxPoint)*180. - 30.)) * f;
 
         return -(pid + ff);
     }
