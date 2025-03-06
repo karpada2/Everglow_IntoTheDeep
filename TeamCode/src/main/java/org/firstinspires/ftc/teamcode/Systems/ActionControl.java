@@ -116,6 +116,16 @@ public class ActionControl {
         );
     }
 
+    public Action hangHighRaise() {
+        return returnWithDrive(new TokenSequentialAction(
+                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750),
+                        elevators.setVerticalElevatorAction(VerticalState.VERTICAL_SPECIMEN_HIGH),
+                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.HANG_SPECIMEN.state, 750),
+                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_PICKUP)
+                )
+        );
+    }
+
 
 //    public void runAction(Action action){
 //        if(!isRunAction){

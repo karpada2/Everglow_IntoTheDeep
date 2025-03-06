@@ -21,6 +21,7 @@ public class specimins {
         double dropSpeciminY = -52;
         double firstSpeciminX = 50;
         double secondSpeciminX = 56;
+        double thirdSpeciminX = 60;
         double PickSpeciminY = -12;
 
         Pose2d specimins_beginPose = new Pose2d(16, -62,   Math.PI/2);
@@ -58,9 +59,13 @@ public class specimins {
                 // Moves to the second specimin
                 .splineToConstantHeading(new Vector2d(secondSpeciminX,PickSpeciminY),0)
                 // Waits for human player
-                .waitSeconds(1)
                 // Pushes the second specimin
-                .strafeTo(new Vector2d(secondSpeciminX,dropSpeciminY))
+                .splineToConstantHeading(new Vector2d(secondSpeciminX,dropSpeciminY),-Math.PI/2)
+
+                .splineToConstantHeading(new Vector2d(thirdSpeciminX,PickSpeciminY),0)
+                // Waits for human player
+                // Pushes the second specimin
+                .splineToConstantHeading(new Vector2d(thirdSpeciminX,dropSpeciminY),-Math.PI/2)
                 //* Raises Elevator to picking up height
                 // Goes to pickup first specimin
                 .setTangent(Math.PI/2)
