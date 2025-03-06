@@ -282,8 +282,8 @@ public class Elevators implements Tokenable {
     }
 
     public void setHorizontalDestination(double destination) {
-        leftHor.setPosition(Math.abs(destination)%1.0);
-        rightHor.setPosition(Math.abs(destination)%1.0);
+        leftHor.setPosition(destination);
+        rightHor.setPosition(destination);
     }
 
     public VerticalElevatorAction setVerticalElevatorAction(VerticalState targetState) {
