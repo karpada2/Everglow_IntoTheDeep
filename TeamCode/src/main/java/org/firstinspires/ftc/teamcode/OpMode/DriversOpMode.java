@@ -127,8 +127,8 @@ public class DriversOpMode {
                 }else if(horElevatorPosition >= Elevators.HorizontalState.HORIZONTAL_EXTENDED.state){
                     horElevatorPosition =  Elevators.HorizontalState.HORIZONTAL_EXTENDED.state;
                 }
-                horElevatorPosition += -gamepad2.right_stick_y*40*3;
-                elevators.setHorizontalDestination((int)(horElevatorPosition));
+                horElevatorPosition += -gamepad2.right_stick_y*0.02;
+                elevators.setHorizontalDestination(horElevatorPosition);
             }
             opMode.telemetry.addData("sweeper:", virtualClawPose);
             opMode.telemetry.addData("precieved hor position: ", horElevatorPosition);
