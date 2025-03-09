@@ -56,6 +56,7 @@ public class DriversOpMode {
         double virtualClawPose = claws.maxPoint;
 
         double horElevatorPosition = 0;
+        elevators.setHorizontalDestination(Elevators.HorizontalState.HORIZONTAL_RETRACTED.state);
 
         double startTime = 0;
 
