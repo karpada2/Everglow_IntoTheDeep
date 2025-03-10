@@ -30,7 +30,7 @@ public class DifferentialClaws {
 
     private static DifferentialClaws instance = null;
 
-    public static final double maxPoint = 68;
+    public static final double maxPoint = 117;
 
     double armPosition = 0;
     double lastPosRequest = 0;
@@ -52,10 +52,10 @@ public class DifferentialClaws {
 
     public static PIDController controller;
 
-    public final double p = 0.009,//.008,
-            i = 0,
+    public final double p = 0.01,//.008,
+            i = 0.0002,
             d = 0.0002;//.0001;
-    public double f = 0.12;//0.08;
+    public double f = 0.07;//0.08;
 
     private double target = 0;
 

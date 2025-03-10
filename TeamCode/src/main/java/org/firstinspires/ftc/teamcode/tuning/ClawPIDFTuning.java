@@ -9,8 +9,9 @@ import org.firstinspires.ftc.teamcode.Systems.DifferentialClaws;
 @Config
 @TeleOp(name="ClawPIDFTuning", group = "Tests")
 public class ClawPIDFTuning extends LinearOpMode {
-    public static double p = 0, i = 0, d = 0;//0.0075, i=0,d=0.00005;//0.008, i = 0, d = 0.0001;
-    public static double f = 0;//0.05;
+    public static double pos = 0;
+    public static double p = 0.01, i = 0.0002, d = 0.0002;//0.0075, i=0,d=0.00005;//0.008, i = 0, d = 0.0001;
+    public static double f = 0.07;//0.05;
     public static double x = 0;
     public static double startTime;
 
@@ -24,10 +25,18 @@ public class ClawPIDFTuning extends LinearOpMode {
         startTime = System.currentTimeMillis();
         double lastPIDPower = 0;
         while (opModeIsActive()) {
+            if (pos < 0) {
+                pos = 0;
+            }
+            else if (pos > DifferentialClaws.maxPoint) {
+                pos = DifferentialClaws.maxPoint;
+            }
+
             claws.controller.setPID(p, i, d);
             claws.setF(f);
 
             telemetry.addData("pos: ", claws.getActualArmRotation());
+            telemetry.addData("actual pos", pos);
             telemetry.addData("target: ", claws.getArmTargetPosition());
             telemetry.addData("curr rotation", claws.getArmPosition());
             //telemetry.addData("curr rotation", claws.getArmPosition());
@@ -47,9 +56,9 @@ public class ClawPIDFTuning extends LinearOpMode {
                 x = x % 8000;
 
                 if (x <= 4000) {
-                    claws.setArmTargetPosition(68);
+                    claws.setArmTargetPosition(100);
                 } else {
-                    claws.setArmTargetPosition(48);
+                    claws.setArmTargetPosition(20);
                 }
             }
         }
