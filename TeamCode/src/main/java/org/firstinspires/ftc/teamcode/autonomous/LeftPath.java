@@ -56,7 +56,7 @@ public class LeftPath extends LinearOpMode {
     public void runOpMode() throws InterruptedException{
         // Init Poses
         Pose2d beginPose = new Pose2d(-31.1, -63,   Math.PI);
-        Pose2d basketPose = new Pose2d(-57,-55.3,1.25*Math.PI);
+        Pose2d basketPose = new Pose2d(-54,-53.3,1.25*Math.PI);
 
         // Init Systems
         DifferentialClaws claws  = DifferentialClaws.getInstance(this);
@@ -183,7 +183,7 @@ public class LeftPath extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
                         new ParallelAction(
-                                //claws.clawMovementAction(58, 750),
+                                claws.clawMovementAction(DifferentialClaws.ClawPositionState.SPIT_STATE.state, 1000),
                                 elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HIGH),
                                 preload //movement
                         ),
@@ -206,13 +206,13 @@ public class LeftPath extends LinearOpMode {
                                 sample2pickup //movement
                         ),
                         claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, DownTime),
-                        pickup2//,
-//                        new ParallelAction(
-//                                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HIGH),
-//                                sample2basket  //movement
-//                        ),
-//                        unload3,
-//
+                        pickup2,
+                        new ParallelAction(
+                                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HIGH),
+                                sample2basket  //movement
+                        ),
+                        unload3
+
 //
 //                        new ParallelAction(
 //                                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN),
