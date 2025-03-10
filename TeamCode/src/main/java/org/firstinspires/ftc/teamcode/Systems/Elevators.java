@@ -155,6 +155,7 @@ public class Elevators implements Tokenable {
 //        rightHor.setDirection(Servo.Direction.FORWARD);
 
         setHorizontalCorrectDirection();
+        setHorizontalDestination(HorizontalState.HORIZONTAL_RETRACTED);
 //        setHoriozontalScales();
 
 
@@ -173,6 +174,7 @@ public class Elevators implements Tokenable {
             instance.setVerticalDestination(instance.getVerticalCurrentPosition());
 
             instance.setHorizontalCorrectDirection();
+            instance.setHorizontalDestination(HorizontalState.HORIZONTAL_RETRACTED);
 //            instance.setHoriozontalScales();
         }
         return instance;

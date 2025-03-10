@@ -123,14 +123,14 @@ public class DriversOpMode {
             rightBumper = !gamepad2.right_bumper;
 
             if (Math.abs(gamepad2.right_stick_y) > joystickTolerance) {
+                horElevatorPosition += -gamepad2.right_stick_y*0.1;
                 if(horElevatorPosition < 0){
                     horElevatorPosition = 0;
                 }else if(horElevatorPosition >= Elevators.HorizontalState.HORIZONTAL_EXTENDED.state){
                     horElevatorPosition =  Elevators.HorizontalState.HORIZONTAL_EXTENDED.state;
                 }
-                horElevatorPosition += -gamepad2.right_stick_y*0.02;
-                elevators.setHorizontalDestination(horElevatorPosition);
             }
+            elevators.setHorizontalDestination(horElevatorPosition);
             opMode.telemetry.addData("sweeper:", virtualClawPose);
             opMode.telemetry.addData("precieved hor position: ", horElevatorPosition);
             opMode.telemetry.addData("hor position: ", elevators.getHorizontalPosition());
