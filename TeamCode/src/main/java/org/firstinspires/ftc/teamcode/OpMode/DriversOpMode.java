@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.OpMode;
 
+import static org.firstinspires.ftc.teamcode.Systems.DifferentialClaws.maxPoint;
+import static org.firstinspires.ftc.teamcode.tuning.ClawPIDFTuning.f;
+
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
@@ -33,9 +36,9 @@ public class DriversOpMode {
         elevators.setVerticalPower(0.0);
         boolean isInitialized = false;
         boolean secondery = false;
-        ActionControl control = new ActionControl(elevators, claws, colorSensorSystem, drive, gamepad1, gamepad2);
-        Thread driverThread = new Thread(this::DriverRun);
-        driverThread.start();
+        //ActionControl control = new ActionControl(elevators, claws, colorSensorSystem, drive, gamepad1, gamepad2);
+        //Thread driverThread = new Thread(this::DriverRun);
+        //driverThread.start();
         opMode.waitForStart();
         //LynxModule controlHub = hardwareMap.get(LynxModule.class, "Control Hub");
         //LynxModule expansionHub = hardwareMap.get(LynxModule.class, "Expansion Hub 2");
@@ -52,31 +55,24 @@ public class DriversOpMode {
         boolean flagElevatorHorizontalCircle = true;
         boolean flagElevatorHorizontalSquare = true;
 
-        boolean flagSweeper = true;
+        double ff;
         boolean leftBumper = true;
         boolean rightBumper = true;
+        boolean isPIDFRuns = false;
         double lastPIDPower = 0;
-        double virtualClawPose = claws.maxPoint;
+        double virtualClawPose = maxPoint;
 
         double horElevatorPosition = 0;
-
         double startTime = 0;
-
-        double AnalogueExtensionVertical;
-        double VerticalAnalogueFactor = 1;
-
-        double HorizontalAnalogueFactor = 1;
-        double AnalogueExtensionHorizontal;
-        boolean isRunPID = false;
 
         while (opMode.opModeIsActive()) {
             //driving
-
+            ff = Math.cos(Math.toRadians((claws.getActualArmRotation()/maxPoint)*120. - 30.)) * f;
             claws.updateRightClawServoRotation();
             claws.updateLeftClawServoRotation();
 
             if(gamepad2.triangle && flagElevatorHorizontalTriangle){
-                virtualClawPose = DifferentialClaws.ClawPositionState.SPIT_STATE.state-10;
+                virtualClawPose = DifferentialClaws.ClawPositionState.HANG_SPECIMEN.state;
                 claws.setArmTargetPosition(virtualClawPose);
                 startTime = System.currentTimeMillis();
             }
@@ -101,8 +97,11 @@ public class DriversOpMode {
             }
             else {
                 //claws.rotateArm(lastPIDPower);
-                claws.rotateArm(-gamepad2.left_stick_y/1.5); //- Math.cos(Math.toRadians((claws.getActualArmRotation()/claws.maxPoint)*120. - 30.)) * claws.f
+                if(!isPIDFRuns)
+                    claws.rotateArm(-(ff + gamepad2.left_stick_y/100)); //- Math.cos(Math.toRadians((claws.getActualArmRotation()/claws.maxPoint)*120. - 30.)) * claws.f
             }
+
+            isPIDFRuns = System.currentTimeMillis()-startTime < 1500;
 
             leftBumper = !gamepad2.left_bumper;
             rightBumper = !gamepad2.right_bumper;
@@ -161,22 +160,12 @@ public class DriversOpMode {
             }
             flagElevatorHorizontalSquare = !gamepad2.square;
 
-            if(System.currentTimeMillis()-startTime <3000) {
-                if(claws.getArmTargetPosition() == 0)
-                {
-                    if(claws.getActualArmRotation() >58)
-                        lastPIDPower = 0.2;
-                    else
-                        lastPIDPower = -Math.cos(Math.toRadians(
-                                ((int)(claws.getActualArmRotation())/DifferentialClaws.maxPoint)*180. - 30.)) * -0.05;
-                }
-                else
-                    lastPIDPower = claws.getPIDArmPower();
-
+            if(isPIDFRuns) {
+                lastPIDPower = claws.getPIDArmPower();
                 claws.rotateArm(lastPIDPower);
-                if ((claws.getActualArmRotation() <= 5 && claws.getArmTargetPosition() ==0)
-                        || (claws.getActualArmRotation() >= DifferentialClaws.maxPoint-2 && claws.getArmTargetPosition() == DifferentialClaws.maxPoint))
-                    lastPIDPower = 0;
+//                if ((claws.getActualArmRotation() <= 5 && claws.getArmTargetPosition() ==0)
+//                        || (claws.getActualArmRotation() >= maxPoint-2 && claws.getArmTargetPosition() == maxPoint))
+//                    lastPIDPower = 0;
             }
         }
 
