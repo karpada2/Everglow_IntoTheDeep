@@ -9,9 +9,11 @@ import org.firstinspires.ftc.teamcode.Systems.DifferentialClaws;
 @Config
 @TeleOp(name="ClawPIDFTuning", group = "Tests")
 public class ClawPIDFTuning extends LinearOpMode {
-    public static double p = 0, i = 0, d = 0;//0.0075, i=0,d=0.00005;//0.008, i = 0, d = 0.0001;
-    public static double f = 0;//0.05;
+    public static double p = 0.008, i = 0, d = 0.0002;//0.0075, i=0,d=0.00005;//0.008, i = 0, d = 0.0001;
+    public static double f = 0.085;//0.05;
     public static double x = 0;
+    //f = 0.085
+    //p = 0.006
     public static double startTime;
 
     @Override
@@ -50,6 +52,19 @@ public class ClawPIDFTuning extends LinearOpMode {
                     claws.setArmTargetPosition(DifferentialClaws.maxPoint);
                 } else {
                     claws.setArmTargetPosition(DifferentialClaws.maxPoint-46);
+                }
+            }
+
+            if (gamepad2.circle) {
+                lastPIDPower = claws.getPIDArmPower();
+                claws.rotateArm(lastPIDPower);
+                x = System.currentTimeMillis() - startTime;
+                x = x % 8000;
+
+                if (x <= 4000) {
+                    claws.setArmTargetPosition(DifferentialClaws.ClawPositionState.SPIT_STATE.state);
+                } else {
+                    claws.setArmTargetPosition(0);
                 }
             }
         }

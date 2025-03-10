@@ -8,6 +8,10 @@
 
 package org.firstinspires.ftc.teamcode.Systems;
 
+import static java.lang.Math.abs;
+import static java.lang.Math.sin;
+import static java.lang.Math.toRadians;
+
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.canvas.Canvas;
@@ -30,7 +34,7 @@ public class DifferentialClaws {
 
     private static DifferentialClaws instance = null;
 
-    public static final double maxPoint = 68+46;
+    public static final double maxPoint = 122;
 
     double armPosition = 0;
     double lastPosRequest = 0;
@@ -52,10 +56,10 @@ public class DifferentialClaws {
 
     public static PIDController controller;
 
-    public final double p = 0.009,//.008,
+    public final double p = 0.008,//0.009,//.008,
             i = 0,
-            d = 0.0002;//.0001;
-    public double f = 0.12;//0.08;
+            d = 0.0002;//2;//.0001;
+    public double f = 0.085;//0.12;//0.08;
 
     private double target = 0;
 
@@ -211,10 +215,7 @@ public class DifferentialClaws {
             instance = new DifferentialClaws(opMode);
         }
         else {
-            instance.rotateArm(0.01);
-            instance.rotateArm(0);
-
-            instance.setCorrectDirections();
+            instance = new DifferentialClaws(opMode);
         }
 
         return instance;
@@ -232,9 +233,9 @@ public class DifferentialClaws {
     }
 
     public enum ClawPowerState {
-        TAKE_IN(-1),
+        TAKE_IN(1),
         OFF(0.08),
-        SPIT(0.25);
+        SPIT(-0.25);
 
         public final double state;
 
@@ -242,8 +243,8 @@ public class DifferentialClaws {
     }
 
     public void setCorrectDirections() {
-        leftClawServo.setDirection(DcMotorSimple.Direction.REVERSE);
-        rightClawServo.setDirection(DcMotorSimple.Direction.FORWARD);
+        leftClawServo.setDirection(DcMotorSimple.Direction.FORWARD);
+        rightClawServo.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
 
@@ -251,7 +252,7 @@ public class DifferentialClaws {
         double leftDiff = trueLeftRotation - leftClawStart;
         double rightDiff = trueRightRotation - rightClawStart;
 
-        return Math.abs(((-rightDiff+leftDiff)/2)*(20.0/43.0));
+        return abs(((-rightDiff+leftDiff)/2)*(20.0/43.0));
     }
 
     public static double getRotationOfInput(AnalogInput input) {
@@ -263,7 +264,7 @@ public class DifferentialClaws {
         double diff = currentRotation - leftClawOldPos;
 
         double newRotationEstimate = 180;
-        if(Math.abs(diff) > newRotationEstimate){
+        if(abs(diff) > newRotationEstimate){
             //new rotation occur
             if(diff < 0)
                 diff += 360; //add rotation
@@ -279,8 +280,8 @@ public class DifferentialClaws {
         double currentRotation = getRotationOfInput(clawInput2);
         double diff = currentRotation - rightClawOldPos;
 
-        double newRotationEstimate = 180;
-        if(Math.abs(diff) > newRotationEstimate){
+        double newRotationEstimate = 250;
+        if(abs(diff) > newRotationEstimate){
             //new rotation occur
             if(diff < 0)
                 diff += 360; //add rotation
@@ -300,7 +301,8 @@ public class DifferentialClaws {
     public double getPIDArmPower(){
         int armPos = (int)(getActualArmRotation());
         double pid = controller.calculate(armPos, target);
-        double ff = Math.cos(Math.toRadians((armPos/maxPoint)*180. - 30.)) * f;
+        double x = (armPos/maxPoint) * 180.;
+        double ff = abs(sin(toRadians(0.48*(90-(x-30))* (x-180))))*f;//abs(Math.cos(Math.toRadians((armPos/maxPoint)*180. - 30.))) * f;
 
         return -(pid + ff);
     }

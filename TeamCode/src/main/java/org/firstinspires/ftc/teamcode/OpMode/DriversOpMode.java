@@ -86,7 +86,7 @@ public class DriversOpMode {
                 claws.rotateWheels(DifferentialClaws.ClawPowerState.TAKE_IN);
             }
             else if (gamepad2.left_trigger >= 0.4) {
-                claws.rotateWheels(gamepad2.left_trigger);
+                claws.rotateWheels(-gamepad2.left_trigger/2);
             }
             else if (gamepad2.right_bumper && rightBumper) {
                 virtualClawPose = DifferentialClaws.ClawPositionState.SPIT_STATE.state;
@@ -101,7 +101,7 @@ public class DriversOpMode {
             }
             else {
                 //claws.rotateArm(lastPIDPower);
-                claws.rotateArm(-gamepad2.left_stick_y); //- Math.cos(Math.toRadians((claws.getActualArmRotation()/claws.maxPoint)*120. - 30.)) * claws.f
+                claws.rotateArm(-gamepad2.left_stick_y/1.5); //- Math.cos(Math.toRadians((claws.getActualArmRotation()/claws.maxPoint)*120. - 30.)) * claws.f
             }
 
             leftBumper = !gamepad2.left_bumper;
@@ -113,8 +113,8 @@ public class DriversOpMode {
                 }else if(horElevatorPosition >= Elevators.HorizontalState.HORIZONTAL_EXTENDED.state){
                     horElevatorPosition =  Elevators.HorizontalState.HORIZONTAL_EXTENDED.state;
                 }
-                horElevatorPosition += 2*-gamepad2.right_stick_y/100.;
-                elevators.setHorizontalDestination((int)(horElevatorPosition));
+                horElevatorPosition += 1.5*4*(-gamepad2.right_stick_y/100.);
+                elevators.setHorizontalDestination(horElevatorPosition);
             }
             opMode.telemetry.addData("sweeper:", virtualClawPose);
             opMode.telemetry.addData("precieved hor position: ", horElevatorPosition);
