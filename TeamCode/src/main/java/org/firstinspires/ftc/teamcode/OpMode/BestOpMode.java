@@ -32,6 +32,7 @@ public class BestOpMode{
     private final Telemetry telemetry;
     private final GamepadEx gamepad1;
     private final GamepadEx gamepad2;
+    boolean isPIDF_Active = false;
 
     public void run(boolean isBlue) {
         Sweeper sweeper = new Sweeper(opMode);
@@ -62,10 +63,13 @@ public class BestOpMode{
             gamepad1.readButtons();
             gamepad2.readButtons();
 
+            claws.updateLeftClawServoRotation();
+            claws.updateRightClawServoRotation();
+
             //driving
             drive.setDrivePowers(new PoseVelocity2d(
                     new Vector2d(
-                            linearToExpo(-gamepad1.getLeftY())*(1.0/Math.pow(4.5, gamepad1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER))),
+                            linearToExpo(gamepad1.getLeftY())*(1.0/Math.pow(4.5, gamepad1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER))),
                             -gamepad1.getLeftX()*(1.0/Math.pow(4, gamepad1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER)))
                     ),
                     -gamepad1.getRightX()*(1.0/Math.pow(5, gamepad1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER)))
@@ -118,19 +122,25 @@ public class BestOpMode{
             else if (gamepad2.wasJustPressed(GamepadKeys.Button.X)) {
                 targetArmPosition = DifferentialClaws.ClawPositionState.SPIT_STATE.state;
             }
-            else if (gamepad2.wasJustPressed(GamepadKeys.Button.Y)) {
+            else if (gamepad2.wasJustPressed(GamepadKeys.Button.Y)) { //tringle
                 targetArmPosition = DifferentialClaws.ClawPositionState.MIN.state;
             }
 
-            targetArmPosition += -gamepad2.getLeftY()/100.0;
+            isPIDF_Active = !(gamepad2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) >= 0.4 || gamepad2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) >= 0.4);
 
-            claws.setArmTargetPosition(targetArmPosition);
+            targetArmPosition += -gamepad2.getLeftY()/10.0;
 
-            claws.rotateArm(claws.getPIDArmPower());
+            if(isPIDF_Active) {
+                claws.setArmTargetPosition(targetArmPosition);
+
+                claws.rotateArm(claws.getPIDArmPower());
+            }
 
             telemetry.addData("loops done", loopsDone);
             telemetry.addData("time since start", timeSinceStartSecs);
             telemetry.addData("loops per second avg", loopsDone/timeSinceStartSecs);
+            telemetry.addData("target pos", targetArmPosition);
+            telemetry.addData("claw pos", claws.getActualArmRotation());
             telemetry.update();
         }
     }
