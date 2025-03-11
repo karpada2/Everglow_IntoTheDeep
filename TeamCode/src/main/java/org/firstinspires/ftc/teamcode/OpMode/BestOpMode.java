@@ -8,6 +8,7 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Systems.ColorSensorSystem;
 import org.firstinspires.ftc.teamcode.Systems.DifferentialClaws;
@@ -22,8 +23,10 @@ public class BestOpMode{
         this.opMode = opMode;
         this.gamepad1 = new GamepadEx(gamepad1);
         this.gamepad2 = new GamepadEx(gamepad2);
+        this.telemetry = opMode.telemetry;
     }
     private final LinearOpMode opMode;
+    private final Telemetry telemetry;
     private final GamepadEx gamepad1;
     private final GamepadEx gamepad2;
 
@@ -36,21 +39,23 @@ public class BestOpMode{
         Elevators elevators = Elevators.getInstance(opMode);
         elevators.setVerticalPower(0.0);
 
-        boolean isInitialized = false;
-        boolean secondary = false;
-
         double joystickTolerance = 0.05;
-        double lastPIDPower = 0;
-        double virtualClawPose = claws.maxPoint;
 
         double horElevatorPosition = 0;
         elevators.setHorizontalDestination(Elevators.HorizontalState.HORIZONTAL_RETRACTED.state);
 
         opMode.waitForStart();
 
-        double startTime = 0;
+        double startTime = System.currentTimeMillis();
+        int loopsDone = 0;
+        double timeSinceStartSecs = (System.currentTimeMillis() - startTime)/1000.0;
 
         while (opMode.opModeIsActive()) {
+            loopsDone++;
+            timeSinceStartSecs = (System.currentTimeMillis() - startTime)/1000.0;
+
+            gamepad1.readButtons();
+            gamepad2.readButtons();
 
             //driving
             drive.setDrivePowers(new PoseVelocity2d(
@@ -102,6 +107,15 @@ public class BestOpMode{
             else if (gamepad2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) >= 0.4) {
                 claws.rotateWheels(gamepad2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER));
             }
+            else {
+                claws.rotateWheels(0);
+            }
+
+            telemetry.addData("loops done", loopsDone);
+            telemetry.addData("time since start", timeSinceStartSecs);
+            telemetry.addData("loops per second avg", loopsDone/timeSinceStartSecs);
+            telemetry.update();
+
 
             //TODO: add claw positions and stuff, need omri to help with that.
         }

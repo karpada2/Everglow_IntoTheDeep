@@ -66,8 +66,13 @@ public class DriversOpMode {
         double HorizontalAnalogueFactor = 1;
         double AnalogueExtensionHorizontal;
         boolean isRunPID = false;
+        int loopsDone = 0;
+        double timeOfStart = System.currentTimeMillis();
+        double timeSinceStartSecs = (System.currentTimeMillis() - timeOfStart)/1000.0;
 
         while (opMode.opModeIsActive()) {
+            loopsDone++;
+            timeSinceStartSecs = (System.currentTimeMillis() - timeOfStart)/1000.0;
             //driving
             drive.setDrivePowers(new PoseVelocity2d(
                     new Vector2d(
@@ -197,6 +202,10 @@ public class DriversOpMode {
                         || (claws.getActualArmRotation() >= 67 && claws.getArmTargetPosition() == 68))
                     lastPIDPower = 0;
             }
+            opMode.telemetry.addData("loops done", loopsDone);
+            opMode.telemetry.addData("time since start", timeSinceStartSecs);
+            opMode.telemetry.addData("loops per second avg", loopsDone/timeSinceStartSecs);
+            opMode.telemetry.update();
         }
 
     }

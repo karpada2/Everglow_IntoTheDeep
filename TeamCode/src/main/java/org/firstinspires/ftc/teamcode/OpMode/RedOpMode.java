@@ -15,8 +15,8 @@ import org.firstinspires.ftc.teamcode.Systems.Elevators;
 public class RedOpMode extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
-        BestOpMode bestOpMode = new BestOpMode(this, gamepad1, gamepad2);
-        bestOpMode.run(false);
+        DriversOpMode driversOpMode = new DriversOpMode(this, gamepad1, gamepad2);
+        driversOpMode.run(false);
     }
 
 }
