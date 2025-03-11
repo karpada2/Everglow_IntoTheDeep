@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.OpMode;
 
+import static org.firstinspires.ftc.teamcode.Systems.DifferentialClaws.maxPoint;
+import static org.firstinspires.ftc.teamcode.tuning.ClawPIDFTuning.f;
+
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
@@ -42,6 +45,8 @@ public class BestOpMode{
         double joystickTolerance = 0.05;
 
         double horElevatorPosition = 0;
+        double targetArmPosition = claws.getActualArmRotation();
+
         elevators.setHorizontalDestination(Elevators.HorizontalState.HORIZONTAL_RETRACTED.state);
 
         opMode.waitForStart();
@@ -107,17 +112,26 @@ public class BestOpMode{
             else if (gamepad2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) >= 0.4) {
                 claws.rotateWheels(gamepad2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER));
             }
-            else {
-                claws.rotateWheels(0);
+            else if (gamepad2.wasJustPressed(GamepadKeys.Button.A)) {
+                targetArmPosition = DifferentialClaws.ClawPositionState.MAX.state;
             }
+            else if (gamepad2.wasJustPressed(GamepadKeys.Button.X)) {
+                targetArmPosition = DifferentialClaws.ClawPositionState.SPIT_STATE.state;
+            }
+            else if (gamepad2.wasJustPressed(GamepadKeys.Button.Y)) {
+                targetArmPosition = DifferentialClaws.ClawPositionState.MIN.state;
+            }
+
+            targetArmPosition += -gamepad2.getLeftY()/100.0;
+
+            claws.setArmTargetPosition(targetArmPosition);
+
+            claws.rotateArm(claws.getPIDArmPower());
 
             telemetry.addData("loops done", loopsDone);
             telemetry.addData("time since start", timeSinceStartSecs);
             telemetry.addData("loops per second avg", loopsDone/timeSinceStartSecs);
             telemetry.update();
-
-
-            //TODO: add claw positions and stuff, need omri to help with that.
         }
     }
 }
