@@ -88,16 +88,23 @@ public class Elevators implements Tokenable {
         private final double desitnation;
         private final double timeUntilDone;
         private double startTime;
+        private boolean isInit;
 
         public HorizontalElevatorAction(HorizontalState state, double timeUntilDone) {
             isDone = HorizontalElevatorAction.this::hasEnoughTimePassed;
             desitnation = state.state;
             this.timeUntilDone = timeUntilDone;
+            this.isInit = false;
         }
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            setHorizontalDestination(desitnation);
+            if (!isInit) {
+                startTime = System.currentTimeMillis();
+                setHorizontalDestination(desitnation);
+                isInit = true;
+            }
+
             return !hasEnoughTimePassed();
         }
     }
@@ -126,7 +133,7 @@ public class Elevators implements Tokenable {
     public enum HorizontalState {
         HORIZONTAL_RETRACTED(0),
         HORIZONTAL_HALFWAY(0.3),
-        HORIZONTAL_EXTENDED(0.6);
+        HORIZONTAL_EXTENDED(0.52);
 
         public final double state;
 

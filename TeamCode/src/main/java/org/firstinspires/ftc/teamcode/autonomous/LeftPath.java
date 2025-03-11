@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
+import static org.firstinspires.ftc.teamcode.Systems.Elevators.HorizontalState.HORIZONTAL_EXTENDED;
 import static org.firstinspires.ftc.teamcode.Systems.Elevators.HorizontalState.HORIZONTAL_HALFWAY;
+import static org.firstinspires.ftc.teamcode.Systems.Elevators.HorizontalState.HORIZONTAL_RETRACTED;
 
 import androidx.annotation.NonNull;
 
@@ -28,6 +30,22 @@ import org.firstinspires.ftc.teamcode.Systems.Elevators;
 @Autonomous(name="LeftPath", group="Autonomous")
 public class LeftPath extends LinearOpMode {
 
+    public class WaitAction implements Action {
+        private double startTime = -1;
+        private final double timeToSleep;
+        public WaitAction(double timeToSleep) {
+            this.timeToSleep = timeToSleep;
+        }
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            if (startTime == -1) {
+                startTime = System.currentTimeMillis();
+            }
+
+            return System.currentTimeMillis() - startTime <= timeToSleep;
+        }
+    }
+
     public class AddToTelemetryAction implements Action {
         private final Telemetry telemetry;
         private final String title;
@@ -47,9 +65,11 @@ public class LeftPath extends LinearOpMode {
         }
     }
     public static int DownTime = 400;
-    public static double collectLine = -50;
+    public static double collectLine = -48;
     public static double collectLineSampleThree = -40;
-    public static double sampleOffset = 3.5;
+    public static double firstSampleX = -50;
+    public static double sampleOffset1 = 3.5;
+    public static double sampleOffset2 = -8;
     public static double VelConstraint = 5;
 
     @Override
@@ -68,13 +88,13 @@ public class LeftPath extends LinearOpMode {
                 .strafeToSplineHeading(basketPose.position,basketPose.heading, new AngularVelConstraint(Math.PI*1.5));
 
         TrajectoryActionBuilder B_sample1pickup = B_preload.endTrajectory().fresh()
-                .strafeToSplineHeading(new Vector2d(-50 + sampleOffset,collectLine),0.5*Math.PI, new AngularVelConstraint(Math.PI/2));
+                .strafeToSplineHeading(new Vector2d(firstSampleX + sampleOffset1,collectLine),0.5*Math.PI, new AngularVelConstraint(Math.PI/2));
 
         TrajectoryActionBuilder B_sample1basket = B_sample1pickup.endTrajectory().fresh()
                 .strafeToSplineHeading(basketPose.position,basketPose.heading);
 
         TrajectoryActionBuilder B_sample2pickup = B_sample1basket.endTrajectory().fresh()
-                .strafeToSplineHeading(new Vector2d(-60 + sampleOffset, collectLine),0.5*Math.PI);
+                .strafeToSplineHeading(new Vector2d(firstSampleX + sampleOffset2, collectLine),0.5*Math.PI);
 
         TrajectoryActionBuilder B_sample3pickup = B_sample1basket.endTrajectory().fresh()
                 .strafeToSplineHeading(new Vector2d(collectLineSampleThree, -23),Math.PI, new TranslationalVelConstraint(VelConstraint));
@@ -92,75 +112,9 @@ public class LeftPath extends LinearOpMode {
         Action wait = drive.actionBuilder(new Pose2d(0,0,0))
                 .build();
 
-        Action BackAndForth1 = drive.actionBuilder(new Pose2d(-50 + sampleOffset,collectLine,0.5*Math.PI))
-                .waitSeconds(0.1)
-                .lineToY(collectLine+10, new TranslationalVelConstraint(VelConstraint))
-                .waitSeconds(1)
-                .lineToY(collectLine)
-                .build();
 
-        Action BackAndForth2 = drive.actionBuilder(new Pose2d(-60 + sampleOffset,collectLine,0.5*Math.PI))
-             //   .waitSeconds(0.1)
-                .lineToY(collectLine+10, new TranslationalVelConstraint(VelConstraint))
-                .waitSeconds(0.1)
-                .lineToY(collectLine)
-                .build();
-
-        Action BackAndForth3 = drive.actionBuilder(new Pose2d(collectLineSampleThree, -25,Math.PI))
-             //   .waitSeconds(0.1)
-                .lineToX(collectLineSampleThree-10, new TranslationalVelConstraint(VelConstraint))
-                .waitSeconds(0.1)
-                .lineToX(collectLineSampleThree, new TranslationalVelConstraint(VelConstraint))
-                .build();
         // Turning action builders into actions
         //Action armUp = claws.clawMovementAction(DownTime);
-
-        Action unload1 = new SequentialAction(
-                claws.clawMovementAction(DifferentialClaws.ClawPositionState.SPIT_STATE.state, 750),
-                claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,colorSensorSystem),
-                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, DownTime)
-        );
-        Action unload2 =
-                new SequentialAction(
-                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.SPIT_STATE.state, 750),
-                        claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,colorSensorSystem),
-                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750)
-                );
-        Action unload3 = new SequentialAction(
-                claws.clawMovementAction(DifferentialClaws.ClawPositionState.SPIT_STATE.state, 750),
-                claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,colorSensorSystem),
-                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750)
-        );
-        Action unload4 = new SequentialAction(
-                claws.clawMovementAction(DifferentialClaws.ClawPositionState.SPIT_STATE.state, 750),
-                claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,colorSensorSystem),
-                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750)
-        );
-        Action pickup1 = new ParallelAction(BackAndForth1,
-                new SequentialAction(
-                        elevators.setHorizontalElevatorAction(HORIZONTAL_HALFWAY),
-                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, DownTime),
-                        claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, colorSensorSystem),
-                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 1000),
-                        elevators.setHorizontalElevatorAction(Elevators.HorizontalState.HORIZONTAL_RETRACTED)
-                ));
-        Action pickup2 = new ParallelAction(BackAndForth2,
-                new SequentialAction(
-                        elevators.setHorizontalElevatorAction(HORIZONTAL_HALFWAY),
-                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, DownTime),
-                        claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, colorSensorSystem),
-                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 1000),
-                        elevators.setHorizontalElevatorAction(Elevators.HorizontalState.HORIZONTAL_RETRACTED)
-                ));
-
-        Action pickup3 = new ParallelAction(BackAndForth3,
-                new SequentialAction(
-                        elevators.setHorizontalElevatorAction(HORIZONTAL_HALFWAY),
-                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, DownTime),
-                        claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, colorSensorSystem),
-                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 1000),
-                        elevators.setHorizontalElevatorAction(Elevators.HorizontalState.HORIZONTAL_RETRACTED)
-                ));
 
         Action preload = B_preload.build();
 
@@ -175,6 +129,60 @@ public class LeftPath extends LinearOpMode {
 
         Action Park = B_park.build();
 
+        Action unload1 = new SequentialAction(
+                claws.clawMovementAction(DifferentialClaws.ClawPositionState.SPIT_STATE.state, 750),
+                claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,colorSensorSystem),
+                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, DownTime)
+        );
+        Action unload2 =
+                new SequentialAction(
+                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.SPIT_STATE.state, 750),
+                        claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,colorSensorSystem),
+                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, DownTime)
+                );
+        Action unload3 = new SequentialAction(
+                claws.clawMovementAction(DifferentialClaws.ClawPositionState.SPIT_STATE.state, 750),
+                claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,colorSensorSystem),
+                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, DownTime)
+        );
+        Action unload4 = new SequentialAction(
+                claws.clawMovementAction(DifferentialClaws.ClawPositionState.SPIT_STATE.state, 750),
+                claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,colorSensorSystem),
+                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, DownTime)
+        );
+        Action pickup1 = new SequentialAction(
+                new ParallelAction(
+                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN),
+                        sample1pickup //movement
+                ),
+
+                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, DownTime),
+                elevators.setHorizontalElevatorAction(HORIZONTAL_HALFWAY),
+                claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, colorSensorSystem)
+
+        );
+        Action pickup2 = new SequentialAction(
+                new ParallelAction(
+                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN),
+                        sample2pickup //movement
+                ),
+
+                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, DownTime),
+                elevators.setHorizontalElevatorAction(HORIZONTAL_HALFWAY),
+                claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, colorSensorSystem)
+        );
+
+        Action pickup3 = new SequentialAction(
+                new ParallelAction(
+                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN),
+                        sample3pickup //movement
+                ),
+
+                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, DownTime),
+//                elevators.setHorizontalElevatorAction(HORIZONTAL_HALFWAY),
+                claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, colorSensorSystem)
+        );
+
         waitForStart();
 
         telemetry.addData("claws", claws);
@@ -183,35 +191,40 @@ public class LeftPath extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
                         new ParallelAction(
-                                claws.clawMovementAction(DifferentialClaws.ClawPositionState.SPIT_STATE.state, 1000),
                                 elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HIGH),
                                 preload //movement
                         ),
                         unload1,
-                        new ParallelAction(
-                                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN),
-                                sample1pickup //movement
-                        ),
-                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, DownTime),
                         pickup1,
 
                         new ParallelAction(
+                                elevators.setHorizontalElevatorAction(HORIZONTAL_RETRACTED),
                                 elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HIGH),
+                                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, DownTime),
                                 sample1basket //movement
                         ),
-                        unload2,
 
-                       new ParallelAction(
-                                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN),
-                                sample2pickup //movement
-                        ),
-                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, DownTime),
+                        unload2,
                         pickup2,
+
                         new ParallelAction(
+                                elevators.setHorizontalElevatorAction(HORIZONTAL_RETRACTED),
                                 elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HIGH),
-                                sample2basket  //movement
+                                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, DownTime),
+                                sample2basket //movement
                         ),
-                        unload3
+
+                        unload3,
+                        pickup3,
+
+                        new ParallelAction(
+                                elevators.setHorizontalElevatorAction(HORIZONTAL_RETRACTED),
+                                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HIGH),
+                                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, DownTime),
+                                sample3basket //movement
+                        ),
+
+                        unload4
 
 //
 //                        new ParallelAction(

@@ -140,7 +140,7 @@ public class MeepMeepTesting {
                 .waitSeconds(1) //grabs sample
                 ;
 
-        myBot.runAction(left_path_with_specimen.build());
+        myBot.runAction(left_path.build());
 
         TrajectoryActionBuilder right_path = myBot.getDrive().actionBuilder(right_beginPose)
                 .waitSeconds(10)

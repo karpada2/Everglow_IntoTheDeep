@@ -98,7 +98,28 @@ public class RightPath extends LinearOpMode {
                 //* Hangs
                 ;
 
-        TrajectoryActionBuilder B_park = B_pickup2.endTrajectory().fresh()
+        TrajectoryActionBuilder B_pickup3 = B_hang2.endTrajectory().fresh()
+                //* Lowers Elevator to picking up height
+                // Goes to pickup second specimen
+                .strafeToLinearHeading(specimins_pickupPose.position,-Math.PI/2)
+                //* Picks up second specimen
+                ;
+
+        TrajectoryActionBuilder B_hang3 = B_pickup3.endTrajectory().fresh()
+                // Goes to hang Specimen
+                .strafeToLinearHeading(specimins_basketPose.position,Math.PI/2)
+                //* Hangs
+                ;
+
+        TrajectoryActionBuilder B_pickup4 = B_hang3.endTrajectory().fresh()
+                //* Lowers Elevator to picking up height
+                // Goes to pickup second specimen
+                .strafeToLinearHeading(specimins_pickupPose.position,-Math.PI/2)
+                //* Picks up second specimen
+                ;
+
+
+        TrajectoryActionBuilder B_park = B_pickup4.endTrajectory().fresh()
                 //*Lowers elevator
                 // Park
                 .setTangent(-Math.PI/4)
@@ -114,6 +135,12 @@ public class RightPath extends LinearOpMode {
 
         Action m_pickup2 = B_pickup2.build();
         Action m_hang2 = B_hang2.build();
+
+        Action m_pickup3 = B_pickup3.build();
+        Action m_hang3 = B_hang3.build();
+
+        Action m_pickup4 = B_pickup4.build();
+
 
         Action m_park = B_park.build();
 
@@ -172,6 +199,39 @@ public class RightPath extends LinearOpMode {
                 actionControl.hangHighRaise()
         );
 
+        Action pickup3 = new SequentialAction(
+                new ParallelAction(
+                        m_pickup3,
+                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, 750),
+                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_PICKUP)
+                ),
+                new ParallelAction(
+                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN),
+                        claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, 200)
+                )
+        );
+
+        Action hang3 = new SequentialAction(
+                new ParallelAction(
+                        m_hang3,
+                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750),
+                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_HIGH)
+                ),
+                actionControl.hangHighRaise()
+        );
+
+        Action pickup4 = new SequentialAction(
+                new ParallelAction(
+                        m_pickup3,
+                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, 750),
+                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_PICKUP)
+                ),
+                new ParallelAction(
+                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN),
+                        claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, 200)
+                )
+        );
+
         Action park = new ParallelAction(
                 m_park,
                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, 750),
@@ -191,6 +251,9 @@ public class RightPath extends LinearOpMode {
                         hang1,
                         pickup2,
                         hang2,
+                        pickup3,
+                        hang3,
+                        pickup4,
                         park
                 )
         );
