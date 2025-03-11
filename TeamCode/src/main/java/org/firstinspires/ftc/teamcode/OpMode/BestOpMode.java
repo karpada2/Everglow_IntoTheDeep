@@ -66,6 +66,8 @@ public class BestOpMode{
             claws.updateLeftClawServoRotation();
             claws.updateRightClawServoRotation();
 
+            colorSensorSystem.updateAlert();
+
             //driving
             drive.setDrivePowers(new PoseVelocity2d(
                     new Vector2d(
@@ -100,7 +102,7 @@ public class BestOpMode{
             }
 
             if (Math.abs(gamepad2.getRightY()) > joystickTolerance) {
-                horElevatorPosition += -gamepad2.getRightY()*0.2;
+                horElevatorPosition += -gamepad2.getRightY()*0.025;
                 if(horElevatorPosition < Elevators.HorizontalState.HORIZONTAL_RETRACTED.state){
                     horElevatorPosition = Elevators.HorizontalState.HORIZONTAL_RETRACTED.state;
                 }else if(horElevatorPosition >= Elevators.HorizontalState.HORIZONTAL_EXTENDED.state){
@@ -128,7 +130,15 @@ public class BestOpMode{
 
             isPIDF_Active = !(gamepad2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) >= 0.4 || gamepad2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) >= 0.4);
 
-            targetArmPosition += -gamepad2.getLeftY()/10.0;
+            targetArmPosition += -gamepad2.getLeftY()/2.5;
+
+
+            if (targetArmPosition > maxPoint) {
+                targetArmPosition = maxPoint;
+            }
+            else if (targetArmPosition < 0) {
+                targetArmPosition = 0;
+            }
 
             if(isPIDF_Active) {
                 claws.setArmTargetPosition(targetArmPosition);

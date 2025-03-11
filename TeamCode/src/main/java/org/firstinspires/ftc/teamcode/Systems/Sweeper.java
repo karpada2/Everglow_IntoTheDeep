@@ -14,8 +14,8 @@ public class Sweeper {
     }
 
     public enum SweeperAngle {
-        SWEEPER_RETRACTED(0.6),
-        SWEEPER_EXTENDED(0.3);
+        SWEEPER_RETRACTED(0.42),
+        SWEEPER_EXTENDED(0.9);
 
         public final double angle;
 
@@ -27,6 +27,7 @@ public class Sweeper {
     public void setPosition(SweeperAngle position) {
         sweeper.setPosition(position.angle);
     }
+    public void setPosition(double position) {sweeper.setPosition(position);}
 
     // returns the position it is now set to
     public SweeperAngle toggle() {
