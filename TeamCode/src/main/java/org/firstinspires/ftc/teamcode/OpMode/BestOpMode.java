@@ -87,12 +87,13 @@ public class BestOpMode{
 
             if (Math.abs(gamepad2.getRightY()) > joystickTolerance) {
                 horElevatorPosition += -gamepad2.getRightY()*0.2;
-                if(horElevatorPosition < 0){
-                    horElevatorPosition = 0;
+                if(horElevatorPosition < Elevators.HorizontalState.HORIZONTAL_RETRACTED.state){
+                    horElevatorPosition = Elevators.HorizontalState.HORIZONTAL_RETRACTED.state;
                 }else if(horElevatorPosition >= Elevators.HorizontalState.HORIZONTAL_EXTENDED.state){
                     horElevatorPosition =  Elevators.HorizontalState.HORIZONTAL_EXTENDED.state;
                 }
             }
+            elevators.setHorizontalDestination(horElevatorPosition);
 
 
             if (gamepad2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) >= 0.4) { //split
