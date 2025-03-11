@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.teamcode.OpMode.ActionSequantionalOpMode.linearToExpo;
+
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.canvas.Canvas;
@@ -39,6 +41,8 @@ import com.acmerobotics.roadrunner.ftc.LynxFirmware;
 import com.acmerobotics.roadrunner.ftc.OverflowEncoder;
 import com.acmerobotics.roadrunner.ftc.PositionVelocityPair;
 import com.acmerobotics.roadrunner.ftc.RawEncoder;
+import com.arcrobotics.ftclib.gamepad.GamepadEx;
+import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -50,6 +54,8 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+import org.firstinspires.ftc.teamcode.Systems.Sweeper;
+import org.firstinspires.ftc.teamcode.Systems.Token.Token;
 import org.firstinspires.ftc.teamcode.Systems.Token.TokenAction;
 import org.firstinspires.ftc.teamcode.Systems.Token.Tokenable;
 import org.firstinspires.ftc.teamcode.messages.DriveCommandMessage;
@@ -505,25 +511,44 @@ public class MecanumDrive{
     }
 
     public class MecanumDriveAction extends TokenAction{
-        private Gamepad gamepad1, gamepad2;
-        public MecanumDriveAction(Gamepad gamepad1, Gamepad gamepad2, Tokenable Token){
+        private GamepadEx gamepad1, gamepad2;
+        private  Sweeper sweeper;
+        Token token;
+        public MecanumDriveAction(GamepadEx gamepad1, GamepadEx gamepad2, Sweeper sweeper, Tokenable Token, Token stopToken){
             this.gamepad1 = gamepad1;
             this.gamepad2 = gamepad2;
             isDone = Token;
             isInitialized = true;
+            this.sweeper = sweeper;
+            token = stopToken;
         }
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             setDrivePowers(new PoseVelocity2d(
-                    new Vector2d(-linearInputToExponential(gamepad1.left_stick_y),
-                                -linearInputToExponential(gamepad1.left_stick_x)),
-                    -linearInputToExponential(gamepad1.right_stick_x)));
+                    new Vector2d(
+                            linearToExpo(gamepad1.getLeftY())*(1.0/Math.pow(4.5, gamepad1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER))),
+                            -gamepad1.getLeftX()*(1.0/Math.pow(4, gamepad1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER)))
+                    ),
+                    -gamepad1.getRightX()*(1.0/Math.pow(5, gamepad1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER)))
+            ));
+            updatePoseEstimate();
 
+
+            if (gamepad1.isDown(GamepadKeys.Button.LEFT_BUMPER)) {
+                sweeper.setPosition(Sweeper.SweeperAngle.SWEEPER_EXTENDED);
+            }
+            else {
+                sweeper.setPosition(Sweeper.SweeperAngle.SWEEPER_RETRACTED);
+            }
+
+            if(gamepad2.wasJustPressed(GamepadKeys.Button.A))
+                token.Interrupt();
             return !checkToken();
         }
     }
 
-    public MecanumDriveAction getMecanumDriveAction(Gamepad gamepad1,Gamepad gamepad2, Tokenable tokenable){
-        return new MecanumDriveAction(gamepad1,gamepad2,tokenable);
+    public MecanumDriveAction getMecanumDriveAction(GamepadEx gamepad1, GamepadEx gamepad2, Sweeper sweeper
+            , Tokenable tokenable, Token stopToken){
+        return new MecanumDriveAction(gamepad1,gamepad2, sweeper, tokenable, stopToken);
     }
 }

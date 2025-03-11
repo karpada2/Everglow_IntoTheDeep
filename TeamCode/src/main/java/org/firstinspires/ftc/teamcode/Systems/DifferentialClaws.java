@@ -19,6 +19,7 @@ import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
+import org.firstinspires.ftc.teamcode.Systems.Token.Token;
 import org.firstinspires.ftc.teamcode.Systems.Token.TokenAction;
 
 public class DifferentialClaws {
@@ -68,14 +69,24 @@ public class DifferentialClaws {
         double destination;
         int timeTillFinish;
         long startTime;
+        Token token;
         public ClawMovementAction(double destination, int timeTillFinish) {
             this.timeTillFinish =timeTillFinish;
             this.destination = destination;
             isDone = this::isWaitEnough;
         }
 
+        public ClawMovementAction(double destination, int timeTillFinish, Token token) {
+            this(destination, timeTillFinish);
+            this.token = token;
+        }
+
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+
+            if(token != null && token.checkInterruption())
+                return false; //finish the sequence
+
             setArmTargetPosition(destination);
             updateLeftClawServoRotation();
             updateRightClawServoRotation();
@@ -85,6 +96,8 @@ public class DifferentialClaws {
                 startTime = System.currentTimeMillis();
                 isInitialized = true;
             }
+
+
             return !isWaitEnough();
         }
         private boolean isWaitEnough(){
@@ -99,6 +112,7 @@ public class DifferentialClaws {
         private ColorSensorSystem colorSensorSystem = null;
         boolean isIn = false;
         boolean isToInsert;
+        Token token;
 
         private ClawSampleInteractionAction(ClawPowerState state, double timeToStop) {
             assert timeToStop >= 0;
@@ -112,8 +126,17 @@ public class DifferentialClaws {
             this.colorSensorSystem = colorSensorSystem;
         }
 
+        public ClawSampleInteractionAction(ClawPowerState state, ColorSensorSystem colorSensorSystem
+                , boolean insert, Token token) {
+            this(state, colorSensorSystem, insert);
+            this.token = token;
+        }
+
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            if(token != null && token.checkInterruption())
+                return false; //finish the sequence
+
             updateRightClawServoRotation();
             updateLeftClawServoRotation();
             if (!isInitialized) {
@@ -207,15 +230,16 @@ public class DifferentialClaws {
     }
 
     public static DifferentialClaws getInstance(OpMode opMode) {
-        if (instance == null) {
-            instance = new DifferentialClaws(opMode);
-        }
-        else {
-            instance.rotateArm(0.01);
-            instance.rotateArm(0);
-
-            instance.setCorrectDirections();
-        }
+//        if (instance == null) {
+//            instance = new DifferentialClaws(opMode);
+//        }
+//        else {
+//            instance.rotateArm(0.01);
+//            instance.rotateArm(0);
+//
+//            instance.setCorrectDirections();
+//        }
+        instance = new DifferentialClaws(opMode);
 
         return instance;
     }
@@ -365,6 +389,11 @@ public class DifferentialClaws {
         return new ClawSampleInteractionAction(state, colorSensorSystem, state == ClawPowerState.TAKE_IN);
     }
 
+    public ClawSampleInteractionAction setClawSampleInteractionAction(ClawPowerState state
+            , ColorSensorSystem colorSensorSystem, Token token) {
+        return new ClawSampleInteractionAction(state, colorSensorSystem, state == ClawPowerState.TAKE_IN, token);
+    }
+
     public ClawSampleInteractionAction setClawSampleInteractionAction(ClawPowerState state) {
         return new ClawSampleInteractionAction(state, 0);
     }
@@ -382,9 +411,10 @@ public class DifferentialClaws {
 
     //gets in degrees, sets the claw's position to the given position
     public ClawMovementAction clawMovementAction(double dest, int timeTillFinish) {
-        //double diff = armPosition - this.armPosition;
-        //ClawMovementAction action =;
-        //this.armPosition = armPosition;
+        return new ClawMovementAction(dest, timeTillFinish);
+    }
+
+    public ClawMovementAction clawMovementAction(double dest, int timeTillFinish, Token token) {
         return new ClawMovementAction(dest, timeTillFinish);
     }
 

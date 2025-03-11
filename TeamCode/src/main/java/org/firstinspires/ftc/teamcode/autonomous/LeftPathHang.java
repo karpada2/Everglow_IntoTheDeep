@@ -10,6 +10,7 @@ import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
+import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -18,6 +19,7 @@ import org.firstinspires.ftc.teamcode.Systems.ActionControl;
 import org.firstinspires.ftc.teamcode.Systems.ColorSensorSystem;
 import org.firstinspires.ftc.teamcode.Systems.DifferentialClaws;
 import org.firstinspires.ftc.teamcode.Systems.Elevators;
+import org.firstinspires.ftc.teamcode.Systems.Sweeper;
 
 @Config
 @Autonomous(name="LeftPathHang", group="Autonomous")
@@ -36,13 +38,15 @@ public class LeftPathHang extends LinearOpMode {
         Pose2d beginPose = new Pose2d(-31.1, -63,   Math.PI);
         Pose2d basketPose = new Pose2d(-57,-55.3,1.25*Math.PI);
         Pose2d hanging_pose = new Pose2d(-2,-30,0.5*Math.PI);
+        GamepadEx gamepadEx1 = new GamepadEx(gamepad1), gamepadEx2 = new GamepadEx(gamepad2);
 
         // Init Systems
         DifferentialClaws claws  = DifferentialClaws.getInstance(this);
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
         Elevators elevators  = Elevators.getInstance(this);
         ColorSensorSystem colorSensorSystem = new ColorSensorSystem(this, true);
-        control = new ActionControl(elevators, claws, colorSensorSystem, drive, gamepad1, gamepad2);
+        control = new ActionControl(elevators, claws, colorSensorSystem, drive, new Sweeper(this),
+                gamepadEx1, gamepadEx2);
         //Init Trajectories
         TrajectoryActionBuilder B_preload = drive.actionBuilder(beginPose)
                 .strafeToSplineHeading(hanging_pose.position,hanging_pose.heading);

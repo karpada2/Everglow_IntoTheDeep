@@ -8,6 +8,7 @@ import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
+import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -16,6 +17,7 @@ import org.firstinspires.ftc.teamcode.Systems.ActionControl;
 import org.firstinspires.ftc.teamcode.Systems.ColorSensorSystem;
 import org.firstinspires.ftc.teamcode.Systems.DifferentialClaws;
 import org.firstinspires.ftc.teamcode.Systems.Elevators;
+import org.firstinspires.ftc.teamcode.Systems.Sweeper;
 
 @Config
 @Autonomous(name="RightPath", group="Autonomous")
@@ -25,7 +27,8 @@ public class RightPath extends LinearOpMode {
     public void runOpMode()  throws InterruptedException{
         // Init Poses
         Pose2d specimins_beginPose = new Pose2d(16, -62,   Math.PI/2);
-        Pose2d hangPose = new Pose2d(6,-32,Math.PI/2);;
+        Pose2d hangPose = new Pose2d(6,-32,Math.PI/2);
+        GamepadEx gamepadEx1 = new GamepadEx(gamepad1), gamepadEx2 = new GamepadEx(gamepad2);
         double VelConstraint = 20;
 
         double dropSpeciminY = -52;
@@ -43,7 +46,8 @@ public class RightPath extends LinearOpMode {
         Elevators elevators  = Elevators.getInstance(this);
 
         ColorSensorSystem colorSensorSystem = new ColorSensorSystem(this, true);
-        ActionControl actionControl = new ActionControl(elevators,claws,colorSensorSystem,drive,gamepad1,gamepad2);
+        ActionControl actionControl = new ActionControl(elevators, claws, colorSensorSystem, drive, new Sweeper(this),
+                gamepadEx1, gamepadEx2);
         //Init Trajectories
 
 
