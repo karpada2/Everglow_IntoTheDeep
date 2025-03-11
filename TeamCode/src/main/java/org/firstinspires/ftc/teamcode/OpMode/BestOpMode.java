@@ -116,7 +116,7 @@ public class BestOpMode{
                 claws.rotateWheels(DifferentialClaws.ClawPowerState.TAKE_IN);
             }
             else if (gamepad2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) >= 0.4) {
-                claws.rotateWheels(gamepad2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER));
+                claws.rotateWheels(-gamepad2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER));
             }
             else if (gamepad2.wasJustPressed(GamepadKeys.Button.A)) {
                 targetArmPosition = DifferentialClaws.ClawPositionState.MAX.state;
