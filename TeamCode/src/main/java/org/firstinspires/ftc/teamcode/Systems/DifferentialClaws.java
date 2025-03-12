@@ -23,13 +23,11 @@ import org.firstinspires.ftc.teamcode.Systems.Token.TokenAction;
 
 public class DifferentialClaws {
 
-    static CRServo leftClawServo;
-    static CRServo rightClawServo;
-    static AnalogInput clawInput1;
-    static AnalogInput clawInput2;
-
-    private static DifferentialClaws instance = null;
-
+    CRServo leftClawServo;
+    CRServo rightClawServo;
+    AnalogInput clawInput1;
+    AnalogInput clawInput2;
+    
     public static final double maxPoint = 117;
 
     double armPosition = 0;
@@ -207,17 +205,7 @@ public class DifferentialClaws {
     }
 
     public static DifferentialClaws getInstance(OpMode opMode) {
-        if (instance == null) {
-            instance = new DifferentialClaws(opMode);
-        }
-        else {
-            instance.rotateArm(0.01);
-            instance.rotateArm(0);
-
-            instance.setCorrectDirections();
-        }
-
-        return instance;
+        return new DifferentialClaws(opMode);
     }
 
     public enum ClawPositionState {
