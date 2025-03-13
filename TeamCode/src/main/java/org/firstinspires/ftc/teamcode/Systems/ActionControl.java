@@ -2,6 +2,9 @@ package org.firstinspires.ftc.teamcode.Systems;
 
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
+import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
@@ -65,15 +68,41 @@ public class ActionControl {
     public Action dropHigh() {
         Token stopToken = new Token();
         return returnWithDrive(new TokenSequentialAction(
-                        elevators.setVerticalElevatorAction(VerticalState.VERTICAL_HIGH, stopToken),
-                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.SPIT_STATE.state, 750, stopToken),
-                        claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,colorSensorSystem, stopToken),
-                        new TokenParallelAction(
-                                elevators.setVerticalElevatorAction(VerticalState.VERTICAL_LOW, stopToken),
-                                claws.clawMovementAction(DifferentialClaws.ClawPositionState.SPIT_STATE.state, 750, stopToken)
-                        )
+                    elevators.setVerticalElevatorAction(VerticalState.VERTICAL_HIGH, stopToken),
+                    claws.clawMovementAction(DifferentialClaws.ClawPositionState.SPIT_STATE.state, 750, stopToken),
+                    claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,colorSensorSystem, stopToken),
+                    new TokenParallelAction(
+                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 1000, stopToken),
+                        elevators.setVerticalElevatorAction(VerticalState.VERTICAL_MIN, stopToken)
+                    )
                 )
                 , stopToken);
+    }
+
+    public Action dropHighAndToPlace() {
+        Token stopToken = new Token();
+
+        return new TokenSequentialAction(
+                mecanumDrive.getDriveUntilStopAction(colorSensorSystem, stopToken),
+            elevators.setVerticalElevatorAction(VerticalState.VERTICAL_HIGH, stopToken),
+            claws.clawMovementAction(DifferentialClaws.ClawPositionState.SPIT_STATE.state, 750, stopToken),
+            claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,colorSensorSystem, stopToken),
+            new TokenParallelAction(
+                    elevators.setVerticalElevatorAction(VerticalState.VERTICAL_MIN, stopToken),
+                    claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750, stopToken)
+            ));
+    }
+
+    public Action splineToDropLine(){
+        Pose2d start = new Pose2d(-24,-11.7, 0);
+        Pose2d midPoint = new Pose2d(-40, -11.2, 0);
+        Pose2d end = new Pose2d(-59.2, -11.2, (1.5)*Math.PI);
+
+        return mecanumDrive.actionBuilder(start)
+                .setTangent(Math.PI)
+                .splineToSplineHeading(midPoint, Math.PI)
+                .splineToSplineHeading(end, Math.PI)
+                .build();
     }
 
 }

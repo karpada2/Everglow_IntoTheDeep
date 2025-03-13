@@ -54,6 +54,7 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+import org.firstinspires.ftc.teamcode.Systems.ColorSensorSystem;
 import org.firstinspires.ftc.teamcode.Systems.Sweeper;
 import org.firstinspires.ftc.teamcode.Systems.Token.Token;
 import org.firstinspires.ftc.teamcode.Systems.Token.TokenAction;
@@ -524,6 +525,9 @@ public class MecanumDrive{
         }
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            gamepad1.readButtons();
+            gamepad2.readButtons();
+
             setDrivePowers(new PoseVelocity2d(
                     new Vector2d(
                             linearToExpo(gamepad1.getLeftY())*(1.0/Math.pow(4.5, gamepad1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER))),
@@ -541,14 +545,92 @@ public class MecanumDrive{
                 sweeper.setPosition(Sweeper.SweeperAngle.SWEEPER_RETRACTED);
             }
 
-            if(gamepad2.wasJustPressed(GamepadKeys.Button.A))
+            if(gamepad2.wasJustPressed(GamepadKeys.Button.B))
                 token.Interrupt();
             return !checkToken();
+        }
+    }
+
+    public class DriveUntilStop extends TokenAction{
+        ColorSensorSystem colorSensorSystem;
+        double power = 0.5;
+
+        boolean bothStop = false;
+        boolean lastRec1=false, lastRec2=false;
+        int timesOnTheLine1 = 0, timesOnTheLine2 = 0;
+
+        Token stopToken;
+
+        public DriveUntilStop(ColorSensorSystem colorSensorSystem, Token stopToken){
+            this.colorSensorSystem = colorSensorSystem;
+            this.stopToken = stopToken;
+        }
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+
+            if (!isInitialized){
+                frontLeft.setPower(power);
+                backLeft.setPower(power);
+                frontRight.setPower(power);
+                backRight.setPower(power);
+                isInitialized = true;
+            }
+
+            boolean recLeft = colorSensorSystem.isOnTape(true);
+            boolean recRight = colorSensorSystem.isOnTape(false);
+
+            timesOnTheLine1 += recRight != lastRec1? 1: 0;
+            timesOnTheLine2 += recLeft != lastRec2? 1: 0;
+
+
+            switch (timesOnTheLine2 % 3){
+                case 0:
+                    frontLeft.setPower(power);
+                    backLeft.setPower(power);
+                    break;
+                case 1:
+                    frontLeft.setPower(0);
+                    backLeft.setPower(0);
+                    break;
+                default:
+                    frontLeft.setPower(-power);
+                    backLeft.setPower(-power);
+                    break;
+            }
+
+            switch (timesOnTheLine1 % 3){
+                case 0:
+                    frontRight.setPower(power);
+                    backRight.setPower(power);
+                    break;
+                case 1:
+                    frontRight.setPower(0);
+                    backRight.setPower(0);
+                    break;
+                default:
+                    frontRight.setPower(-power);
+                    backRight.setPower(-power);
+                    break;
+            }
+
+            lastRec2 = recLeft;
+            lastRec1 = recRight;
+            bothStop = recLeft && recRight;
+            return !isOnLine();
+        }
+
+        public boolean isOnLine(){
+            return bothStop || stopToken.checkInterruption();
         }
     }
 
     public MecanumDriveAction getMecanumDriveAction(GamepadEx gamepad1, GamepadEx gamepad2, Sweeper sweeper
             , Tokenable tokenable, Token stopToken){
         return new MecanumDriveAction(gamepad1,gamepad2, sweeper, tokenable, stopToken);
+    }
+
+    public DriveUntilStop getDriveUntilStopAction(ColorSensorSystem colorSensorSystem, Token stopToken){
+        return new DriveUntilStop(colorSensorSystem, stopToken);
     }
 }
