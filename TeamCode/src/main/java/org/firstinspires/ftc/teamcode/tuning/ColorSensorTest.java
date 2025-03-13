@@ -81,6 +81,7 @@ public class ColorSensorTest extends LinearOpMode {
 //            telemetry.addData("blue", colorSystem.leftSensor.blue()); //570
 //            telemetry.addData("alpha", colorSystem.leftSensor.alpha()); //470
                 telemetry.addData("myColor", Integer.toHexString(colorSystem.leftSensor.argb())); //c7010202
+                telemetry.addData("am i on tape", colorSystem.isOnTape(false));
                 telemetry.addData("loops per second avg", loopsDone/timeSinceStart);
             }
 

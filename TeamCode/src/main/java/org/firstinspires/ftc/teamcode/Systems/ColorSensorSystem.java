@@ -2,7 +2,10 @@ package org.firstinspires.ftc.teamcode.Systems;
 
 import static java.lang.Math.abs;
 
+import android.graphics.Color;
 import android.widget.GridLayout;
+
+import androidx.annotation.ColorInt;
 
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.qualcomm.hardware.lynx.LynxI2cColorRangeSensor;
@@ -15,7 +18,6 @@ import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 public class ColorSensorSystem {
-
     LynxI2cColorRangeSensor colorSensor;
     public ColorSensor leftSensor;
     public ColorSensor rightSensor;
@@ -102,6 +104,10 @@ public class ColorSensorSystem {
 
     }
 
+    public static boolean isSameColor(@ColorInt int color1, @ColorInt int color2, double tolerance) {
+        return Math.abs(color1>>24 & 0x000000FF - color2>>24 & 0x000000FF) <= tolerance && Math.abs(color1>>16 & 0x000000FF - color2>>16 & 0x000000FF) <= tolerance && Math.abs(color1>>8 & 0x000000FF - color2>>8 & 0x000000FF) <= tolerance && Math.abs(color1 & 0x000000FF - color2 & 0x000000FF) <= tolerance;
+    }
+
     public boolean isSpecimenIn(){
         double minValue = 5.5; //cm
         return colorSensor.getDistance(DistanceUnit.CM) <= minValue;
@@ -140,19 +146,20 @@ public class ColorSensorSystem {
     }
 
     public boolean isOnTape(boolean isRight){
-        int red_c = 115;
-        int blue_c = 190;
+        int tolerance = 6; 
+        int red_c = 0x76010000;
+        int blue_c = 0xab000102;
+        int white_c = 0xf6020506;
+        int floor_c = 0x83000101;
         //int std = 19;
-        int red, blue;
+        @ColorInt int myColor;
         if (isRight){
-            red = rightSensor.red();
-            blue = rightSensor.blue();
+            myColor = rightSensor.argb();
         }
         else{
-            red = leftSensor.red();
-            blue = leftSensor.blue();
+            myColor = leftSensor.argb();
         }
-        return (red>red_c && red<270)|| blue>blue_c;
+        return !isSameColor(myColor, floor_c, tolerance) && !isSameColor(myColor, white_c, tolerance) && isTeamBlue ? isSameColor(myColor, blue_c, tolerance) : isSameColor(myColor, red_c, tolerance);
     }
 
     public boolean myTeamSpecimen(SpecimenColor specimenColor){
