@@ -16,7 +16,7 @@ import org.firstinspires.ftc.teamcode.Systems.ColorSensorSystem;
 @Config
 public class TestFloorSensors extends LinearOpMode {
     public static double power = 0.3;
-    public static double breakPower = -0.3;
+    public static double breakPower = 0;
     public static double afterPower = -0.3;
 
     public static double redConst = 0;

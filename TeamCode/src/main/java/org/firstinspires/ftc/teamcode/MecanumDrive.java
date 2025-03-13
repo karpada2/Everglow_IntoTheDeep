@@ -553,7 +553,10 @@ public class MecanumDrive{
 
     public class DriveUntilStop extends TokenAction{
         ColorSensorSystem colorSensorSystem;
+
+        //TODO: change the following powers
         double power = 0.5;
+        double afterPower = -0.5;
 
         boolean bothStop = false;
         boolean lastRec1=false, lastRec2=false;
@@ -594,8 +597,8 @@ public class MecanumDrive{
                     backLeft.setPower(0);
                     break;
                 default:
-                    frontLeft.setPower(-power);
-                    backLeft.setPower(-power);
+                    frontLeft.setPower(afterPower);
+                    backLeft.setPower(afterPower);
                     break;
             }
 
@@ -609,8 +612,8 @@ public class MecanumDrive{
                     backRight.setPower(0);
                     break;
                 default:
-                    frontRight.setPower(-power);
-                    backRight.setPower(-power);
+                    frontRight.setPower(afterPower);
+                    backRight.setPower(afterPower);
                     break;
             }
 

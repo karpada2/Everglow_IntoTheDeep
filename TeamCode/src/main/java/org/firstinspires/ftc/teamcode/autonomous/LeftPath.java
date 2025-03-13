@@ -64,7 +64,11 @@ public class LeftPath extends LinearOpMode {
             return false;
         }
     }
-    public static int DownTime = 500, UpTime = 250;
+
+    //TODO: change these variables so the Autonomous will be optimal
+    //----------------------------------------------//
+    public static int DownTime = 500, BetweenUpTime = 300, ToUpTime = 750;
+    //----------------------------------------------//
     public static double collectLine = -47.5;
     public static double collectLineSampleThree = -52;
     public static double firstSampleX = -50;
@@ -130,24 +134,24 @@ public class LeftPath extends LinearOpMode {
         Action Park = B_park.build();
 
         Action unload1 = new SequentialAction(
-                claws.clawMovementAction(DifferentialClaws.ClawPositionState.SPIT_STATE.state, 750),
+                claws.clawMovementAction(DifferentialClaws.ClawPositionState.SPIT_STATE.state, BetweenUpTime),
                 claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,colorSensorSystem),
-                claws.clawMovementAction(DifferentialClaws.ClawPositionState.READY_TO_SPIT.state, UpTime)
+                claws.clawMovementAction(DifferentialClaws.ClawPositionState.READY_TO_SPIT.state, BetweenUpTime)
         );
         Action unload2 = new SequentialAction(
-                claws.clawMovementAction(DifferentialClaws.ClawPositionState.SPIT_STATE.state, 750),
+                claws.clawMovementAction(DifferentialClaws.ClawPositionState.SPIT_STATE.state, BetweenUpTime),
                 claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,colorSensorSystem),
-                claws.clawMovementAction(DifferentialClaws.ClawPositionState.READY_TO_SPIT.state, UpTime)
+                claws.clawMovementAction(DifferentialClaws.ClawPositionState.READY_TO_SPIT.state, BetweenUpTime)
         );
         Action unload3 = new SequentialAction(
-                claws.clawMovementAction(DifferentialClaws.ClawPositionState.SPIT_STATE.state, 750),
+                claws.clawMovementAction(DifferentialClaws.ClawPositionState.SPIT_STATE.state, BetweenUpTime),
                 claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,colorSensorSystem),
-                claws.clawMovementAction(DifferentialClaws.ClawPositionState.READY_TO_SPIT.state, UpTime)
+                claws.clawMovementAction(DifferentialClaws.ClawPositionState.READY_TO_SPIT.state, BetweenUpTime)
         );
         Action unload4 = new SequentialAction(
-                claws.clawMovementAction(DifferentialClaws.ClawPositionState.SPIT_STATE.state, 750),
+                claws.clawMovementAction(DifferentialClaws.ClawPositionState.SPIT_STATE.state, BetweenUpTime),
                 claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,colorSensorSystem),
-                claws.clawMovementAction(DifferentialClaws.ClawPositionState.READY_TO_SPIT.state, UpTime)
+                claws.clawMovementAction(DifferentialClaws.ClawPositionState.READY_TO_SPIT.state, BetweenUpTime)
         );
         Action pickup1 = new SequentialAction(
                 new ParallelAction(
@@ -160,7 +164,7 @@ public class LeftPath extends LinearOpMode {
                         claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, colorSensorSystem)
                 ),
                 new ParallelAction(
-                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.READY_TO_SPIT.state, 750),
+                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.READY_TO_SPIT.state, ToUpTime),
                         elevators.setHorizontalElevatorAction(HORIZONTAL_RETRACTED)
                 )
         );
@@ -175,7 +179,7 @@ public class LeftPath extends LinearOpMode {
                         claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, colorSensorSystem)
                 ),
                 new ParallelAction(
-                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.READY_TO_SPIT.state, 750),
+                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.READY_TO_SPIT.state, ToUpTime),
                         elevators.setHorizontalElevatorAction(HORIZONTAL_RETRACTED)
                 )
         );
@@ -220,6 +224,7 @@ public class LeftPath extends LinearOpMode {
                         new ParallelAction(
                                 elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HIGH),
                                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.READY_TO_SPIT.state, 750),
+                                //TODO: I don't know if we need the claws Action here. if there is no problem do not touch it.
                                 sample1basket //movement
                         ),
                         unload2,
@@ -236,7 +241,7 @@ public class LeftPath extends LinearOpMode {
                         new ParallelAction(
                                 elevators.setHorizontalElevatorAction(HORIZONTAL_RETRACTED),
                                 elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HIGH),
-                                claws.clawMovementAction(DifferentialClaws.ClawPositionState.READY_TO_SPIT.state, DownTime),
+                                claws.clawMovementAction(DifferentialClaws.ClawPositionState.READY_TO_SPIT.state, ToUpTime),
                                 sample3basket //movement
                         ),
 
@@ -244,7 +249,7 @@ public class LeftPath extends LinearOpMode {
 
                         new ParallelAction(
                                 elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_LOW),
-                                claws.clawMovementAction(DifferentialClaws.ClawPositionState.READY_TO_SPIT.state, DownTime-200),
+                                claws.clawMovementAction(DifferentialClaws.ClawPositionState.READY_TO_SPIT.state, ToUpTime),
                                 Park  //movement
                         )
                 )

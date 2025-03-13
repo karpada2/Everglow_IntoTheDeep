@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.Systems.Token.Token;
 import org.firstinspires.ftc.teamcode.Systems.Token.TokenAction;
 import org.firstinspires.ftc.teamcode.Systems.Token.Tokenable;
 
@@ -28,20 +29,25 @@ public class Elevators implements Tokenable {
     // sets the vertical elevator to the specified position
     public class VerticalElevatorAction extends TokenAction {
         private final int destination;
-        private long TEST_LONGEST_TIME = 7 *1000;
-        private long TEST_START_TIME;
+        Token token;
 
         public VerticalElevatorAction(int destination) {
             this.destination = destination;
             isDone = Elevators.this::isElevatorInDestination;
         }
 
+        public VerticalElevatorAction(int destination, Token token) {
+            this(destination);
+            this.token = token;
+        }
+
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            if(token != null && token.checkInterruption())
+                return false;
 
             if (!isInitialized) {
                 setVerticalDestination(this.destination);
-                TEST_START_TIME = System.currentTimeMillis();
                 isInitialized = true;
             }
 
@@ -58,29 +64,6 @@ public class Elevators implements Tokenable {
     -------------------------------------------------------------------
      */
     // moves the horizontal elevators to destination, and is considered finished when they reach the destination
-    public class MotorHorizontalElevatorAction extends TokenAction {
-        private final double destination;
-
-        public MotorHorizontalElevatorAction(HorizontalState state) {
-            //motorSetHorizontalDestination(state);
-            this.destination = state.state;
-
-            isDone = Elevators.this::motorIsHorizontalInDestination;
-        }
-
-        @Override
-        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-
-            if (!isInitialized) {
-                setHorizontalDestination(this.destination);
-                isInitialized = true;
-            }
-
-            setHorizontalDestination(this.destination);
-            return !motorIsHorizontalInDestination();
-        }
-    }
-
     public class HorizontalElevatorAction extends TokenAction {
         private boolean hasEnoughTimePassed() {
             return System.currentTimeMillis() - startTime >= timeUntilDone;
@@ -89,6 +72,7 @@ public class Elevators implements Tokenable {
         private final double timeUntilDone;
         private double startTime;
         private boolean isInit;
+        private Token token;
 
         public HorizontalElevatorAction(HorizontalState state, double timeUntilDone) {
             isDone = HorizontalElevatorAction.this::hasEnoughTimePassed;
@@ -97,8 +81,16 @@ public class Elevators implements Tokenable {
             this.isInit = false;
         }
 
+        public HorizontalElevatorAction(HorizontalState state, double timeUntilDone, Token token) {
+            this(state, timeUntilDone);
+            this.token = token;
+        }
+
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            if(token != null && token.checkInterruption())
+                return false;
+
             if (!isInit) {
                 startTime = System.currentTimeMillis();
                 setHorizontalDestination(desitnation);
@@ -233,7 +225,7 @@ public class Elevators implements Tokenable {
     }
 
     public void updateVert(){
-        if (Math.abs(verticalDestination-getVerticalCurrentPosition())<=10 && verticalDestination == 0) {
+        if (Math.abs(verticalDestination-getVerticalCurrentPosition())<=30 && verticalDestination == 0) {
             setVerticalPower(0);
             double innerEps = 10;
             if(Math.abs(verticalDestination-getVerticalCurrentPosition())>= innerEps) {
@@ -297,6 +289,9 @@ public class Elevators implements Tokenable {
 
     public VerticalElevatorAction setVerticalElevatorAction(VerticalState targetState) {
         return new VerticalElevatorAction(targetState.state);
+    }
+    public VerticalElevatorAction setVerticalElevatorAction(VerticalState targetState, Token token) {
+        return new VerticalElevatorAction(targetState.state, token);
     }
 
     public void resetVert(){
