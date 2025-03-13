@@ -119,7 +119,7 @@ public class Elevators implements Tokenable {
         VERTICAL_SPECIMEN_PICKUP(557),
         VERTICAL_SPECIMEN_HIGH(1670),
         VERTICAL_LOW(2804),
-        VERTICAL_HIGH(3670),
+        VERTICAL_HIGH(3370),
         VERTICAL_OPMODE_HIGH(3670),
         VERTICAL_MAX(4200); //4200/11448
 
@@ -132,7 +132,7 @@ public class Elevators implements Tokenable {
 
     public enum HorizontalState {
         HORIZONTAL_RETRACTED(0),
-        HORIZONTAL_HALFWAY(0.3),
+        HORIZONTAL_HALFWAY(0.32),
         HORIZONTAL_EXTENDED(0.52);
 
         public final double state;
@@ -233,7 +233,7 @@ public class Elevators implements Tokenable {
     }
 
     public void updateVert(){
-        if (Math.abs(verticalDestination-getVerticalCurrentPosition())<=200 && verticalDestination == 0) {
+        if (Math.abs(verticalDestination-getVerticalCurrentPosition())<=10 && verticalDestination == 0) {
             setVerticalPower(0);
             double innerEps = 10;
             if(Math.abs(verticalDestination-getVerticalCurrentPosition())>= innerEps) {

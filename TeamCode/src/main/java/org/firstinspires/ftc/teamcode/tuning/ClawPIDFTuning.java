@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.tuning;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -50,15 +51,13 @@ public class ClawPIDFTuning extends LinearOpMode {
             telemetry.update();
 
             if (gamepad2.square) {
-                lastPIDPower = claws.getPIDArmPower();
-                claws.rotateArm(lastPIDPower);
                 x = System.currentTimeMillis() - startTime;
                 x = x % 8000;
 
                 if (x <= 4000) {
-                    claws.setArmTargetPosition(100);
+                    Actions.runBlocking(claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, 750));
                 } else {
-                    claws.setArmTargetPosition(20);
+                    Actions.runBlocking(claws.clawMovementAction(DifferentialClaws.ClawPositionState.SPIT_STATE.state, 750));
                 }
             }
         }

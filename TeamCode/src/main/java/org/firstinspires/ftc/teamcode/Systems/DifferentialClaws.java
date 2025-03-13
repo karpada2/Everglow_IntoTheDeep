@@ -50,7 +50,7 @@ public class DifferentialClaws {
 
     public static PIDController controller;
 
-    public final double p = 0.01,//.008,
+    public final double p = 0.016,//.008,
             i = 0.0002,
             d = 0.0002;//.0001;
     public double f = 0.07;//0.08;
@@ -127,7 +127,7 @@ public class DifferentialClaws {
                 if(isToInsert)
                     timeUntilFinished = 450;
                 else
-                    timeUntilFinished = 700;
+                    timeUntilFinished = 450;
                 isIn = true;
             }
 
@@ -212,6 +212,7 @@ public class DifferentialClaws {
         MIN(0.0),
         MID(maxPoint/2),
         SPIT_STATE(70),
+        READY_TO_SPIT(80),
         HANG_SPECIMEN(maxPoint-30),
         MAX(maxPoint);
 
@@ -222,7 +223,7 @@ public class DifferentialClaws {
     public enum ClawPowerState {
         TAKE_IN(1),
         OFF(0.08),
-        SPIT(-0.25);
+        SPIT(-0.15);
 
         public final double state;
 
