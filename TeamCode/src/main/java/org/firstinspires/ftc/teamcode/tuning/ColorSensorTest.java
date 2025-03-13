@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.Systems.ColorSensorSystem;
 public class ColorSensorTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
-//        LynxI2cColorRangeSensor colorRangeSensor = hardwareMap.get(LynxI2cColorRangeSensor.class, "clawSensor");
+        LynxI2cColorRangeSensor colorRangeSensor = hardwareMap.get(LynxI2cColorRangeSensor.class, "clawSensor");
         ColorSensorSystem colorSystem = new ColorSensorSystem(this, true);
         int loopsDone = 0;
         double startTime = System.currentTimeMillis();
@@ -74,8 +74,15 @@ public class ColorSensorTest extends LinearOpMode {
 //            telemetry.addData("blue", normalizedRGBA.blue);
 //            telemetry.addData("alpha", normalizedRGBA.alpha);
 //            telemetry.addData("hue", hue);
-            telemetry.addData("color", colorSystem.getSpecimenColor());
-            telemetry.addData("loops per second avg", loopsDone/timeSinceStart);
+            if (!gamepad1.cross) {
+                telemetry.addData("color", colorSystem.getSpecimenColor());
+//            telemetry.addData("red", colorSystem.leftSensor.red()); //280
+//            telemetry.addData("green", colorSystem.leftSensor.green()); //555
+//            telemetry.addData("blue", colorSystem.leftSensor.blue()); //570
+//            telemetry.addData("alpha", colorSystem.leftSensor.alpha()); //470
+                telemetry.addData("myColor", Integer.toHexString(colorSystem.leftSensor.argb())); //c7010202
+                telemetry.addData("loops per second avg", loopsDone/timeSinceStart);
+            }
 
 
             //yellow: Red: 0.31, Green: 0.282, Blue: 0.118, Alpha: 0.727
