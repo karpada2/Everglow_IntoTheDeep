@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Systems;
 
+import static java.lang.Math.abs;
+
 import android.widget.GridLayout;
 
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
@@ -15,6 +17,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 public class ColorSensorSystem {
 
     LynxI2cColorRangeSensor colorSensor;
+    public ColorSensor leftSensor;
+    public ColorSensor rightSensor;
+
     private SpecimenColor currentSpecimentColor;
     boolean isTeamBlue;
 
@@ -45,10 +50,14 @@ public class ColorSensorSystem {
     }
     public ColorSensorSystem(OpMode opMode, boolean isBlueTeam){
         colorSensor = opMode.hardwareMap.get(LynxI2cColorRangeSensor.class, "clawSensor");
+        rightSensor = opMode.hardwareMap.get(ColorSensor.class, "rightColorSensor");
+        leftSensor = opMode.hardwareMap.get(ColorSensor.class, "leftColorSensor");
         isTeamBlue = isBlueTeam;
         gamepad1 = opMode.gamepad1;
         gamepad2 = opMode.gamepad2;
         colorSensor.enableLed(true);
+        rightSensor.enableLed(true);
+        leftSensor.enableLed(true);
         initializeRamble();
     }
 
@@ -101,8 +110,7 @@ public class ColorSensorSystem {
     public double getDistance(DistanceUnit unit){
         return  colorSensor.getDistance(unit);
     }
-    public double getHue() {
-        NormalizedRGBA normalzie = colorSensor.getNormalizedColors();
+    public double getHue(NormalizedRGBA normalzie) {
         double red = normalzie.red;
         double green = normalzie.green;
         double blue = normalzie.blue;
@@ -124,11 +132,38 @@ public class ColorSensorSystem {
         return hue;
     }
     public SpecimenColor getSpecimenColor(){
-        double hue = getHue();
+        double hue = getHue(colorSensor.getNormalizedColors());
         if (isSpecimenIn())
             return SpecimenColor.getColor(hue);
         else
             return SpecimenColor.NO_COLOR_DETECTED;
+    }
+
+    public boolean isOnTape(boolean isRight){
+        //TODO: update these constants and put the relevant conditions (so it wont recognize white as "true")
+        int red_c = 0;
+        int blue_c = 0;
+        int std = 0;
+
+        int red= 0, blue = 0;
+        if (isRight){
+            if(isTeamBlue)
+                blue = rightSensor.blue();
+            else
+                red = rightSensor.red();
+        }
+        else{
+            if(isTeamBlue)
+                blue = leftSensor.blue();
+            else
+                red = leftSensor.red();
+        }
+
+        //TODO: change the conditions if needed
+        if(isTeamBlue)
+            return abs(blue - blue_c) <= std;
+        else
+            return abs(red - red_c) <= std;
     }
 
     public boolean myTeamSpecimen(SpecimenColor specimenColor){

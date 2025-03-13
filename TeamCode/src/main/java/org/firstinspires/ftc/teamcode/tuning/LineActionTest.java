@@ -14,8 +14,8 @@ import org.firstinspires.ftc.teamcode.Systems.DifferentialClaws;
 import org.firstinspires.ftc.teamcode.Systems.Elevators;
 import org.firstinspires.ftc.teamcode.Systems.Sweeper;
 
-@TeleOp(name = "TokenActionTest", group = "Tests")
-public class TokenActionTest extends LinearOpMode {
+@TeleOp(name = "LineActionTest", group = "Tests")
+public class LineActionTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         Elevators elevators = Elevators.getInstance(this);
@@ -34,14 +34,10 @@ public class TokenActionTest extends LinearOpMode {
 
         while (opModeIsActive()){
             gamepadEx2.readButtons();
-            if(gamepadEx2.wasJustPressed(GamepadKeys.Button.A)) {
-                telemetry.addLine("here");
-                telemetry.update();
-                Actions.runBlocking(actionControl.dropHigh());
+            if(gamepadEx2.wasJustPressed(GamepadKeys.Button.A)){
+                Actions.runBlocking(actionControl.splineToDropLine());
+                Actions.runBlocking(actionControl.dropHighAndToPlace());
             }
-
-            telemetry.addLine("finished");
-            telemetry.update();
         }
     }
 }

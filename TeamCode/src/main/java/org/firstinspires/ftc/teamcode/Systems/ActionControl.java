@@ -2,143 +2,107 @@ package org.firstinspires.ftc.teamcode.Systems;
 
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
+import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.Vector2d;
+import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Systems.Elevators.HorizontalState;
 import org.firstinspires.ftc.teamcode.Systems.Elevators.VerticalState;
+import org.firstinspires.ftc.teamcode.Systems.Token.Token;
 import org.firstinspires.ftc.teamcode.Systems.Token.TokenParallelAction;
 import org.firstinspires.ftc.teamcode.Systems.Token.TokenSequentialAction;
 
 
 public class ActionControl {
-//    public final Action getReadyExtendedPickUp;
-//    public final Action getReadyHalfwayPickUp;
-//    public final Action returnFromPickUp;
-//    public final Action getReadyDropLow;
-//    public final Action getReadyDropHigh;
-//    public final Action returnFromDrop;
     Elevators elevators;
     DifferentialClaws claws;
 
     ColorSensorSystem colorSensorSystem;
     MecanumDrive mecanumDrive;
-    Gamepad gamepad1, gamepad2;
+    GamepadEx gamepad1, gamepad2;
 
-
-    private boolean isRunAction = false;
-    private Thread runingThread;
+    Sweeper sweeper;
 
     public ActionControl(Elevators elevators, DifferentialClaws claws, ColorSensorSystem colorSensorSystem,
-                         MecanumDrive drive, Gamepad gamepad1, Gamepad gamepad2) {
+                         MecanumDrive drive, Sweeper sweeper, GamepadEx gamepad1, GamepadEx gamepad2) {
         this.elevators = elevators;
         this.claws = claws;
         this.colorSensorSystem = colorSensorSystem;
         this.mecanumDrive = drive;
         this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;
+        this.sweeper = sweeper;
         //TODO: ADD CLAW MOVEMENTS TO THESE
     }
 
-    public Action returnFromDrop(){
-
-        return returnWithDrive(new TokenSequentialAction(
-                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state,1000), // up
-                //elevators.setMotorHorizontalElevatorAction(MotorHorizontalState.HORIZONTAL_RETRACTED),
-                elevators.setVerticalElevatorAction(VerticalState.VERTICAL_MIN),
-                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 800))); // down
-    }
-
-    public Action returnWithDrive(TokenSequentialAction tokenAction){
-        return new ParallelAction(mecanumDrive.getMecanumDriveAction(gamepad1, gamepad2, tokenAction), tokenAction);
-    }
-
-    public Action getReadyDropHigh(){
-        return returnWithDrive(new TokenSequentialAction(
-                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750), //up
-                elevators.setVerticalElevatorAction(VerticalState.VERTICAL_HIGH),
-                claws.clawMovementAction(DifferentialClaws.ClawPositionState.SPIT_STATE.state, 750)
-//                claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,1000),
-//                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750)
-        ));
-    }
-
-    public Action getReadyPickUpSpecimen(){
-        return returnWithDrive(new TokenSequentialAction(
-                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, 750),
-                new TokenParallelAction(
-                claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, colorSensorSystem),
-                elevators.setHorizontalElevatorAction(HorizontalState.HORIZONTAL_HALFWAY)
-                )
-        ));
-    }
-
-    public  Action getReadyDropLow(){
-        return returnWithDrive(new TokenSequentialAction(
-                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 1000),//mid
-                elevators.setVerticalElevatorAction(VerticalState.VERTICAL_LOW),
-                elevators.setHorizontalElevatorAction(HorizontalState.HORIZONTAL_HALFWAY),
-                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 800) // down
-        ));
-    }
-
-    public Action returnFromPickUp(){
-        return returnWithDrive(new TokenSequentialAction(
-                claws.clawMovementAction(45, 750), //mid
-                elevators.setHorizontalElevatorAction(HorizontalState.HORIZONTAL_RETRACTED),
-                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 800) // down
-        ));
-    }
-
-    public Action getReadyExtendedPickUp(){
-        return returnWithDrive(new TokenSequentialAction(
-                claws.clawMovementAction(45, 750), //mid
-                elevators.setHorizontalElevatorAction(HorizontalState.HORIZONTAL_EXTENDED)
-                //claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 800) // down
-        ));
-    }
-
-    public Action getReadyHalfwayPickUp(){
-        return returnWithDrive(new TokenSequentialAction(
-                claws.clawMovementAction(45, 750), //mid
-                elevators.setHorizontalElevatorAction(HorizontalState.HORIZONTAL_HALFWAY),
-                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 800) // down
-        ));
+    public Action returnWithDrive(TokenSequentialAction tokenAction, Token stopToken){
+        return new ParallelAction(mecanumDrive.getMecanumDriveAction(gamepad1, gamepad2, sweeper, tokenAction, stopToken)
+                , tokenAction);
     }
 
     public Action hangSpecimenHigh() {
+        Token stopToken = new Token();
         return returnWithDrive(new TokenSequentialAction(
                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750),
                 elevators.setVerticalElevatorAction(VerticalState.VERTICAL_SPECIMEN_HIGH),
                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.HANG_SPECIMEN.state, 750),
                 elevators.setVerticalElevatorAction(VerticalState.VERTICAL_MIN)
                 )
-        );
+                , stopToken);
     }
 
     public Action hangHighRaise() {
+        Token stopToken = new Token();
         return returnWithDrive(new TokenSequentialAction(
-                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750),
-                        elevators.setVerticalElevatorAction(VerticalState.VERTICAL_SPECIMEN_HIGH),
-                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.HANG_SPECIMEN.state, 750),
-                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_PICKUP)
+                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750, stopToken),
+                        elevators.setVerticalElevatorAction(VerticalState.VERTICAL_SPECIMEN_HIGH, stopToken),
+                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.HANG_SPECIMEN.state, 750, stopToken),
+                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_PICKUP, stopToken)
                 )
-        );
+                , stopToken);
     }
 
+    public Action dropHigh() {
+        Token stopToken = new Token();
+        return returnWithDrive(new TokenSequentialAction(
+                    elevators.setVerticalElevatorAction(VerticalState.VERTICAL_HIGH, stopToken),
+                    claws.clawMovementAction(DifferentialClaws.ClawPositionState.SPIT_STATE.state, 750, stopToken),
+                    claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,colorSensorSystem, stopToken),
+                    new TokenParallelAction(
+                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 1000, stopToken),
+                        elevators.setVerticalElevatorAction(VerticalState.VERTICAL_MIN, stopToken)
+                    )
+                )
+                , stopToken);
+    }
 
-//    public void runAction(Action action){
-//        if(!isRunAction){
-//            isRunAction = true;
-//            runingThread = new Thread(() -> {
-//                Actions.runBlocking(action);
-//                isRunAction = false;
-//            });
-//            runingThread.start();
-//        }
-//    }
-//
-//    public boolean isOnRun(){
-//        return  isRunAction;
-//    }
+    public Action dropHighAndToPlace() {
+        Token stopToken = new Token();
+
+        return new TokenSequentialAction(
+                mecanumDrive.getDriveUntilStopAction(colorSensorSystem, stopToken),
+            elevators.setVerticalElevatorAction(VerticalState.VERTICAL_HIGH, stopToken),
+            claws.clawMovementAction(DifferentialClaws.ClawPositionState.SPIT_STATE.state, 750, stopToken),
+            claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,colorSensorSystem, stopToken),
+            new TokenParallelAction(
+                    elevators.setVerticalElevatorAction(VerticalState.VERTICAL_MIN, stopToken),
+                    claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750, stopToken)
+            ));
+    }
+
+    public Action splineToDropLine(){
+        Pose2d start = new Pose2d(-24,-11.7, 0);
+        Pose2d midPoint = new Pose2d(-40, -11.2, 0);
+        Pose2d end = new Pose2d(-59.2, -11.2, (1.5)*Math.PI);
+
+        return mecanumDrive.actionBuilder(start)
+                .setTangent(Math.PI)
+                .splineToSplineHeading(midPoint, Math.PI)
+                .splineToSplineHeading(end, Math.PI)
+                .build();
+    }
+
 }
