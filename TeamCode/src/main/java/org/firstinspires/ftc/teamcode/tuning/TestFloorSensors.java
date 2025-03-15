@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.Systems.ColorSensorSystem;
 public class TestFloorSensors extends LinearOpMode {
     public static double power = 0.3;
     public static double breakPower = 0;
-    public static double afterPower = -0.3;
+    public static double afterPower = 0.1;
 
     public static double redConst = 1420;
 
@@ -88,7 +88,7 @@ public class TestFloorSensors extends LinearOpMode {
                 drive.backLeft.setPower(0);
             }
             else {
-                if (timeLeftTheLineLeft % 2 == 0) {
+                if (timeLeftTheLineLeft == 0) {
                     drive.frontLeft.setPower(power);
                     drive.backLeft.setPower(power);
                 }
@@ -103,7 +103,7 @@ public class TestFloorSensors extends LinearOpMode {
                 drive.backRight.setPower(0);
             }
             else {
-                if (timeLeftTheLineLeft % 2 == 0) {
+                if (timeLeftTheLineLeft == 0) {
                     drive.frontRight.setPower(power);
                     drive.backRight.setPower(power);
                 }
