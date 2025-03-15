@@ -103,8 +103,8 @@ public class TestFloorSensors extends LinearOpMode {
                     ));
                 }
                 else if (rightDetected) {
-                    if (leftDetected) {
-                        turnMultiplier = -1;
+                    if (recLeft) {
+                        turnMultiplier =  1;
                         angle = drive.pose.heading.toDouble() - angle;
                         angle /= 2.0;
                         finishedCalculatingRotation = true;
@@ -126,8 +126,8 @@ public class TestFloorSensors extends LinearOpMode {
                     }
                 }
                 else if (leftDetected) {
-                    if (rightDetected) {
-                        turnMultiplier = 1;
+                    if (recRight) {
+                        turnMultiplier = -1;
                         angle = drive.pose.heading.toDouble() - angle;
                         angle /= 2.0;
                         finishedCalculatingRotation = true;
