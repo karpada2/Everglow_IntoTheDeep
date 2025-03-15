@@ -555,7 +555,7 @@ public class MecanumDrive{
         ColorSensorSystem colorSensorSystem;
 
         //TODO: change the following powers
-        double power = 0.5;
+        double power = 0.25;
 
         boolean bothStop = false;
 
