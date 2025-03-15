@@ -37,77 +37,85 @@ public class TestFloorSensors extends LinearOpMode {
 
         boolean recLeft;
         boolean recRight;
-        boolean lastRec1=false, lastRec2=false;
-        int timesOnTheLine1 = 0, timesOnTheLine2 = 0;
+        boolean lastRecRight=false, lastRecLeft=false;
+        int timeLeftTheLineLeft = 0, timeLeftTheLineRight = 0;
         double redRec, blueRec;
 
-//        drive.frontLeft.setPower(power);
-//        drive.backLeft.setPower(power);
-//        drive.frontRight.setPower(power);
-//        drive.backRight.setPower(power);
+        drive.frontLeft.setPower(power);
+        drive.backLeft.setPower(power);
+        drive.frontRight.setPower(power);
+        drive.backRight.setPower(power);
 
         while (opModeIsActive()){
-            recLeft = colorSensorSystem.isOnTape(true);
-            recRight = colorSensorSystem.isOnTape(false);
+            recLeft = colorSensorSystem.isOnTape(false);
+            recRight = colorSensorSystem.isOnTape(true);
 
-            timesOnTheLine1 += recRight != lastRec1? 1: 0;
-            timesOnTheLine2 += recLeft != lastRec2? 1: 0;
+            timeLeftTheLineLeft += !recLeft && lastRecLeft ? 1 : 0;
+            timeLeftTheLineRight += !recRight && lastRecRight ? 1 : 0;
 
             redRec = colorSensorSystem.leftSensor.red();
             blueRec = colorSensorSystem.leftSensor.blue();
 
 
-            //TODO: run tuning, change
-            telemetry.addData("rightSensor", recRight);
-            telemetry.addData("leftSensor", recLeft);
-            telemetry.addData("red:", redRec);
-            //telemetry.addData("red:", colorSensorSystem.rightSensor.red());
-            telemetry.addData("blue", blueRec);
-            telemetry.addData("alpha", colorSensorSystem.leftSensor.alpha());
-            telemetry.addData("green", colorSensorSystem.leftSensor.green());
-            telemetry.addData("is on red?", Math.abs(redRec - redConst) <= eps);
-            telemetry.addData("is on blue?", Math.abs(blueRec - blueConst) <= eps);
+//            //TODO: run tuning, change
+//            telemetry.addData("rightSensor", recRight);
+//            telemetry.addData("leftSensor", recLeft);
+//            telemetry.addData("red:", redRec);
+//            //telemetry.addData("red:", colorSensorSystem.rightSensor.red());
+//            telemetry.addData("blue", blueRec);
+//            telemetry.addData("alpha", colorSensorSystem.leftSensor.alpha());
+//            telemetry.addData("green", colorSensorSystem.leftSensor.green());
+//            telemetry.addData("is on red?", Math.abs(redRec - redConst) <= eps);
+//            telemetry.addData("is on blue?", Math.abs(blueRec - blueConst) <= eps);
+//
+//            //TODO: find way (with the parameters above) to make difference between recognition of blue and red to white
+//            //TODO: put your code here:
+//            telemetry.addData("is on white? (should be false when on red or blue)", Math.abs(colorSensorSystem.leftSensor.green() - whiteGreenValueConst) <= eps);
+//
+//            telemetry.update();
 
-            //TODO: find way (with the parameters above) to make difference between recognition of blue and red to white
-            //TODO: put your code here:
-            telemetry.addData("is on white? (should be false when on red or blue)", Math.abs(colorSensorSystem.leftSensor.green() - whiteGreenValueConst) <= eps);
+            telemetry.addData("time left left the line", timeLeftTheLineLeft);
+            telemetry.addData("time right left the line", timeLeftTheLineRight);
 
             telemetry.update();
 
-            //TODO: finished tuning? now update the ColorSensorSystem and run the blow code to check if it works
-//
-//            switch (timesOnTheLine2 % 3){
-//                case 0:
-//                    drive.frontLeft.setPower(power);
-//                    drive.backLeft.setPower(power);
-//                    break;
-//                case 1:
-//                    drive.frontLeft.setPower(0);
-//                    drive.backLeft.setPower(0);
-//                    break;
-//                default:
-//                    drive.frontLeft.setPower(afterPower);
-//                    drive.backLeft.setPower(afterPower);
-//                    break;
-//            }
-//
-//            switch (timesOnTheLine1 % 3){
-//                case 0:
-//                    drive.frontRight.setPower(power);
-//                    drive.backRight.setPower(power);
-//                    break;
-//                case 1:
-//                    drive.frontRight.setPower(0);
-//                    drive.backRight.setPower(0);
-//                    break;
-//                default:
-//                    drive.frontRight.setPower(afterPower);
-//                    drive.backRight.setPower(afterPower);
-//                    break;
-//            }
 
-            lastRec2 = recLeft;
-            lastRec1 = recRight;
+
+            //TODO: finished tuning? now update the ColorSensorSystem and run the blow code to check if it works
+
+            if (recLeft) {
+                drive.frontLeft.setPower(0);
+                drive.backLeft.setPower(0);
+            }
+            else {
+                if (timeLeftTheLineLeft % 2 == 0) {
+                    drive.frontLeft.setPower(power);
+                    drive.backLeft.setPower(power);
+                }
+                else {
+                    drive.frontLeft.setPower(afterPower);
+                    drive.backLeft.setPower(afterPower);
+                }
+            }
+
+            if (recRight) {
+                drive.frontRight.setPower(0);
+                drive.backRight.setPower(0);
+            }
+            else {
+                if (timeLeftTheLineLeft % 2 == 0) {
+                    drive.frontRight.setPower(power);
+                    drive.backRight.setPower(power);
+                }
+                else {
+                    drive.frontRight.setPower(afterPower);
+                    drive.backRight.setPower(afterPower);
+                }
+            }
+
+
+            lastRecLeft = recLeft;
+            lastRecRight = recRight;
 
             // blue tape: red: 364, blue: 2960, green: 1111, alpha: 1486
             // red tape: red: 1417, blue: 709, green: 984, alpha: 1044
