@@ -18,16 +18,6 @@ import org.firstinspires.ftc.teamcode.Systems.ColorSensorSystem;
 @Config
 public class TestFloorSensors extends LinearOpMode {
     public static double power = 0.3;
-    public static double breakPower = 0;
-    public static double afterPower = 0.1;
-
-    public static double redConst = 1420;
-
-    public static double blueConst = 2960;
-
-    public static double whiteGreenValueConst = 6600;
-
-    public static double eps = 700;
 
     @Override
     public void runOpMode() throws InterruptedException {
