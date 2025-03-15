@@ -5,7 +5,9 @@ import static org.firstinspires.ftc.teamcode.tuning.ClawPIDFTuning.f;
 
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
+import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.acmerobotics.roadrunner.ftc.Actions;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -13,6 +15,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.teamcode.Systems.ActionControl;
 import org.firstinspires.ftc.teamcode.Systems.ColorSensorSystem;
 import org.firstinspires.ftc.teamcode.Systems.DifferentialClaws;
 import org.firstinspires.ftc.teamcode.Systems.Elevators;
@@ -42,6 +45,8 @@ public class BestOpMode{
 
         Elevators elevators = Elevators.getInstance(opMode);
         elevators.setVerticalPower(0.0);
+
+        ActionControl actionControl = new ActionControl(elevators, claws, colorSensorSystem, drive, sweeper, gamepad1, gamepad2);
 
         double joystickTolerance = 0.05;
 
@@ -88,21 +93,18 @@ public class BestOpMode{
 
 
 
-            if (gamepad2.wasJustPressed(GamepadKeys.Button.DPAD_DOWN)) {
-                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_PICKUP.state);
+            if (gamepad2.wasJustPressed(GamepadKeys.Button.Y)) {
+                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_OPMODE_HIGH.state);
             }
-            else if (gamepad2.wasJustPressed(GamepadKeys.Button.DPAD_LEFT)) {
-                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_LOW.state);
-            }
-            else if (gamepad2.wasJustPressed(GamepadKeys.Button.DPAD_UP)) {
+            else if (gamepad2.wasJustPressed(GamepadKeys.Button.X)) {
                 elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_SPECIMEN_HIGH.state);
             }
-            else if (gamepad2.wasJustPressed(GamepadKeys.Button.DPAD_RIGHT)) {
-                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_OPMODE_HIGH.state);
+            else if (gamepad2.wasJustPressed(GamepadKeys.Button.A)) {
+                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_PICKUP.state);
             }
 
             if (Math.abs(gamepad2.getRightY()) > joystickTolerance) {
-                horElevatorPosition += -gamepad2.getRightY()*0.025;
+                horElevatorPosition += -gamepad2.getRightY()*0.005 * (gamepad2.isDown(GamepadKeys.Button.RIGHT_STICK_BUTTON) ? 2 : 1);
                 if(horElevatorPosition < Elevators.HorizontalState.HORIZONTAL_RETRACTED.state){
                     horElevatorPosition = Elevators.HorizontalState.HORIZONTAL_RETRACTED.state;
                 }else if(horElevatorPosition >= Elevators.HorizontalState.HORIZONTAL_EXTENDED.state){
@@ -118,19 +120,19 @@ public class BestOpMode{
             else if (gamepad2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) >= 0.4) {
                 claws.rotateWheels(-gamepad2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER));
             }
-            else if (gamepad2.wasJustPressed(GamepadKeys.Button.A)) {
-                targetArmPosition = DifferentialClaws.ClawPositionState.MAX.state;
+            else if (gamepad2.wasJustPressed(GamepadKeys.Button.DPAD_DOWN)) {
+                targetArmPosition = DifferentialClaws.ClawPositionState.MIN.state;
             }
-            else if (gamepad2.wasJustPressed(GamepadKeys.Button.X)) {
+            else if (gamepad2.wasJustPressed(GamepadKeys.Button.DPAD_UP)) {
                 targetArmPosition = DifferentialClaws.ClawPositionState.SPIT_STATE.state;
             }
-            else if (gamepad2.wasJustPressed(GamepadKeys.Button.Y)) { //tringle
-                targetArmPosition = DifferentialClaws.ClawPositionState.MIN.state;
+            else if (gamepad2.wasJustPressed(GamepadKeys.Button.DPAD_LEFT)) {
+                targetArmPosition = DifferentialClaws.ClawPositionState.MAX.state;
             }
 
             isPIDF_Active = !(gamepad2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) >= 0.4 || gamepad2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) >= 0.4);
 
-            targetArmPosition += -gamepad2.getLeftY()/2.5;
+            targetArmPosition += (-gamepad2.getLeftY()/2.5) * (gamepad2.isDown(GamepadKeys.Button.LEFT_STICK_BUTTON) ? 2 : 1);
 
 
             if (targetArmPosition > maxPoint) {
@@ -144,6 +146,14 @@ public class BestOpMode{
                 claws.setArmTargetPosition(targetArmPosition);
 
                 claws.rotateArm(claws.getPIDArmPower());
+            }
+
+
+            if (gamepad2.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER)) {
+                Actions.runBlocking(actionControl.dropHigh());
+            }
+            else if (gamepad2.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER)) {
+                Actions.runBlocking(new SequentialAction(actionControl.splineToDropLine(), actionControl.dropHighAndToPlace()));
             }
 
             telemetry.addData("loops done", loopsDone);
