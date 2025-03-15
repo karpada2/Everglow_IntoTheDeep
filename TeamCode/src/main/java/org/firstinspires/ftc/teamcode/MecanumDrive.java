@@ -52,6 +52,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.Systems.ColorSensorSystem;
@@ -554,10 +555,10 @@ public class MecanumDrive{
     public class DriveUntilStop extends TokenAction{
         ColorSensorSystem colorSensorSystem;
 
-        //TODO: change the following powers
-        double power = 0.25;
+        Telemetry telemetry;
 
-        boolean bothStop = false;
+        //TODO: change the following powers
+        double power = 0.3;
 
         Token stopToken;
 
@@ -575,9 +576,12 @@ public class MecanumDrive{
         boolean finishedCalculatingRotation = false;
         boolean startedRotating = false;
 
-        private DriveUntilStop(ColorSensorSystem colorSensorSystem, Token stopToken){
+        boolean isFinished;
+
+        private DriveUntilStop(ColorSensorSystem colorSensorSystem, Token stopToken, Telemetry telemetry){
             this.colorSensorSystem = colorSensorSystem;
             this.stopToken = stopToken;
+            this.telemetry = telemetry;
         }
 
         @Override
@@ -602,7 +606,7 @@ public class MecanumDrive{
                 if (!startedRotating) {
                     startedRotating = true;
                     if (!(recLeft && recRight)) { //do last correction
-                        Action lastAction = actionBuilder(pose).fresh().turn(turnMultiplier * angle).build();
+                        Action lastAction = actionBuilder(pose).fresh().turn((-turnMultiplier * angle)/4.0).build();
                         boolean lastRunValue;
                         do {
                             lastRunValue = lastAction.run(telemetryPacket);
@@ -670,11 +674,12 @@ public class MecanumDrive{
                 }
                 updatePoseEstimate();
             }
+            if (telemetry != null) {
+                telemetry.addData("recRight", recRight);
+                telemetry.addData("recLeft", recLeft);
+                telemetry.update();
+            }
             return true;
-        }
-
-        public boolean isOnLine(){
-            return bothStop || stopToken.checkInterruption();
         }
     }
 
@@ -684,6 +689,10 @@ public class MecanumDrive{
     }
 
     public DriveUntilStop getDriveUntilStopAction(ColorSensorSystem colorSensorSystem, Token stopToken){
-        return new DriveUntilStop(colorSensorSystem, stopToken);
+        return new DriveUntilStop(colorSensorSystem, stopToken, null);
+    }
+
+    public DriveUntilStop getDriveUntilStopAction(ColorSensorSystem colorSensorSystem, Token stopToken, Telemetry telemetry){
+        return new DriveUntilStop(colorSensorSystem, stopToken, telemetry);
     }
 }

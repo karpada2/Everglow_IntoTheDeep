@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.Systems.Token.TokenAction;
 import org.firstinspires.ftc.teamcode.Systems.Token.Tokenable;
 
 public class Elevators implements Tokenable {
-    final int epsilon = 100;
+    final int epsilon = 0;
 
 
     static DcMotorEx rightVert;
@@ -111,7 +111,7 @@ public class Elevators implements Tokenable {
         VERTICAL_SPECIMEN_PICKUP(557),
         VERTICAL_SPECIMEN_HIGH(1670),
         VERTICAL_LOW(2804),
-        VERTICAL_HIGH(3370),
+        VERTICAL_HIGH(3800),
         VERTICAL_OPMODE_HIGH(3670),
         VERTICAL_MAX(4200); //4200/11448
 
@@ -150,6 +150,7 @@ public class Elevators implements Tokenable {
         leftVert.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightVert.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         leftVert.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//        setVertTolerances();
 
 //        leftHor.setDirection(Servo.Direction.REVERSE);
 //        rightHor.setDirection(Servo.Direction.FORWARD);
@@ -172,12 +173,18 @@ public class Elevators implements Tokenable {
             instance.setVertMode(DcMotor.RunMode.RUN_TO_POSITION);
             instance.resetDirections();
             instance.setVerticalDestination(instance.getVerticalCurrentPosition());
+//            instance.setVertTolerances();
 
             instance.setHorizontalCorrectDirection();
             instance.setHorizontalDestination(HorizontalState.HORIZONTAL_RETRACTED);
 //            instance.setHoriozontalScales();
         }
         return instance;
+    }
+
+    public void setVertTolerances() {
+        rightVert.setTargetPositionTolerance(5);
+        leftVert.setTargetPositionTolerance(5);
     }
 
     public void setVertMode(DcMotor.RunMode runMode) {

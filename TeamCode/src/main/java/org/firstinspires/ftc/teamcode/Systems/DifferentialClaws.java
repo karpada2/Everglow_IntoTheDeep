@@ -149,6 +149,9 @@ public class DifferentialClaws {
                 isIn = true;
             }
 
+            if (isFinished()) {
+                rotateWheels(0);
+            }
             return !isFinished();
         }
 
