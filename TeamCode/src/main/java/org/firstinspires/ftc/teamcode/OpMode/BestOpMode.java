@@ -104,7 +104,7 @@ public class BestOpMode{
             }
 
             if (Math.abs(gamepad2.getRightY()) > joystickTolerance) {
-                horElevatorPosition += -gamepad2.getRightY()*0.005 * (gamepad2.isDown(GamepadKeys.Button.RIGHT_STICK_BUTTON) ? 2 : 1);
+                horElevatorPosition += -gamepad2.getRightY()*0.015 * (gamepad2.isDown(GamepadKeys.Button.RIGHT_STICK_BUTTON) ? 1.0/3.0 : 1);
                 if(horElevatorPosition < Elevators.HorizontalState.HORIZONTAL_RETRACTED.state){
                     horElevatorPosition = Elevators.HorizontalState.HORIZONTAL_RETRACTED.state;
                 }else if(horElevatorPosition >= Elevators.HorizontalState.HORIZONTAL_EXTENDED.state){
@@ -132,7 +132,7 @@ public class BestOpMode{
 
             isPIDF_Active = !(gamepad2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) >= 0.4 || gamepad2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) >= 0.4);
 
-            targetArmPosition += (-gamepad2.getLeftY()/2.5) * (gamepad2.isDown(GamepadKeys.Button.LEFT_STICK_BUTTON) ? 2 : 1);
+            targetArmPosition += (-gamepad2.getLeftY()/2.5) * (gamepad2.isDown(GamepadKeys.Button.LEFT_STICK_BUTTON) ? 1.0/2.0 : 1);
 
 
             if (targetArmPosition > maxPoint) {
