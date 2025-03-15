@@ -19,11 +19,13 @@ public class TestFloorSensors extends LinearOpMode {
     public static double breakPower = 0;
     public static double afterPower = -0.3;
 
-    public static double redConst = 0;
+    public static double redConst = 1420;
 
-    public static double blueConst = 0;
+    public static double blueConst = 2960;
 
-    public static double eps = 0;
+    public static double whiteGreenValueConst = 6600;
+
+    public static double eps = 700;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -54,6 +56,7 @@ public class TestFloorSensors extends LinearOpMode {
             redRec = colorSensorSystem.leftSensor.red();
             blueRec = colorSensorSystem.leftSensor.blue();
 
+
             //TODO: run tuning, change
             telemetry.addData("rightSensor", recRight);
             telemetry.addData("leftSensor", recLeft);
@@ -67,7 +70,7 @@ public class TestFloorSensors extends LinearOpMode {
 
             //TODO: find way (with the parameters above) to make difference between recognition of blue and red to white
             //TODO: put your code here:
-            telemetry.addData("is on white? (should be false when on red or blue)", "Put here code");
+            telemetry.addData("is on white? (should be false when on red or blue)", Math.abs(colorSensorSystem.leftSensor.green() - whiteGreenValueConst) <= eps);
 
             telemetry.update();
 
@@ -105,6 +108,10 @@ public class TestFloorSensors extends LinearOpMode {
 
             lastRec2 = recLeft;
             lastRec1 = recRight;
+
+            // blue tape: red: 364, blue: 2960, green: 1111, alpha: 1486
+            // red tape: red: 1417, blue: 709, green: 984, alpha: 1044
+            // white tape: red: 3222, blue: 7126, green: 6650, alpha: 5710
         }
     }
 }
