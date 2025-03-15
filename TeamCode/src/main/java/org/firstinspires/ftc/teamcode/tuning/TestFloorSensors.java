@@ -3,7 +3,9 @@ package org.firstinspires.ftc.teamcode.tuning;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
+import com.acmerobotics.roadrunner.TimeTurn;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.acmerobotics.roadrunner.ftc.Actions;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -29,32 +31,41 @@ public class TestFloorSensors extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        ColorSensorSystem colorSensorSystem = new ColorSensorSystem(this, true);
-        MecanumDrive drive = new MecanumDrive(hardwareMap,new Pose2d(0,0,0));
+        ColorSensorSystem colorSensorSystem = new ColorSensorSystem(this, false);
+        MecanumDrive drive = new MecanumDrive(hardwareMap,new Pose2d(10,10,0));
 
         waitForStart();
+
+        double angle = 0;
 
 
         boolean recLeft;
         boolean recRight;
-        boolean lastRecRight=false, lastRecLeft=false;
-        int timeLeftTheLineLeft = 0, timeLeftTheLineRight = 0;
-        double redRec, blueRec;
 
-        drive.frontLeft.setPower(power);
-        drive.backLeft.setPower(power);
-        drive.frontRight.setPower(power);
-        drive.backRight.setPower(power);
+        boolean leftDetected = false;
+        boolean rightDetected = false;
+
+        int turnMultiplier = 0;
+
+        boolean finishedCalculatingRotation = false;
+        boolean startedRotating = false;
 
         while (opModeIsActive()){
             recLeft = colorSensorSystem.isOnTape(false);
             recRight = colorSensorSystem.isOnTape(true);
 
-            timeLeftTheLineLeft += !recLeft && lastRecLeft ? 1 : 0;
-            timeLeftTheLineRight += !recRight && lastRecRight ? 1 : 0;
-
-            redRec = colorSensorSystem.leftSensor.red();
-            blueRec = colorSensorSystem.leftSensor.blue();
+            if (recLeft && !leftDetected) {
+                leftDetected = true;
+                if (!rightDetected) {
+                    angle = drive.pose.heading.toDouble();
+                }
+            }
+            if (recRight && !rightDetected) {
+                rightDetected = true;
+                if (!leftDetected) {
+                    angle = drive.pose.heading.toDouble();
+                }
+            }
 
 
 //            //TODO: run tuning, change
@@ -73,49 +84,90 @@ public class TestFloorSensors extends LinearOpMode {
 //            telemetry.addData("is on white? (should be false when on red or blue)", Math.abs(colorSensorSystem.leftSensor.green() - whiteGreenValueConst) <= eps);
 //
 //            telemetry.update();
-
-            telemetry.addData("time left left the line", timeLeftTheLineLeft);
-            telemetry.addData("time right left the line", timeLeftTheLineRight);
-
-            telemetry.update();
+//
+//            telemetry.addData("time left left the line", timeLeftTheLineLeft);
+//            telemetry.addData("time right left the line", timeLeftTheLineRight);
+//
+//            telemetry.update();
 
 
 
             //TODO: finished tuning? now update the ColorSensorSystem and run the blow code to check if it works
 
-            if (recLeft) {
-                drive.frontLeft.setPower(0);
-                drive.backLeft.setPower(0);
+            if (finishedCalculatingRotation) {
+                if (!startedRotating) {
+                    startedRotating = true;
+                    if (!(recLeft && recRight)) {
+                        Actions.runBlocking(drive.actionBuilder(drive.pose).fresh().turn(turnMultiplier * angle).build());
+                    }
+                }
             }
             else {
-                if (timeLeftTheLineLeft == 0) {
-                    drive.frontLeft.setPower(power);
-                    drive.backLeft.setPower(power);
+                if (!leftDetected && !rightDetected) {
+                    drive.setDrivePowers(new PoseVelocity2d(
+                            new Vector2d(
+                                    power,
+                                    0
+                            ),
+                            0
+                    ));
                 }
-                else {
-                    drive.frontLeft.setPower(afterPower);
-                    drive.backLeft.setPower(afterPower);
+                else if (rightDetected) {
+                    if (leftDetected) {
+                        turnMultiplier = -1;
+                        angle = drive.pose.heading.toDouble() - angle;
+                        angle /= 2.0;
+                        finishedCalculatingRotation = true;
+                        drive.setDrivePowers(new PoseVelocity2d(
+                                new Vector2d(
+                                        0,
+                                        0
+                                ),
+                                0
+                        ));
+                    } else {
+                        drive.setDrivePowers(new PoseVelocity2d(
+                                new Vector2d(
+                                        0,
+                                        0
+                                ),
+                                -0.2
+                        ));
+                    }
                 }
+                else if (leftDetected) {
+                    if (rightDetected) {
+                        turnMultiplier = 1;
+                        angle = drive.pose.heading.toDouble() - angle;
+                        angle /= 2.0;
+                        finishedCalculatingRotation = true;
+                        drive.setDrivePowers(new PoseVelocity2d(
+                                new Vector2d(
+                                        0,
+                                        0
+                                ),
+                                0
+                        ));
+                    } else {
+                        drive.setDrivePowers(new PoseVelocity2d(
+                                new Vector2d(
+                                        0,
+                                        0
+                                ),
+                                0.2
+                        ));
+                    }
+                }
+                drive.updatePoseEstimate();
             }
 
-            if (recRight) {
-                drive.frontRight.setPower(0);
-                drive.backRight.setPower(0);
-            }
-            else {
-                if (timeLeftTheLineLeft == 0) {
-                    drive.frontRight.setPower(power);
-                    drive.backRight.setPower(power);
-                }
-                else {
-                    drive.frontRight.setPower(afterPower);
-                    drive.backRight.setPower(afterPower);
-                }
-            }
+            telemetry.addData("started rotating", startedRotating);
+            telemetry.addData("left detected", leftDetected);
+            telemetry.addData("right detected", rightDetected);
+            telemetry.addData("angle to turn", angle);
+            telemetry.addData("robot angle", drive.pose.heading.toDouble());
+            telemetry.update();
 
-
-            lastRecLeft = recLeft;
-            lastRecRight = recRight;
 
             // blue tape: red: 364, blue: 2960, green: 1111, alpha: 1486
             // red tape: red: 1417, blue: 709, green: 984, alpha: 1044
