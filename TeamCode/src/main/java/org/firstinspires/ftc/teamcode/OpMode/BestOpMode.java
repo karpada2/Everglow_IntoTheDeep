@@ -51,18 +51,23 @@ public class BestOpMode{
         double joystickTolerance = 0.05;
 
         double horElevatorPosition = 0;
-        double targetArmPosition = claws.getActualArmRotation();
+        double targetArmPosition = DifferentialClaws.ClawPositionState.MAX.state;
 
         elevators.setHorizontalDestination(Elevators.HorizontalState.HORIZONTAL_RETRACTED.state);
 
         opMode.waitForStart();
 
+
         double startTime = System.currentTimeMillis();
         int loopsDone = 0;
         double timeSinceStartSecs = (System.currentTimeMillis() - startTime)/1000.0;
 
+        claws.updateLeftClawServoRotation();
+        claws.updateRightClawServoRotation();
+
+        targetArmPosition = claws.getClawRotation();
+
         while (opMode.opModeIsActive()) {
-            telemetry.addData("tolorence", elevators.rightVert.getTargetPositionTolerance());
             loopsDone++;
             timeSinceStartSecs = (System.currentTimeMillis() - startTime)/1000.0;
 
@@ -73,6 +78,26 @@ public class BestOpMode{
             claws.updateRightClawServoRotation();
 
             colorSensorSystem.updateAlert();
+
+
+            isPIDF_Active = !(gamepad2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) >= 0.4 || gamepad2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) >= 0.4);
+
+            targetArmPosition += (-gamepad2.getLeftY()/2.5) * (gamepad2.isDown(GamepadKeys.Button.LEFT_STICK_BUTTON) ? 1.0/2.0 : 1);
+
+
+            if (targetArmPosition > maxPoint) {
+                targetArmPosition = maxPoint;
+            }
+            else if (targetArmPosition < 0) {
+                targetArmPosition = 0;
+            }
+
+            if(isPIDF_Active) {
+                claws.setArmTargetPosition(targetArmPosition);
+
+                claws.rotateArm(claws.getPIDArmPower());
+            }
+
 
             //driving
             drive.setDrivePowers(new PoseVelocity2d(
@@ -95,7 +120,7 @@ public class BestOpMode{
 
 
             if (gamepad2.wasJustPressed(GamepadKeys.Button.Y)) {
-                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_MAX.state);
+                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_OPMODE_HIGH.state);
             }
             else if (gamepad2.wasJustPressed(GamepadKeys.Button.X)) {
                 elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_SPECIMEN_HIGH.state);
@@ -127,28 +152,10 @@ public class BestOpMode{
                 targetArmPosition = DifferentialClaws.ClawPositionState.MIN.state;
             }
             else if (gamepad2.wasJustPressed(GamepadKeys.Button.DPAD_UP)) {
-                targetArmPosition = DifferentialClaws.ClawPositionState.SPIT_STATE.state;
-            }
-            else if (gamepad2.wasJustPressed(GamepadKeys.Button.DPAD_LEFT)) {
                 targetArmPosition = DifferentialClaws.ClawPositionState.MAX.state;
             }
-
-            isPIDF_Active = !(gamepad2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) >= 0.4 || gamepad2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) >= 0.4);
-
-            targetArmPosition += (-gamepad2.getLeftY()/2.5) * (gamepad2.isDown(GamepadKeys.Button.LEFT_STICK_BUTTON) ? 1.0/2.0 : 1);
-
-
-            if (targetArmPosition > maxPoint) {
-                targetArmPosition = maxPoint;
-            }
-            else if (targetArmPosition < 0) {
-                targetArmPosition = 0;
-            }
-
-            if(isPIDF_Active) {
-                claws.setArmTargetPosition(targetArmPosition);
-
-                claws.rotateArm(claws.getPIDArmPower());
+            else if (gamepad2.wasJustPressed(GamepadKeys.Button.DPAD_LEFT)) {
+                targetArmPosition = DifferentialClaws.ClawPositionState.SPIT_STATE.state;
             }
 
 
@@ -159,6 +166,8 @@ public class BestOpMode{
                 Actions.runBlocking(new SequentialAction(actionControl.splineToDropLine(), actionControl.dropHighAndToPlace()));
             }
 
+            telemetry.addData("leftVert pos", elevators.getLeftVertPos());
+            telemetry.addData("rightVert pos", elevators.getRightVertPos());
             telemetry.addData("loops done", loopsDone);
             telemetry.addData("time since start", timeSinceStartSecs);
             telemetry.addData("loops per second avg", loopsDone/timeSinceStartSecs);

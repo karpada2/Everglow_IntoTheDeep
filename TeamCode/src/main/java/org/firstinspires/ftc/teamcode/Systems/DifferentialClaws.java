@@ -31,7 +31,7 @@ public class DifferentialClaws {
     
     public static final double maxPoint = 117;
 
-    double armPosition = 0;
+    static double armPosition = 0;
     double lastPosRequest = 0;
 
     boolean isGoingDown = false;
@@ -230,7 +230,7 @@ public class DifferentialClaws {
     }
 
     public enum ClawPositionState {
-        MIN(0.0),
+        MIN(4.0),
         MID(maxPoint/2),
         SPIT_STATE(70),
         READY_TO_SPIT(80),
@@ -245,7 +245,7 @@ public class DifferentialClaws {
         TAKE_IN(1),
         OFF(0.08),
         SPIT(-0.15),
-        SPIT_AUTO(-0.25);
+        SPIT_AUTO(-0.15);
 
         public final double state;
 
@@ -303,7 +303,8 @@ public class DifferentialClaws {
         trueRightRotation += diff;
     }
     public double getActualArmRotation() {
-        return Math.max(getArmPosition() - armStartingPosition, armStartingPosition - getArmPosition());
+        armPosition = Math.max(getArmPosition() - armStartingPosition, armStartingPosition - getArmPosition());
+        return armPosition;
     }
     public void setF(double f){
         this.f = f;

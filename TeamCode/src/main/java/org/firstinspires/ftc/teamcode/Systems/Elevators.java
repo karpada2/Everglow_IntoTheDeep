@@ -17,8 +17,8 @@ public class Elevators implements Tokenable {
     final int epsilon = 100;
 
 
-    public static DcMotorEx rightVert;
-    static DcMotorEx leftVert;
+    DcMotorEx rightVert;
+    DcMotorEx leftVert;
     static Servo rightHor;
     static Servo leftHor;
 
@@ -111,8 +111,8 @@ public class Elevators implements Tokenable {
         VERTICAL_SPECIMEN_PICKUP(557),
         VERTICAL_SPECIMEN_HIGH(1670),
         VERTICAL_LOW(2804),
-        VERTICAL_HIGH(3800),
-        VERTICAL_OPMODE_HIGH(3670),
+        VERTICAL_HIGH(3650),
+        VERTICAL_OPMODE_HIGH(3570),
         VERTICAL_MAX(4200); //4200/11448
 
         public final int state;
@@ -170,6 +170,7 @@ public class Elevators implements Tokenable {
             instance = new Elevators(opMode);
         }
         else {
+            instance.setVertMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             instance.setVertMode(DcMotor.RunMode.RUN_TO_POSITION);
             instance.resetDirections();
             instance.setVerticalDestination(instance.getVerticalCurrentPosition());
@@ -183,8 +184,13 @@ public class Elevators implements Tokenable {
     }
 
     public void setVertTolerances() {
-        rightVert.setTargetPositionTolerance(15);
-        leftVert.setTargetPositionTolerance(15);
+        rightVert.setTargetPositionTolerance(4);
+        leftVert.setTargetPositionTolerance(4);
+    }
+
+    public void setVertVelocities() {
+        rightVert.setVelocity(1900);
+        leftVert.setVelocity(1900);
     }
 
     public void setVertMode(DcMotor.RunMode runMode) {
@@ -235,13 +241,13 @@ public class Elevators implements Tokenable {
     public void updateVert(){
         if (Math.abs(verticalDestination-getVerticalCurrentPosition())<=30 && verticalDestination == 0) {
             setVerticalPower(0);
-            double innerEps = 10;
-            if(Math.abs(verticalDestination-getVerticalCurrentPosition())>= innerEps) {
+//            double innerEps = 10;
+//            if(Math.abs(verticalDestination-getVerticalCurrentPosition())>= innerEps) {
                 rightVert.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 leftVert.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 rightVert.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 leftVert.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            }
+//            }
         }
         else if(Math.abs(verticalDestination-getVerticalCurrentPosition())<=epsilon){
             setVerticalPower(0.8);
@@ -262,6 +268,14 @@ public class Elevators implements Tokenable {
     public void setVerticalPower(double power){
         rightVert.setPower(power);
         leftVert.setPower(power);
+    }
+
+    public double getLeftVertPos() {
+        return leftVert.getCurrentPosition();
+    }
+
+    public double getRightVertPos() {
+        return rightVert.getCurrentPosition();
     }
 
     // Does not work anymore since we have no motor
