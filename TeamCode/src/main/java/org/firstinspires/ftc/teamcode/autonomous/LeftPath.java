@@ -5,6 +5,8 @@ import static org.firstinspires.ftc.teamcode.Systems.Elevators.HorizontalState.H
 import static org.firstinspires.ftc.teamcode.Systems.Elevators.HorizontalState.HORIZONTAL_QUARTERWAY;
 import static org.firstinspires.ftc.teamcode.Systems.Elevators.HorizontalState.HORIZONTAL_RETRACTED;
 
+import android.text.style.UpdateAppearance;
+
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.config.Config;
@@ -90,7 +92,7 @@ public class LeftPath extends LinearOpMode {
         ColorSensorSystem colorSensorSystem = new ColorSensorSystem(this, true);
         //Init Trajectories
         TrajectoryActionBuilder B_preload = drive.actionBuilder(beginPose)
-                .strafeToSplineHeading(basketPose.position,basketPose.heading, new AngularVelConstraint(Math.PI*1.5));
+                .strafeToSplineHeading(basketPose.position.plus(new Vector2d(-2, 2)), basketPose.heading, new AngularVelConstraint(Math.PI*1.5));
 
         TrajectoryActionBuilder B_sample1pickup = B_preload.endTrajectory().fresh()
                 .strafeToSplineHeading(new Vector2d(firstSampleX + sampleOffset1,collectLine),0.75*Math.PI);
@@ -141,17 +143,17 @@ public class LeftPath extends LinearOpMode {
         );
         Action unload2 = new SequentialAction(
                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.SPIT_STATE.state, BetweenUpTime),
-                claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,colorSensorSystem),
+                claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT_AUTO,colorSensorSystem),
                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.READY_TO_SPIT.state, BetweenUpTime)
         );
         Action unload3 = new SequentialAction(
                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.SPIT_STATE.state, BetweenUpTime),
-                claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,colorSensorSystem),
+                claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT_AUTO,colorSensorSystem),
                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.READY_TO_SPIT.state, BetweenUpTime)
         );
         Action unload4 = new SequentialAction(
                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.SPIT_STATE.state, BetweenUpTime),
-                claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,colorSensorSystem),
+                claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT_AUTO,colorSensorSystem),
                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.READY_TO_SPIT.state, BetweenUpTime)
         );
         Action pickup1 = new SequentialAction(
@@ -176,7 +178,7 @@ public class LeftPath extends LinearOpMode {
                 ),
                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, DownTime),
                 new ParallelAction(
-                        elevators.setHorizontalElevatorAction(HORIZONTAL_HALFWAY),
+                        elevators.setHorizontalElevatorAction(HORIZONTAL_QUARTERWAY),
                         claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, colorSensorSystem)
                 ),
                 new ParallelAction(

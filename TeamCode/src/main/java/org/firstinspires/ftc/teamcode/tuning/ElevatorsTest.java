@@ -37,20 +37,20 @@ public class ElevatorsTest extends LinearOpMode {
                 pos = Math.max(0, pos);
             }
 
-//            if (gamepad2.square){
-//                elevators.setVerticalDestination(0);
-//                elevators.setVerticalPower(0);
-//            }
-//
-//            if(gamepad2.dpad_up && flagElevatorVerticalDpadUp){
-//                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_LOW.state);
-//            }
-//            flagElevatorVerticalDpadUp = !gamepad2.dpad_up;
-//
-//            if(gamepad2.dpad_down && flagElevatorVerticalDpadDown) {
-//                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_PICKUP.state);
-//            }
-//            flagElevatorVerticalDpadDown = !gamepad2.dpad_down;
+            if (gamepad2.square){
+                elevators.setVerticalDestination(0);
+                elevators.setVerticalPower(0);
+            }
+
+            if(gamepad2.dpad_up && flagElevatorVerticalDpadUp){
+                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_LOW.state);
+            }
+            flagElevatorVerticalDpadUp = !gamepad2.dpad_up;
+
+            if(gamepad2.dpad_down && flagElevatorVerticalDpadDown) {
+                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_PICKUP.state);
+            }
+            flagElevatorVerticalDpadDown = !gamepad2.dpad_down;
 
             elevators.setHorizontalDestination(pos);
         }

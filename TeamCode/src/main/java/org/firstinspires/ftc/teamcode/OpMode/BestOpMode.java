@@ -62,6 +62,7 @@ public class BestOpMode{
         double timeSinceStartSecs = (System.currentTimeMillis() - startTime)/1000.0;
 
         while (opMode.opModeIsActive()) {
+            telemetry.addData("tolorence", elevators.rightVert.getTargetPositionTolerance());
             loopsDone++;
             timeSinceStartSecs = (System.currentTimeMillis() - startTime)/1000.0;
 
@@ -94,7 +95,7 @@ public class BestOpMode{
 
 
             if (gamepad2.wasJustPressed(GamepadKeys.Button.Y)) {
-                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_OPMODE_HIGH.state);
+                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_MAX.state);
             }
             else if (gamepad2.wasJustPressed(GamepadKeys.Button.X)) {
                 elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_SPECIMEN_HIGH.state);
@@ -102,6 +103,8 @@ public class BestOpMode{
             else if (gamepad2.wasJustPressed(GamepadKeys.Button.A)) {
                 elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_PICKUP.state);
             }
+
+            elevators.updateVert();
 
             if (Math.abs(gamepad2.getRightY()) > joystickTolerance) {
                 horElevatorPosition += -gamepad2.getRightY()*0.015 * (gamepad2.isDown(GamepadKeys.Button.RIGHT_STICK_BUTTON) ? 1.0/3.0 : 1);
