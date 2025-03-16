@@ -150,7 +150,7 @@ public class Elevators implements Tokenable {
         leftVert.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightVert.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         leftVert.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        setVertTolerances();
+        //setVertTolerances();
 
 //        leftHor.setDirection(Servo.Direction.REVERSE);
 //        rightHor.setDirection(Servo.Direction.FORWARD);
@@ -173,7 +173,7 @@ public class Elevators implements Tokenable {
             instance.setVertMode(DcMotor.RunMode.RUN_TO_POSITION);
             instance.resetDirections();
             instance.setVerticalDestination(instance.getVerticalCurrentPosition());
-            instance.setVertTolerances();
+            //instance.setVertTolerances();
 
             instance.setHorizontalCorrectDirection();
             instance.setHorizontalDestination(HorizontalState.HORIZONTAL_RETRACTED);
