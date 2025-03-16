@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Systems;
 
+import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 
@@ -33,5 +34,9 @@ public class DistanceSensorSystem {
 
     public double getFrontDistance(){
         return frontDistance.getDistance(DistanceUnit.INCH);
+    }
+
+    public Pose2d getPosFromDistanceSensors(){
+         return new Pose2d(-14.6 - getFrontDistance(), -23 + getRightDistance(), 0);
     }
 }

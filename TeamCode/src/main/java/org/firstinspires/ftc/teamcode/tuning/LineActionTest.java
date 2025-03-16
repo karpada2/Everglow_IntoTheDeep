@@ -67,6 +67,10 @@ public class LineActionTest extends LinearOpMode {
             else if (gamepadEx1.wasJustPressed(GamepadKeys.Button.B)) {
                 Actions.runBlocking(drive.getDriveUntilStopAction(colorSensorSystem, new Token(), telemetry));
             }
+
+            if (gamepadEx1.wasJustPressed(GamepadKeys.Button.Y)){
+                Actions.runBlocking(actionControl.splineToSabmersable());
+            }
         }
 
         telemetry.update();

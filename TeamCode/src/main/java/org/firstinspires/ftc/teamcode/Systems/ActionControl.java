@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Systems;
 
+import static java.lang.Math.PI;
+
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
@@ -104,6 +106,18 @@ public class ActionControl {
                 .setTangent(Math.PI)
                 .splineToSplineHeading(midPoint, Math.PI)
                 .splineToSplineHeading(end, Math.PI)
+                .build();
+    }
+
+    public Action splineToSabmersable(){
+        Pose2d midPoint = new Pose2d(-54, -15.2, (0)* PI);
+        Pose2d end = new Pose2d(-24,-5.7, 0);
+        Pose2d start = mecanumDrive.pose;
+
+        return mecanumDrive.actionBuilder(start)
+                .setTangent(0.5*PI)
+                .splineToSplineHeading(midPoint, 0.5*PI)
+                .splineToSplineHeading(end, 0)
                 .build();
     }
 
