@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.Systems.Token.Token;
 import org.firstinspires.ftc.teamcode.Systems.Token.TokenAction;
 import org.firstinspires.ftc.teamcode.Systems.Token.Tokenable;
 
@@ -16,8 +17,8 @@ public class Elevators implements Tokenable {
     final int epsilon = 100;
 
 
-    static DcMotorEx rightVert;
-    static DcMotorEx leftVert;
+    DcMotorEx rightVert;
+    DcMotorEx leftVert;
     static Servo rightHor;
     static Servo leftHor;
 
@@ -28,20 +29,25 @@ public class Elevators implements Tokenable {
     // sets the vertical elevator to the specified position
     public class VerticalElevatorAction extends TokenAction {
         private final int destination;
-        private long TEST_LONGEST_TIME = 7 *1000;
-        private long TEST_START_TIME;
+        Token token;
 
         public VerticalElevatorAction(int destination) {
             this.destination = destination;
             isDone = Elevators.this::isElevatorInDestination;
         }
 
+        public VerticalElevatorAction(int destination, Token token) {
+            this(destination);
+            this.token = token;
+        }
+
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            if(token != null && token.checkInterruption())
+                return false;
 
             if (!isInitialized) {
                 setVerticalDestination(this.destination);
-                TEST_START_TIME = System.currentTimeMillis();
                 isInitialized = true;
             }
 
@@ -58,29 +64,6 @@ public class Elevators implements Tokenable {
     -------------------------------------------------------------------
      */
     // moves the horizontal elevators to destination, and is considered finished when they reach the destination
-    public class MotorHorizontalElevatorAction extends TokenAction {
-        private final double destination;
-
-        public MotorHorizontalElevatorAction(HorizontalState state) {
-            //motorSetHorizontalDestination(state);
-            this.destination = state.state;
-
-            isDone = Elevators.this::motorIsHorizontalInDestination;
-        }
-
-        @Override
-        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-
-            if (!isInitialized) {
-                setHorizontalDestination(this.destination);
-                isInitialized = true;
-            }
-
-            setHorizontalDestination(this.destination);
-            return !motorIsHorizontalInDestination();
-        }
-    }
-
     public class HorizontalElevatorAction extends TokenAction {
         private boolean hasEnoughTimePassed() {
             return System.currentTimeMillis() - startTime >= timeUntilDone;
@@ -89,6 +72,7 @@ public class Elevators implements Tokenable {
         private final double timeUntilDone;
         private double startTime;
         private boolean isInit;
+        private Token token;
 
         public HorizontalElevatorAction(HorizontalState state, double timeUntilDone) {
             isDone = HorizontalElevatorAction.this::hasEnoughTimePassed;
@@ -97,8 +81,16 @@ public class Elevators implements Tokenable {
             this.isInit = false;
         }
 
+        public HorizontalElevatorAction(HorizontalState state, double timeUntilDone, Token token) {
+            this(state, timeUntilDone);
+            this.token = token;
+        }
+
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            if(token != null && token.checkInterruption())
+                return false;
+
             if (!isInit) {
                 startTime = System.currentTimeMillis();
                 setHorizontalDestination(desitnation);
@@ -116,11 +108,12 @@ public class Elevators implements Tokenable {
         VERTICAL_MIN(0),
         VERTICAL_PICKUP(0),
         VERTICAL_HURDLE(356),
-        VERTICAL_SPECIMEN_PICKUP(557),
+        VERTICAL_SPECIMEN_PICKUP(775),
+        VERTICAL_SPECIMEN_PICKUP_AUTO(557),
         VERTICAL_SPECIMEN_HIGH(1670),
         VERTICAL_LOW(2804),
-        VERTICAL_HIGH(3370),
-        VERTICAL_OPMODE_HIGH(3670),
+        VERTICAL_HIGH(3650),
+        VERTICAL_OPMODE_HIGH(3570),
         VERTICAL_MAX(4200); //4200/11448
 
         public final int state;
@@ -132,6 +125,7 @@ public class Elevators implements Tokenable {
 
     public enum HorizontalState {
         HORIZONTAL_RETRACTED(0),
+        HORIZONTAL_QUARTERWAY(0.16),
         HORIZONTAL_HALFWAY(0.32),
         HORIZONTAL_EXTENDED(0.52);
 
@@ -157,6 +151,7 @@ public class Elevators implements Tokenable {
         leftVert.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightVert.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         leftVert.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        //setVertTolerances();
 
 //        leftHor.setDirection(Servo.Direction.REVERSE);
 //        rightHor.setDirection(Servo.Direction.FORWARD);
@@ -176,15 +171,27 @@ public class Elevators implements Tokenable {
             instance = new Elevators(opMode);
         }
         else {
+            instance.setVertMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             instance.setVertMode(DcMotor.RunMode.RUN_TO_POSITION);
             instance.resetDirections();
             instance.setVerticalDestination(instance.getVerticalCurrentPosition());
+            //instance.setVertTolerances();
 
             instance.setHorizontalCorrectDirection();
             instance.setHorizontalDestination(HorizontalState.HORIZONTAL_RETRACTED);
 //            instance.setHoriozontalScales();
         }
         return instance;
+    }
+
+    public void setVertTolerances() {
+        rightVert.setTargetPositionTolerance(4);
+        leftVert.setTargetPositionTolerance(4);
+    }
+
+    public void setVertVelocities() {
+        rightVert.setVelocity(1900);
+        leftVert.setVelocity(1900);
     }
 
     public void setVertMode(DcMotor.RunMode runMode) {
@@ -233,18 +240,18 @@ public class Elevators implements Tokenable {
     }
 
     public void updateVert(){
-        if (Math.abs(verticalDestination-getVerticalCurrentPosition())<=10 && verticalDestination == 0) {
+        if (Math.abs(verticalDestination-getVerticalCurrentPosition())<=30 && verticalDestination == 0) {
             setVerticalPower(0);
-            double innerEps = 10;
-            if(Math.abs(verticalDestination-getVerticalCurrentPosition())>= innerEps) {
+//            double innerEps = 10;
+//            if(Math.abs(verticalDestination-getVerticalCurrentPosition())>= innerEps) {
                 rightVert.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 leftVert.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 rightVert.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 leftVert.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            }
+//            }
         }
         else if(Math.abs(verticalDestination-getVerticalCurrentPosition())<=epsilon){
-            setVerticalPower(0.6);
+            setVerticalPower(0.8);
         }
         else {
             setVerticalPower(1);
@@ -262,6 +269,14 @@ public class Elevators implements Tokenable {
     public void setVerticalPower(double power){
         rightVert.setPower(power);
         leftVert.setPower(power);
+    }
+
+    public double getLeftVertPos() {
+        return leftVert.getCurrentPosition();
+    }
+
+    public double getRightVertPos() {
+        return rightVert.getCurrentPosition();
     }
 
     // Does not work anymore since we have no motor
@@ -297,6 +312,9 @@ public class Elevators implements Tokenable {
 
     public VerticalElevatorAction setVerticalElevatorAction(VerticalState targetState) {
         return new VerticalElevatorAction(targetState.state);
+    }
+    public VerticalElevatorAction setVerticalElevatorAction(VerticalState targetState, Token token) {
+        return new VerticalElevatorAction(targetState.state, token);
     }
 
     public void resetVert(){

@@ -20,8 +20,10 @@ public class ElevatorsTest extends LinearOpMode {
 
         waitForStart();
         double pos = 0;
+        double vertPos = 0;
         while (opModeIsActive()){
             telemetry.addData("vert elevators pos:", elevators.getVerticalCurrentPosition());
+            telemetry.addData("wanted vert pos", vertPos);
             telemetry.addData("vert left vel:", elevators.getLeftVelocity());
             telemetry.addData("vert right vel:", elevators.getRightVelocity());
             telemetry.addData("rightHor pos", elevators.getRightHorPos());
@@ -37,21 +39,9 @@ public class ElevatorsTest extends LinearOpMode {
                 pos = Math.max(0, pos);
             }
 
-//            if (gamepad2.square){
-//                elevators.setVerticalDestination(0);
-//                elevators.setVerticalPower(0);
-//            }
-//
-//            if(gamepad2.dpad_up && flagElevatorVerticalDpadUp){
-//                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_LOW.state);
-//            }
-//            flagElevatorVerticalDpadUp = !gamepad2.dpad_up;
-//
-//            if(gamepad2.dpad_down && flagElevatorVerticalDpadDown) {
-//                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_PICKUP.state);
-//            }
-//            flagElevatorVerticalDpadDown = !gamepad2.dpad_down;
+            vertPos += -gamepad1.left_stick_y;
 
+            elevators.setVerticalDestination((int)(vertPos));
             elevators.setHorizontalDestination(pos);
         }
     }

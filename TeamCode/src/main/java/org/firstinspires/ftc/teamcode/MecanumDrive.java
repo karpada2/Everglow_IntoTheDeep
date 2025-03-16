@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.teamcode.OpMode.ActionSequantionalOpMode.linearToExpo;
+
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.canvas.Canvas;
@@ -39,6 +41,8 @@ import com.acmerobotics.roadrunner.ftc.LynxFirmware;
 import com.acmerobotics.roadrunner.ftc.OverflowEncoder;
 import com.acmerobotics.roadrunner.ftc.PositionVelocityPair;
 import com.acmerobotics.roadrunner.ftc.RawEncoder;
+import com.arcrobotics.ftclib.gamepad.GamepadEx;
+import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -48,8 +52,12 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+import org.firstinspires.ftc.teamcode.Systems.ColorSensorSystem;
+import org.firstinspires.ftc.teamcode.Systems.Sweeper;
+import org.firstinspires.ftc.teamcode.Systems.Token.Token;
 import org.firstinspires.ftc.teamcode.Systems.Token.TokenAction;
 import org.firstinspires.ftc.teamcode.Systems.Token.Tokenable;
 import org.firstinspires.ftc.teamcode.messages.DriveCommandMessage;
@@ -505,25 +513,192 @@ public class MecanumDrive{
     }
 
     public class MecanumDriveAction extends TokenAction{
-        private Gamepad gamepad1, gamepad2;
-        public MecanumDriveAction(Gamepad gamepad1, Gamepad gamepad2, Tokenable Token){
+        private GamepadEx gamepad1, gamepad2;
+        private  Sweeper sweeper;
+        Token token;
+        public MecanumDriveAction(GamepadEx gamepad1, GamepadEx gamepad2, Sweeper sweeper, Tokenable Token, Token stopToken){
             this.gamepad1 = gamepad1;
             this.gamepad2 = gamepad2;
             isDone = Token;
             isInitialized = true;
+            this.sweeper = sweeper;
+            token = stopToken;
         }
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            setDrivePowers(new PoseVelocity2d(
-                    new Vector2d(-linearInputToExponential(gamepad1.left_stick_y),
-                                -linearInputToExponential(gamepad1.left_stick_x)),
-                    -linearInputToExponential(gamepad1.right_stick_x)));
+            gamepad1.readButtons();
+            gamepad2.readButtons();
 
+            setDrivePowers(new PoseVelocity2d(
+                    new Vector2d(
+                            linearToExpo(gamepad1.getLeftY())*(1.0/Math.pow(4.5, gamepad1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER))),
+                            -gamepad1.getLeftX()*(1.0/Math.pow(4, gamepad1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER)))
+                    ),
+                    -gamepad1.getRightX()*(1.0/Math.pow(5, gamepad1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER)))
+            ));
+            updatePoseEstimate();
+
+
+            if (gamepad1.isDown(GamepadKeys.Button.LEFT_BUMPER)) {
+                sweeper.setPosition(Sweeper.SweeperAngle.SWEEPER_EXTENDED);
+            }
+            else {
+                sweeper.setPosition(Sweeper.SweeperAngle.SWEEPER_RETRACTED);
+            }
+
+            if(gamepad2.wasJustPressed(GamepadKeys.Button.B))
+                token.Interrupt();
             return !checkToken();
         }
     }
 
-    public MecanumDriveAction getMecanumDriveAction(Gamepad gamepad1,Gamepad gamepad2, Tokenable tokenable){
-        return new MecanumDriveAction(gamepad1,gamepad2,tokenable);
+    public class DriveUntilStop extends TokenAction{
+        ColorSensorSystem colorSensorSystem;
+
+        Telemetry telemetry;
+
+
+        //TODO: change the following powers
+        double power = 0.8;
+
+        Token stopToken;
+
+        public double angle = 0;
+
+
+        boolean recLeft;
+        boolean recRight;
+
+        boolean leftDetected = false;
+        boolean rightDetected = false;
+
+        int turnMultiplier = 0;
+
+        boolean finishedCalculatingRotation = false;
+
+        boolean startedRotating = false;
+
+        double timeOfStartMillis = -1;
+
+        private DriveUntilStop(ColorSensorSystem colorSensorSystem, Token stopToken, Telemetry telemetry){
+            this.colorSensorSystem = colorSensorSystem;
+            this.stopToken = stopToken;
+            this.telemetry = telemetry;
+        }
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            if (timeOfStartMillis == -1) {
+                timeOfStartMillis = System.currentTimeMillis();
+            }
+            power = System.currentTimeMillis() - timeOfStartMillis < 500 ? 0.8 : 0.3;
+            recLeft = colorSensorSystem.isOnTape(false);
+            recRight = colorSensorSystem.isOnTape(true);
+
+            if (recLeft && !leftDetected) {
+                leftDetected = true;
+                if (!rightDetected) {
+                    angle = pose.heading.toDouble();
+                }
+            }
+            if (recRight && !rightDetected) {
+                rightDetected = true;
+                if (!leftDetected) {
+                    angle = pose.heading.toDouble();
+                }
+            }
+
+            if (finishedCalculatingRotation) {
+                if (!startedRotating) {
+                    startedRotating = true;
+                    if (!(recLeft && recRight)) { //do last correction
+                        Action lastAction = actionBuilder(pose).fresh().turn((-turnMultiplier * angle)/4.0).build();
+                        boolean lastRunValue;
+                        do {
+                            lastRunValue = lastAction.run(telemetryPacket);
+                        }
+                        while (lastRunValue);
+                    }
+                    return false;
+                }
+            }
+            else {
+                if (!leftDetected && !rightDetected) {
+                    setDrivePowers(new PoseVelocity2d(
+                            new Vector2d(
+                                    power,
+                                    0
+                            ),
+                            0
+                    ));
+                }
+                else if (rightDetected) {
+                    if (recLeft) {
+                        turnMultiplier =  1;
+                        angle = pose.heading.toDouble() - angle;
+                        angle /= 2.0;
+                        finishedCalculatingRotation = true;
+                        setDrivePowers(new PoseVelocity2d(
+                                new Vector2d(
+                                        0,
+                                        0
+                                ),
+                                0
+                        ));
+                    } else {
+                        setDrivePowers(new PoseVelocity2d(
+                                new Vector2d(
+                                        0,
+                                        0
+                                ),
+                                -0.2
+                        ));
+                    }
+                }
+                else if (leftDetected) {
+                    if (recRight) {
+                        turnMultiplier = -1;
+                        angle = pose.heading.toDouble() - angle;
+                        angle /= 2.0;
+                        finishedCalculatingRotation = true;
+                        setDrivePowers(new PoseVelocity2d(
+                                new Vector2d(
+                                        0,
+                                        0
+                                ),
+                                0
+                        ));
+                    } else {
+                        setDrivePowers(new PoseVelocity2d(
+                                new Vector2d(
+                                        0,
+                                        0
+                                ),
+                                0.2
+                        ));
+                    }
+                }
+                updatePoseEstimate();
+            }
+            if (telemetry != null) {
+                telemetry.addData("recRight", recRight);
+                telemetry.addData("recLeft", recLeft);
+                telemetry.update();
+            }
+            return true;
+        }
+    }
+
+    public MecanumDriveAction getMecanumDriveAction(GamepadEx gamepad1, GamepadEx gamepad2, Sweeper sweeper
+            , Tokenable tokenable, Token stopToken){
+        return new MecanumDriveAction(gamepad1,gamepad2, sweeper, tokenable, stopToken);
+    }
+
+    public DriveUntilStop getDriveUntilStopAction(ColorSensorSystem colorSensorSystem, Token stopToken){
+        return new DriveUntilStop(colorSensorSystem, stopToken, null);
+    }
+
+    public DriveUntilStop getDriveUntilStopAction(ColorSensorSystem colorSensorSystem, Token stopToken, Telemetry telemetry){
+        return new DriveUntilStop(colorSensorSystem, stopToken, telemetry);
     }
 }

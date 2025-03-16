@@ -1,40 +1,47 @@
 package org.firstinspires.ftc.teamcode.tuning;
 
-import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.arcrobotics.ftclib.gamepad.GamepadEx;
+import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.teamcode.Systems.ActionControl;
+import org.firstinspires.ftc.teamcode.Systems.ColorSensorSystem;
 import org.firstinspires.ftc.teamcode.Systems.DifferentialClaws;
 import org.firstinspires.ftc.teamcode.Systems.Elevators;
-import org.firstinspires.ftc.teamcode.Systems.Token.TokenSequentialAction;
-@Disabled
+import org.firstinspires.ftc.teamcode.Systems.Sweeper;
+
 @TeleOp(name = "TokenActionTest", group = "Tests")
 public class TokenActionTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         Elevators elevators = Elevators.getInstance(this);
-        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0,0,0));
-        DifferentialClaws claws = DifferentialClaws.getInstance(this);
+        DifferentialClaws differentialClaws = DifferentialClaws.getInstance(this);
+        ColorSensorSystem colorSensorSystem = new ColorSensorSystem(this, true);
+        Sweeper sweeper = new Sweeper(this);
+        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(-31.1, -63,   Math.PI));
+
+        GamepadEx gamepadEx1 = new GamepadEx(this.gamepad1);
+        GamepadEx gamepadEx2 = new GamepadEx(this.gamepad2);
+
+        ActionControl actionControl = new ActionControl(elevators, differentialClaws, colorSensorSystem, drive,
+                sweeper, gamepadEx1, gamepadEx2);
 
         waitForStart();
 
-        TokenSequentialAction elevAction = new TokenSequentialAction(elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HIGH),
-                claws.clawMovementAction(260, 750),
-                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_LOW));
-
-        Action runAction = new ParallelAction(
-                drive.getMecanumDriveAction(gamepad1,gamepad2, elevAction),
-                elevAction);
-
         while (opModeIsActive()){
-            if(gamepad1.square){
-                Actions.runBlocking(runAction);
+            gamepadEx2.readButtons();
+            if(gamepadEx2.wasJustPressed(GamepadKeys.Button.A)) {
+                telemetry.addLine("here");
+                telemetry.update();
+                Actions.runBlocking(actionControl.dropHigh());
             }
+
+            telemetry.addLine("finished");
+            telemetry.update();
         }
     }
 }
