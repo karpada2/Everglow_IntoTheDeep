@@ -107,7 +107,7 @@ public class BestOpMode{
                 claws.rotateArm(claws.getPIDArmPower());
             }
 
-            if (gamepad1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) <= 0.4 && colorSensorSystem.isSpecimenIn() && (recLeft || recRight)) {
+            if (gamepad1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) >= 0.4 && colorSensorSystem.isSpecimenIn() && (recLeft || recRight)) {
                 if (recRight && !recLeft) {
                     backLeftPower = 1 * power;
                     frontLeftPower = 1 * power;
@@ -161,6 +161,9 @@ public class BestOpMode{
             else if (gamepad2.wasJustPressed(GamepadKeys.Button.A)) {
                 elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_PICKUP.state);
             }
+            else if (gamepad2.wasJustPressed(GamepadKeys.Button.B)) {
+                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_SPECIMEN_PICKUP.state);
+            }
 
             elevators.updateVert();
 
@@ -189,6 +192,9 @@ public class BestOpMode{
             }
             else if (gamepad2.wasJustPressed(GamepadKeys.Button.DPAD_LEFT)) {
                 targetArmPosition = DifferentialClaws.ClawPositionState.SPIT_STATE.state;
+            }
+            else if (gamepad2.wasJustPressed(GamepadKeys.Button.DPAD_RIGHT)) {
+                targetArmPosition = DifferentialClaws.ClawPositionState.TAKE_SPECIMEN.state;
             }
 
 

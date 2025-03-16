@@ -232,6 +232,7 @@ public class DifferentialClaws {
     public enum ClawPositionState {
         MIN(4.0),
         MID(maxPoint/2),
+        TAKE_SPECIMEN(32),
         SPIT_STATE(70),
         READY_TO_SPIT(80),
         HANG_SPECIMEN(maxPoint-30),
@@ -273,7 +274,7 @@ public class DifferentialClaws {
         double currentRotation = getRotationOfInput(clawInput1);
         double diff = currentRotation - leftClawOldPos;
 
-        double newRotationEstimate = 180;
+        double newRotationEstimate = 165;
         if(Math.abs(diff) > newRotationEstimate){
             //new rotation occur
             if(diff < 0)
@@ -290,7 +291,7 @@ public class DifferentialClaws {
         double currentRotation = getRotationOfInput(clawInput2);
         double diff = currentRotation - rightClawOldPos;
 
-        double newRotationEstimate = 180;
+        double newRotationEstimate = 165; //TODO: verify
         if(Math.abs(diff) > newRotationEstimate){
             //new rotation occur
             if(diff < 0)

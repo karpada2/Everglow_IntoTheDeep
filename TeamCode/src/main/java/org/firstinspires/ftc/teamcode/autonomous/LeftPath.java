@@ -70,7 +70,7 @@ public class LeftPath extends LinearOpMode {
 
     //TODO: change these variables so the Autonomous will be optimal
     //----------------------------------------------//
-    public static int DownTime = 500, BetweenUpTime = 300, ToUpTime = 750;
+    public static int DownTime = 500, BetweenUpTime = 500, ToUpTime = 1000;
     //----------------------------------------------//
     public static double collectLine = -40;
     public static double collectLineSampleThree = -52;
