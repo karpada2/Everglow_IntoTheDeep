@@ -88,8 +88,30 @@ public class specimins {
                 // Park
                 .strafeToLinearHeading(new Vector2d(60,-60),Math.PI);
 
-        myBot.runAction(specimins_path.build());
+//        myBot.runAction(specimins_path.build());
 
+        TrajectoryActionBuilder OnePlusOnespecimins_path= myBot.getDrive().actionBuilder(specimins_beginPose)
+                //starts at hanging height
+                .waitSeconds(2)
+                // Goes to basket
+                .strafeTo(specimins_basketPose.position)
+                //* Hangs
+                // Pushes Both Specimins into place
+
+                .strafeToSplineHeading(specimins_pickupPose.position,-Math.PI/2)
+                //* Lowers elevator to pickup
+                // Goes to basket
+                // *Raises elevator for hang
+
+                .strafeToSplineHeading(specimins_basketPose.position,Math.PI/2)
+
+                .setTangent(-Math.PI/4)
+                .splineToConstantHeading(new Vector2d(firstSpeciminX-2,PickSpeciminY-30), Math.PI/2)
+
+
+                .strafeToLinearHeading(new Vector2d(60,-60),Math.PI);
+
+        myBot.runAction(OnePlusOnespecimins_path.build());
 
 
 
