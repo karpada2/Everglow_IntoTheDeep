@@ -244,7 +244,7 @@ public class Elevators implements Tokenable {
             }
         }
         else if(Math.abs(verticalDestination-getVerticalCurrentPosition())<=epsilon){
-            setVerticalPower(0.6);
+            setVerticalPower(0.8);
         }
         else {
             setVerticalPower(1);
