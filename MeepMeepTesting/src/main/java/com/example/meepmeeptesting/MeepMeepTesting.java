@@ -2,6 +2,7 @@ package com.example.meepmeeptesting;
 
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.noahbres.meepmeep.MeepMeep;
 import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
@@ -29,8 +30,8 @@ public class MeepMeepTesting {
                 // goes to basket
                 .waitSeconds(1) //puts sample in basket
                 .strafeToSplineHeading(new Vector2d(-50,-50),0.5*Math.PI)
-                .waitSeconds(1)
-                .lineToY(-40)
+                //.waitSeconds(1)
+                .splineToConstantHeading(new Vector2d(-50,-40), 0.5*Math.PI, new TranslationalVelConstraint(10))
                 .waitSeconds(0.2)
                 .lineToY(-50)
                 // goes to right sample on the left

@@ -70,9 +70,9 @@ public class LeftPath extends LinearOpMode {
     //----------------------------------------------//
     public static int DownTime = 500, BetweenUpTime = 300, ToUpTime = 750;
     //----------------------------------------------//
-    public static double collectLine = -47.5;
+    public static double collectLine = -40;
     public static double collectLineSampleThree = -52;
-    public static double firstSampleX = -50;
+    public static double firstSampleX = -35;
     public static double sampleOffset1 = 3.5;
     public static double sampleOffset2 = -8;
     public static double VelConstraint = 5;
@@ -93,15 +93,13 @@ public class LeftPath extends LinearOpMode {
                 .strafeToSplineHeading(basketPose.position,basketPose.heading, new AngularVelConstraint(Math.PI*1.5));
 
         TrajectoryActionBuilder B_sample1pickup = B_preload.endTrajectory().fresh()
-                .strafeToSplineHeading(new Vector2d(firstSampleX + sampleOffset1,collectLine),0.5*Math.PI)
-                .splineToSplineHeading(new Pose2d(firstSampleX + sampleOffset1,collectLine,0.5*Math.PI),0.5*Math.PI , new TranslationalVelConstraint(10));
+                .strafeToSplineHeading(new Vector2d(firstSampleX + sampleOffset1,collectLine),0.75*Math.PI);
 
         TrajectoryActionBuilder B_sample1basket = B_sample1pickup.endTrajectory().fresh()
                 .strafeToSplineHeading(basketPose.position,basketPose.heading);
 
         TrajectoryActionBuilder B_sample2pickup = B_sample1basket.endTrajectory().fresh()
-                .strafeToSplineHeading(new Vector2d(firstSampleX + sampleOffset2, collectLine),0.5*Math.PI)
-                .splineToSplineHeading(new Pose2d(firstSampleX + sampleOffset2, collectLine - 5,0.5*Math.PI), 0.5*Math.PI, new TranslationalVelConstraint(10));
+                .strafeToSplineHeading(new Vector2d(firstSampleX + sampleOffset2, collectLine),0.75*Math.PI);
 
         TrajectoryActionBuilder B_sample3pickup = B_sample1basket.endTrajectory().fresh()
                 .strafeToSplineHeading(new Vector2d(collectLineSampleThree, -42),Math.PI*0.75);
@@ -235,6 +233,7 @@ public class LeftPath extends LinearOpMode {
 
                         new ParallelAction(
                                 elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HIGH),
+                                claws.clawMovementAction(DifferentialClaws.ClawPositionState.READY_TO_SPIT.state, 1250),
                                 sample2basket //movement
                         ),
 
