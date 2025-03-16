@@ -35,6 +35,7 @@ public class BestOpMode{
     private final Telemetry telemetry;
     private final GamepadEx gamepad1;
     private final GamepadEx gamepad2;
+    private final double power = 0.3;
     boolean isPIDF_Active = false;
 
     public void run(boolean isBlue) {
@@ -54,6 +55,11 @@ public class BestOpMode{
         double targetArmPosition = DifferentialClaws.ClawPositionState.MAX.state;
 
         elevators.setHorizontalDestination(Elevators.HorizontalState.HORIZONTAL_RETRACTED.state);
+
+        double backLeftPower = 0;
+        double frontLeftPower = 0;
+        double frontRightPower = 0;
+        double backRightPower = 0;
 
         opMode.waitForStart();
 
@@ -79,6 +85,9 @@ public class BestOpMode{
 
             colorSensorSystem.updateAlert();
 
+            boolean recLeft = colorSensorSystem.isOnTape(false);
+            boolean recRight = colorSensorSystem.isOnTape(true);
+
 
             isPIDF_Active = !(gamepad2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) >= 0.4 || gamepad2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) >= 0.4);
 
@@ -98,15 +107,39 @@ public class BestOpMode{
                 claws.rotateArm(claws.getPIDArmPower());
             }
 
+            if (gamepad1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) <= 0.4 && colorSensorSystem.isSpecimenIn() && (recLeft || recRight)) {
+                if (recRight && !recLeft) {
+                    backLeftPower = 1 * power;
+                    frontLeftPower = 1 * power;
+                    frontRightPower = 0 * power;
+                    backRightPower = -1 * power * (1 + power);
+                } else if (recLeft && !recRight) {
+                    backLeftPower = -1 * power * (1 + power);
+                    frontLeftPower = 0 * power;
+                    frontRightPower = 1 * power;
+                    backRightPower = 1 * power;
+                } else if (recLeft && recRight) {
+                    backLeftPower = 0 * power;
+                    frontLeftPower = 0 * power;
+                    frontRightPower = 0 * power;
+                    backRightPower = 0 * power;
+                }
+                drive.backLeft.setPower(backLeftPower);
+                drive.frontLeft.setPower(frontLeftPower);
+                drive.frontRight.setPower(frontRightPower);
+                drive.backRight.setPower(backRightPower);
+            }
+            else {
+                //driving
+                drive.setDrivePowers(new PoseVelocity2d(
+                        new Vector2d(
+                                linearToExpo(gamepad1.getLeftY())*(1.0/Math.pow(4.5, gamepad1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER))),
+                                -gamepad1.getLeftX()*(1.0/Math.pow(4, gamepad1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER)))
+                        ),
+                        -gamepad1.getRightX()*(1.0/Math.pow(5, gamepad1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER)))
+                ));
+            }
 
-            //driving
-            drive.setDrivePowers(new PoseVelocity2d(
-                    new Vector2d(
-                            linearToExpo(gamepad1.getLeftY())*(1.0/Math.pow(4.5, gamepad1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER))),
-                            -gamepad1.getLeftX()*(1.0/Math.pow(4, gamepad1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER)))
-                    ),
-                    -gamepad1.getRightX()*(1.0/Math.pow(5, gamepad1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER)))
-            ));
             drive.updatePoseEstimate();
 
 
