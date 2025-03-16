@@ -20,7 +20,7 @@ import org.firstinspires.ftc.teamcode.Systems.Elevators;
 import org.firstinspires.ftc.teamcode.Systems.Sweeper;
 
 @Config
-@Autonomous(name="RightPath", group="Autonomous")
+@Autonomous(name="OnePlusOneRightPath", group="Autonomous")
 public class OnePlusOneRightPath extends LinearOpMode {
 
     @Override
@@ -88,6 +88,7 @@ public class OnePlusOneRightPath extends LinearOpMode {
                         elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_HIGH)
                         ),
                 actionControl.hangHighRaise()
+                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, 200)
         );
 
         Action pickup1 = new SequentialAction(
@@ -109,6 +110,7 @@ public class OnePlusOneRightPath extends LinearOpMode {
                         elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_HIGH)
                         ),
                 actionControl.hangHighRaise()
+                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, 200)
         );
 
         Action pickup2 = new SequentialAction(
