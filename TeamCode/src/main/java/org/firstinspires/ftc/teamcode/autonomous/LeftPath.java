@@ -75,7 +75,7 @@ public class LeftPath extends LinearOpMode {
     public static double collectLine = -40;
     public static double collectLineSampleThree = -52;
     public static double firstSampleX = -35;
-    public static double sampleOffset1 = 3.5;
+    public static double sampleOffset1 = 2.5;
     public static double sampleOffset2 = -8;
     public static double VelConstraint = 5;
 
@@ -165,11 +165,11 @@ public class LeftPath extends LinearOpMode {
                 new ParallelAction(
                         elevators.setHorizontalElevatorAction(HORIZONTAL_HALFWAY),
                         claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, colorSensorSystem)
-                ),
-                new ParallelAction(
-                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.READY_TO_SPIT.state, ToUpTime),
-                        elevators.setHorizontalElevatorAction(HORIZONTAL_RETRACTED)
                 )
+//                new ParallelAction(
+//                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.READY_TO_SPIT.state, ToUpTime),
+//                        elevators.setHorizontalElevatorAction(HORIZONTAL_RETRACTED)
+//                )
         );
         Action pickup2 =  new SequentialAction(
                 new ParallelAction(
@@ -180,11 +180,11 @@ public class LeftPath extends LinearOpMode {
                 new ParallelAction(
                         elevators.setHorizontalElevatorAction(HORIZONTAL_HALFWAY),
                         claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, colorSensorSystem)
-                ),
-                new ParallelAction(
-                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.READY_TO_SPIT.state, ToUpTime),
-                        elevators.setHorizontalElevatorAction(HORIZONTAL_RETRACTED)
                 )
+//                new ParallelAction(
+//                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.READY_TO_SPIT.state, ToUpTime),
+//                        elevators.setHorizontalElevatorAction(HORIZONTAL_RETRACTED)
+//                )
         );
 
         Action pickup3 = new SequentialAction(
@@ -225,6 +225,8 @@ public class LeftPath extends LinearOpMode {
 
 
                         new ParallelAction(
+                                //claws.clawMovementAction(DifferentialClaws.ClawPositionState.READY_TO_SPIT.state, ToUpTime),
+                                elevators.setHorizontalElevatorAction(HORIZONTAL_RETRACTED),
                                 elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HIGH),
                                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 1250),
                                 //TODO: I don't know if we need the claws Action here. if there is no problem do not touch it.
@@ -234,6 +236,7 @@ public class LeftPath extends LinearOpMode {
                         pickup2,
 
                         new ParallelAction(
+                                elevators.setHorizontalElevatorAction(HORIZONTAL_RETRACTED),
                                 elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HIGH),
                                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 1250),
                                 sample2basket //movement
@@ -252,8 +255,8 @@ public class LeftPath extends LinearOpMode {
                         unload4,
 
                         new ParallelAction(
-                                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_LOW),
-                                claws.clawMovementAction(DifferentialClaws.ClawPositionState.READY_TO_SPIT.state, 1200),
+                                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN),
+                                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 1200),
                                 Park  //movement
                         )
                 )
