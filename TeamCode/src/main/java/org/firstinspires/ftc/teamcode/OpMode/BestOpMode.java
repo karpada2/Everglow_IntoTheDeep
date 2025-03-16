@@ -164,6 +164,7 @@ public class BestOpMode{
             telemetry.addData("loops per second avg", loopsDone/timeSinceStartSecs);
             telemetry.addData("target pos", targetArmPosition);
             telemetry.addData("claw pos", claws.getActualArmRotation());
+            telemetry.addData("Vert elvators positions", elevators.getVerticalCurrentPosition());
             telemetry.update();
         }
     }
