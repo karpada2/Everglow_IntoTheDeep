@@ -1,9 +1,13 @@
 package org.firstinspires.ftc.teamcode.tuning;
 
+import static org.firstinspires.ftc.teamcode.OpMode.BestOpMode.linearToExpo;
+
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
@@ -40,8 +44,19 @@ public class LineActionTest extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()){
-            gamepadEx2.readButtons();
-            if(gamepadEx2.wasJustPressed(GamepadKeys.Button.A)){
+
+            //driving
+            drive.setDrivePowers(new PoseVelocity2d(
+                    new Vector2d(
+                            linearToExpo(gamepadEx1.getLeftY())*(1.0/Math.pow(4.5, gamepadEx1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER))),
+                            -gamepadEx1.getLeftX()*(1.0/Math.pow(4, gamepadEx1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER)))
+                    ),
+                    -gamepadEx1.getRightX()*(1.0/Math.pow(5, gamepadEx1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER)))
+            ));
+            drive.updatePoseEstimate();
+
+            gamepadEx1.readButtons();
+            if(gamepadEx1.wasJustPressed(GamepadKeys.Button.A)){
                 Actions.runBlocking(
                         new SequentialAction(
                                 actionControl.splineToDropLine(),
@@ -49,7 +64,7 @@ public class LineActionTest extends LinearOpMode {
                         )
                 );
             }
-            else if (gamepadEx2.wasJustPressed(GamepadKeys.Button.B)) {
+            else if (gamepadEx1.wasJustPressed(GamepadKeys.Button.B)) {
                 Actions.runBlocking(drive.getDriveUntilStopAction(colorSensorSystem, new Token(), telemetry));
             }
         }

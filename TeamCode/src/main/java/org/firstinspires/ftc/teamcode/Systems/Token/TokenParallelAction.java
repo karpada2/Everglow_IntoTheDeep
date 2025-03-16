@@ -32,6 +32,6 @@ public class TokenParallelAction extends TokenAction{
             parallelAction.run(telemetryPacket);
         isInitialized = true;
 
-        return true;
+        return parallelAction.run(telemetryPacket);
     }
 }

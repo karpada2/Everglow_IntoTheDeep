@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.autonomous;
 
 import static org.firstinspires.ftc.teamcode.Systems.Elevators.HorizontalState.HORIZONTAL_EXTENDED;
 import static org.firstinspires.ftc.teamcode.Systems.Elevators.HorizontalState.HORIZONTAL_HALFWAY;
+import static org.firstinspires.ftc.teamcode.Systems.Elevators.HorizontalState.HORIZONTAL_QUARTERWAY;
 import static org.firstinspires.ftc.teamcode.Systems.Elevators.HorizontalState.HORIZONTAL_RETRACTED;
 
 import androidx.annotation.NonNull;
@@ -92,13 +93,15 @@ public class LeftPath extends LinearOpMode {
                 .strafeToSplineHeading(basketPose.position,basketPose.heading, new AngularVelConstraint(Math.PI*1.5));
 
         TrajectoryActionBuilder B_sample1pickup = B_preload.endTrajectory().fresh()
-                .strafeToSplineHeading(new Vector2d(firstSampleX + sampleOffset1,collectLine),0.5*Math.PI, new AngularVelConstraint(Math.PI/2));
+                .strafeToSplineHeading(new Vector2d(firstSampleX + sampleOffset1,collectLine),0.5*Math.PI)
+                .splineToSplineHeading(new Pose2d(firstSampleX + sampleOffset1,collectLine,0.5*Math.PI),0.5*Math.PI , new TranslationalVelConstraint(10));
 
         TrajectoryActionBuilder B_sample1basket = B_sample1pickup.endTrajectory().fresh()
                 .strafeToSplineHeading(basketPose.position,basketPose.heading);
 
         TrajectoryActionBuilder B_sample2pickup = B_sample1basket.endTrajectory().fresh()
-                .strafeToSplineHeading(new Vector2d(firstSampleX + sampleOffset2, collectLine),0.5*Math.PI);
+                .strafeToSplineHeading(new Vector2d(firstSampleX + sampleOffset2, collectLine),0.5*Math.PI)
+                .splineToSplineHeading(new Pose2d(firstSampleX + sampleOffset2, collectLine - 5,0.5*Math.PI), 0.5*Math.PI, new TranslationalVelConstraint(10));
 
         TrajectoryActionBuilder B_sample3pickup = B_sample1basket.endTrajectory().fresh()
                 .strafeToSplineHeading(new Vector2d(collectLineSampleThree, -42),Math.PI*0.75);
@@ -160,7 +163,7 @@ public class LeftPath extends LinearOpMode {
                 ),
                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, DownTime),
                 new ParallelAction(
-                        elevators.setHorizontalElevatorAction(HORIZONTAL_HALFWAY),
+                        elevators.setHorizontalElevatorAction(HORIZONTAL_QUARTERWAY),
                         claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, colorSensorSystem)
                 ),
                 new ParallelAction(
@@ -171,7 +174,7 @@ public class LeftPath extends LinearOpMode {
         Action pickup2 =  new SequentialAction(
                 new ParallelAction(
                         elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_PICKUP),
-                        sample1pickup //movement
+                        sample2pickup //movement
                 ),
                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, DownTime),
                 new ParallelAction(

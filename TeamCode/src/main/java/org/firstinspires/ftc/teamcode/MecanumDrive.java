@@ -557,8 +557,9 @@ public class MecanumDrive{
 
         Telemetry telemetry;
 
+
         //TODO: change the following powers
-        double power = 0.3;
+        double power = 0.8;
 
         Token stopToken;
 
@@ -574,9 +575,10 @@ public class MecanumDrive{
         int turnMultiplier = 0;
 
         boolean finishedCalculatingRotation = false;
+
         boolean startedRotating = false;
 
-        boolean isFinished;
+        double timeOfStartMillis = -1;
 
         private DriveUntilStop(ColorSensorSystem colorSensorSystem, Token stopToken, Telemetry telemetry){
             this.colorSensorSystem = colorSensorSystem;
@@ -586,6 +588,10 @@ public class MecanumDrive{
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            if (timeOfStartMillis == -1) {
+                timeOfStartMillis = System.currentTimeMillis();
+            }
+            power = System.currentTimeMillis() - timeOfStartMillis < 500 ? 0.8 : 0.3;
             recLeft = colorSensorSystem.isOnTape(false);
             recRight = colorSensorSystem.isOnTape(true);
 

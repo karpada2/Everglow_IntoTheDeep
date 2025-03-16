@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.Systems.Token.TokenAction;
 import org.firstinspires.ftc.teamcode.Systems.Token.Tokenable;
 
 public class Elevators implements Tokenable {
-    final int epsilon = 0;
+    final int epsilon = 100;
 
 
     static DcMotorEx rightVert;
