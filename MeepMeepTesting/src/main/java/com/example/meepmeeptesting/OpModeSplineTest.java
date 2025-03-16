@@ -1,5 +1,7 @@
 package com.example.meepmeeptesting;
 
+import static java.lang.Math.PI;
+
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
@@ -19,14 +21,14 @@ public class OpModeSplineTest {
                 .setDimensions(18,18)
                 .build();
 
-        Pose2d start = new Pose2d(-24,-11.7, 0);
-        Pose2d midPoint = new Pose2d(-40, -11.2, 0);
-        Pose2d end = new Pose2d(-59.2, -11.2, (1.5)*Math.PI);
+        Pose2d start = new Pose2d(-54,-51, 1.25* PI);
+        Pose2d midPoint = new Pose2d(-54, -15.2, (0)* PI);
+        Pose2d end = new Pose2d(-24,-5.7, 0);
 
         Action spline = myBot.getDrive().actionBuilder(start)
-                .setTangent(Math.PI)
-                .splineToSplineHeading(midPoint, Math.PI)
-                .splineToSplineHeading(end, Math.PI)
+                .setTangent(0.5*PI)
+                .splineToSplineHeading(midPoint, 0.5*PI)
+                .splineToSplineHeading(end, 0)
                 .build();
 
         myBot.runAction(spline);
