@@ -164,7 +164,7 @@ public class RightPath extends LinearOpMode {
         Action pickup1 = new SequentialAction(
                 new ParallelAction(
                     m_pickup1,
-                    elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_PICKUP),
+                    elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_PICKUP_AUTO),
                         claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, 750)
         ),
                 new ParallelAction(
@@ -186,7 +186,7 @@ public class RightPath extends LinearOpMode {
                 new ParallelAction(
                         m_pickup2,
                         claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, 750),
-                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_PICKUP)
+                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_PICKUP_AUTO)
                 ),
                 new ParallelAction(
                         elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN),
@@ -207,7 +207,7 @@ public class RightPath extends LinearOpMode {
                 new ParallelAction(
                         m_pickup3,
                         claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, 750),
-                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_PICKUP)
+                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_PICKUP_AUTO)
                 ),
                 new ParallelAction(
                         elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN),
@@ -228,7 +228,7 @@ public class RightPath extends LinearOpMode {
                 new ParallelAction(
                         m_pickup3,
                         claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, 750),
-                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_PICKUP)
+                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_PICKUP_AUTO)
                 ),
                 new ParallelAction(
                         elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN),

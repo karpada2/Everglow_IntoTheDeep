@@ -3,13 +3,9 @@ package org.firstinspires.ftc.teamcode.Systems;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
-import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
-import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
-import org.firstinspires.ftc.teamcode.Systems.Elevators.HorizontalState;
 import org.firstinspires.ftc.teamcode.Systems.Elevators.VerticalState;
 import org.firstinspires.ftc.teamcode.Systems.Token.Token;
 import org.firstinspires.ftc.teamcode.Systems.Token.TokenParallelAction;
@@ -60,7 +56,7 @@ public class ActionControl {
                         claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750, stopToken),
                         elevators.setVerticalElevatorAction(VerticalState.VERTICAL_SPECIMEN_HIGH, stopToken),
                         claws.clawMovementAction(DifferentialClaws.ClawPositionState.HANG_SPECIMEN.state, 750, stopToken),
-                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_PICKUP, stopToken)
+                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_PICKUP_AUTO, stopToken)
                 )
                 , stopToken);
     }
