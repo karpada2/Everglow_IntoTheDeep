@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.Systems.ColorSensorSystem;
 import org.firstinspires.ftc.teamcode.Systems.DifferentialClaws;
 
 @Config
@@ -20,10 +21,13 @@ public class ClawPIDFTuning extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         DifferentialClaws claws = DifferentialClaws.getInstance(this);
         //MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0,0,0));
+        ColorSensorSystem colorSensorSystem = new ColorSensorSystem(this, false);
 
         waitForStart();
 
         startTime = System.currentTimeMillis();
+        boolean isDoneOnce = false;
+        boolean isUp = false;
         double lastPIDPower = 0;
         while (opModeIsActive()) {
             if (pos < 0) {
@@ -54,12 +58,24 @@ public class ClawPIDFTuning extends LinearOpMode {
                 x = System.currentTimeMillis() - startTime;
                 x = x % 8000;
 
-                if (x <= 4000) {
-                    Actions.runBlocking(claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, 750));
-                } else {
-                    Actions.runBlocking(claws.clawMovementAction(DifferentialClaws.ClawPositionState.SPIT_STATE.state, 750));
+                if(!isDoneOnce) {
+                    if (x <= 4000) {
+                        Actions.runBlocking(claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, 750));
+                        isUp = true;
+                    } else {
+                        isUp = false;
+                        Actions.runBlocking(claws.clawMovementAction(DifferentialClaws.ClawPositionState.SPIT_STATE.state, 750));
+                    }
+                    isDoneOnce = true;
                 }
+                else
+                    isDoneOnce = !((isUp || x<=4000) && !(isUp && x<=4000)); //XOR
             }
+
+            if(gamepad2.circle)
+                Actions.runBlocking(claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, colorSensorSystem));
+            else if(gamepad2.cross)
+                Actions.runBlocking(claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT, colorSensorSystem));
         }
     }
 }

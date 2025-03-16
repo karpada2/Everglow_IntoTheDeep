@@ -253,7 +253,7 @@ public class LeftPath extends LinearOpMode {
 
                         new ParallelAction(
                                 elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_LOW),
-                                claws.clawMovementAction(DifferentialClaws.ClawPositionState.READY_TO_SPIT.state, ToUpTime),
+                                claws.clawMovementAction(DifferentialClaws.ClawPositionState.READY_TO_SPIT.state, 1200),
                                 Park  //movement
                         )
                 )
