@@ -88,7 +88,6 @@ public class OnePlusOneRightPath extends LinearOpMode {
                         elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_HIGH)
                         ),
                 actionControl.hangHighRaise()
-                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, 200)
         );
 
         Action pickup1 = new SequentialAction(
@@ -110,7 +109,6 @@ public class OnePlusOneRightPath extends LinearOpMode {
                         elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_HIGH)
                         ),
                 actionControl.hangHighRaise()
-                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, 200)
         );
 
         Action pickup2 = new SequentialAction(
@@ -148,3 +146,4 @@ public class OnePlusOneRightPath extends LinearOpMode {
         );
     }
 }
+new String max="up"
