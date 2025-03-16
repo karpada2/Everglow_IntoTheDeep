@@ -52,6 +52,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.Systems.ColorSensorSystem;
@@ -553,75 +554,138 @@ public class MecanumDrive{
 
     public class DriveUntilStop extends TokenAction{
         ColorSensorSystem colorSensorSystem;
-        double power = 0.5;
 
-        boolean bothStop = false;
-        boolean lastRec1=false, lastRec2=false;
-        int timesOnTheLine1 = 0, timesOnTheLine2 = 0;
+        Telemetry telemetry;
+
+
+        //TODO: change the following powers
+        double power = 0.8;
 
         Token stopToken;
 
-        public DriveUntilStop(ColorSensorSystem colorSensorSystem, Token stopToken){
+        public double angle = 0;
+
+
+        boolean recLeft;
+        boolean recRight;
+
+        boolean leftDetected = false;
+        boolean rightDetected = false;
+
+        int turnMultiplier = 0;
+
+        boolean finishedCalculatingRotation = false;
+
+        boolean startedRotating = false;
+
+        double timeOfStartMillis = -1;
+
+        private DriveUntilStop(ColorSensorSystem colorSensorSystem, Token stopToken, Telemetry telemetry){
             this.colorSensorSystem = colorSensorSystem;
             this.stopToken = stopToken;
+            this.telemetry = telemetry;
         }
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            if (timeOfStartMillis == -1) {
+                timeOfStartMillis = System.currentTimeMillis();
+            }
+            power = System.currentTimeMillis() - timeOfStartMillis < 500 ? 0.8 : 0.3;
+            recLeft = colorSensorSystem.isOnTape(false);
+            recRight = colorSensorSystem.isOnTape(true);
 
-            if (!isInitialized){
-                frontLeft.setPower(power);
-                backLeft.setPower(power);
-                frontRight.setPower(power);
-                backRight.setPower(power);
-                isInitialized = true;
+            if (recLeft && !leftDetected) {
+                leftDetected = true;
+                if (!rightDetected) {
+                    angle = pose.heading.toDouble();
+                }
+            }
+            if (recRight && !rightDetected) {
+                rightDetected = true;
+                if (!leftDetected) {
+                    angle = pose.heading.toDouble();
+                }
             }
 
-            boolean recLeft = colorSensorSystem.isOnTape(true);
-            boolean recRight = colorSensorSystem.isOnTape(false);
-
-            timesOnTheLine1 += recRight != lastRec1? 1: 0;
-            timesOnTheLine2 += recLeft != lastRec2? 1: 0;
-
-
-            switch (timesOnTheLine2 % 3){
-                case 0:
-                    frontLeft.setPower(power);
-                    backLeft.setPower(power);
-                    break;
-                case 1:
-                    frontLeft.setPower(0);
-                    backLeft.setPower(0);
-                    break;
-                default:
-                    frontLeft.setPower(-power);
-                    backLeft.setPower(-power);
-                    break;
+            if (finishedCalculatingRotation) {
+                if (!startedRotating) {
+                    startedRotating = true;
+                    if (!(recLeft && recRight)) { //do last correction
+                        Action lastAction = actionBuilder(pose).fresh().turn((-turnMultiplier * angle)/4.0).build();
+                        boolean lastRunValue;
+                        do {
+                            lastRunValue = lastAction.run(telemetryPacket);
+                        }
+                        while (lastRunValue);
+                    }
+                    return false;
+                }
             }
-
-            switch (timesOnTheLine1 % 3){
-                case 0:
-                    frontRight.setPower(power);
-                    backRight.setPower(power);
-                    break;
-                case 1:
-                    frontRight.setPower(0);
-                    backRight.setPower(0);
-                    break;
-                default:
-                    frontRight.setPower(-power);
-                    backRight.setPower(-power);
-                    break;
+            else {
+                if (!leftDetected && !rightDetected) {
+                    setDrivePowers(new PoseVelocity2d(
+                            new Vector2d(
+                                    power,
+                                    0
+                            ),
+                            0
+                    ));
+                }
+                else if (rightDetected) {
+                    if (recLeft) {
+                        turnMultiplier =  1;
+                        angle = pose.heading.toDouble() - angle;
+                        angle /= 2.0;
+                        finishedCalculatingRotation = true;
+                        setDrivePowers(new PoseVelocity2d(
+                                new Vector2d(
+                                        0,
+                                        0
+                                ),
+                                0
+                        ));
+                    } else {
+                        setDrivePowers(new PoseVelocity2d(
+                                new Vector2d(
+                                        0,
+                                        0
+                                ),
+                                -0.2
+                        ));
+                    }
+                }
+                else if (leftDetected) {
+                    if (recRight) {
+                        turnMultiplier = -1;
+                        angle = pose.heading.toDouble() - angle;
+                        angle /= 2.0;
+                        finishedCalculatingRotation = true;
+                        setDrivePowers(new PoseVelocity2d(
+                                new Vector2d(
+                                        0,
+                                        0
+                                ),
+                                0
+                        ));
+                    } else {
+                        setDrivePowers(new PoseVelocity2d(
+                                new Vector2d(
+                                        0,
+                                        0
+                                ),
+                                0.2
+                        ));
+                    }
+                }
+                updatePoseEstimate();
             }
-
-            lastRec2 = recLeft;
-            lastRec1 = recRight;
-            bothStop = recLeft && recRight;
-            return !isOnLine();
-        }
-
-        public boolean isOnLine(){
-            return bothStop || stopToken.checkInterruption();
+            if (telemetry != null) {
+                telemetry.addData("recRight", recRight);
+                telemetry.addData("recLeft", recLeft);
+                telemetry.update();
+            }
+            return true;
         }
     }
 
@@ -631,6 +695,10 @@ public class MecanumDrive{
     }
 
     public DriveUntilStop getDriveUntilStopAction(ColorSensorSystem colorSensorSystem, Token stopToken){
-        return new DriveUntilStop(colorSensorSystem, stopToken);
+        return new DriveUntilStop(colorSensorSystem, stopToken, null);
+    }
+
+    public DriveUntilStop getDriveUntilStopAction(ColorSensorSystem colorSensorSystem, Token stopToken, Telemetry telemetry){
+        return new DriveUntilStop(colorSensorSystem, stopToken, telemetry);
     }
 }

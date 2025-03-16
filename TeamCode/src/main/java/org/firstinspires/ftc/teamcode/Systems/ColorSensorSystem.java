@@ -140,30 +140,19 @@ public class ColorSensorSystem {
     }
 
     public boolean isOnTape(boolean isRight){
-        //TODO: update these constants and put the relevant conditions (so it wont recognize white as "true")
-        int red_c = 0;
-        int blue_c = 0;
-        int std = 0;
+        int eps = 700;
+        int redConst = 1420;
+        int blueConst = 2960;
+        int whiteGreenConst = 6600;
 
-        int red= 0, blue = 0;
-        if (isRight){
-            if(isTeamBlue)
-                blue = rightSensor.blue();
-            else
-                red = rightSensor.red();
-        }
-        else{
-            if(isTeamBlue)
-                blue = leftSensor.blue();
-            else
-                red = leftSensor.red();
-        }
+        ColorSensor currSensor = isRight ? rightSensor : leftSensor;
 
-        //TODO: change the conditions if needed
-        if(isTeamBlue)
-            return abs(blue - blue_c) <= std;
-        else
-            return abs(red - red_c) <= std;
+        if (isTeamBlue) {
+            return Math.abs(currSensor.blue() - blueConst) <= eps && Math.abs(currSensor.green() - whiteGreenConst) > eps;
+        }
+        else {
+            return Math.abs(currSensor.red() - redConst) <= eps && Math.abs(currSensor.green() - whiteGreenConst) > eps;
+        }
     }
 
     public boolean myTeamSpecimen(SpecimenColor specimenColor){
