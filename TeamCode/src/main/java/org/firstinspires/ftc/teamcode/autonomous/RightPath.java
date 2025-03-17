@@ -238,7 +238,7 @@ public class RightPath extends LinearOpMode {
 
         Action park = new ParallelAction(
                 m_park,
-                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, 750),
+                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750),
                 elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN)
         );
 
