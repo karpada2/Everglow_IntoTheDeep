@@ -71,14 +71,13 @@ public class Elevators implements Tokenable {
         private final double desitnation;
         private final double timeUntilDone;
         private double startTime;
-        private boolean isInit;
         private Token token;
 
         public HorizontalElevatorAction(HorizontalState state, double timeUntilDone) {
             isDone = HorizontalElevatorAction.this::hasEnoughTimePassed;
             desitnation = state.state;
             this.timeUntilDone = timeUntilDone;
-            this.isInit = false;
+            this.isInitialized = false;
         }
 
         public HorizontalElevatorAction(HorizontalState state, double timeUntilDone, Token token) {
@@ -91,10 +90,10 @@ public class Elevators implements Tokenable {
             if(token != null && token.checkInterruption())
                 return false;
 
-            if (!isInit) {
+            if (!isInitialized) {
                 startTime = System.currentTimeMillis();
                 setHorizontalDestination(desitnation);
-                isInit = true;
+                isInitialized = true;
             }
 
             return !hasEnoughTimePassed();

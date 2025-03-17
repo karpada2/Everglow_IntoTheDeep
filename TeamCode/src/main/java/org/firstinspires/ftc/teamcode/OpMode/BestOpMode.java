@@ -71,7 +71,7 @@ public class BestOpMode{
         claws.updateLeftClawServoRotation();
         claws.updateRightClawServoRotation();
 
-        targetArmPosition = claws.getClawRotation();
+        targetArmPosition = claws.getActualArmRotation();
 
         while (opMode.opModeIsActive()) {
             loopsDone++;
@@ -200,6 +200,8 @@ public class BestOpMode{
 
             if (gamepad2.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER)) {
                 Actions.runBlocking(actionControl.dropHigh());
+                targetArmPosition = DifferentialClaws.ClawPositionState.MAX.state;
+                horElevatorPosition = Elevators.HorizontalState.HORIZONTAL_RETRACTED.state;
             }
             else if (gamepad2.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER)) {
                 Actions.runBlocking(new SequentialAction(actionControl.splineToDropLine(), actionControl.dropHighAndToPlace()));

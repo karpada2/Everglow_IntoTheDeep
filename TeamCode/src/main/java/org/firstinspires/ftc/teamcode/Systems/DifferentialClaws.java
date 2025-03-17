@@ -232,7 +232,7 @@ public class DifferentialClaws {
     public enum ClawPositionState {
         MIN(4.0),
         MID(maxPoint/2),
-        TAKE_SPECIMEN(32),
+        TAKE_SPECIMEN(54.3),
         SPIT_STATE(70),
         READY_TO_SPIT(80),
         HANG_SPECIMEN(maxPoint-30),
@@ -245,7 +245,7 @@ public class DifferentialClaws {
     public enum ClawPowerState {
         TAKE_IN(1),
         OFF(0.08),
-        SPIT(-0.15),
+        SPIT(-0.17),
         SPIT_AUTO(-0.17);
 
         public final double state;
