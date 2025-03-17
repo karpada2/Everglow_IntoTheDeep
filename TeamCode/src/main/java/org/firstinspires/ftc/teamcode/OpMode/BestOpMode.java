@@ -66,6 +66,7 @@ public class BestOpMode{
 
         double startTime = System.currentTimeMillis();
         int loopsDone = 0;
+        boolean recOpisideTeam = false;
         double timeSinceStartSecs = (System.currentTimeMillis() - startTime)/1000.0;
 
         claws.updateLeftClawServoRotation();
@@ -83,7 +84,7 @@ public class BestOpMode{
             claws.updateLeftClawServoRotation();
             claws.updateRightClawServoRotation();
 
-            colorSensorSystem.updateAlert();
+            recOpisideTeam = !colorSensorSystem.updateAlert(); //update alert and return if the color detected is good
 
             boolean recLeft = colorSensorSystem.isOnTape(false);
             boolean recRight = colorSensorSystem.isOnTape(true);
@@ -150,8 +151,6 @@ public class BestOpMode{
                 sweeper.setPosition(Sweeper.SweeperAngle.SWEEPER_RETRACTED);
             }
 
-
-
             if (gamepad2.wasJustPressed(GamepadKeys.Button.Y)) {
                 elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_OPMODE_HIGH.state);
             }
@@ -168,7 +167,7 @@ public class BestOpMode{
             elevators.updateVert();
 
             if (Math.abs(gamepad2.getRightY()) > joystickTolerance) {
-                horElevatorPosition += -gamepad2.getRightY()*0.015 * (gamepad2.isDown(GamepadKeys.Button.RIGHT_STICK_BUTTON) ? 1.0/3.0 : 1);
+                horElevatorPosition += -gamepad2.getRightY()*0.015 * (gamepad2.isDown(GamepadKeys.Button.RIGHT_STICK_BUTTON) ? 1.0/3.0 : 1.5);
                 if(horElevatorPosition < Elevators.HorizontalState.HORIZONTAL_RETRACTED.state){
                     horElevatorPosition = Elevators.HorizontalState.HORIZONTAL_RETRACTED.state;
                 }else if(horElevatorPosition >= Elevators.HorizontalState.HORIZONTAL_EXTENDED.state){
@@ -197,6 +196,11 @@ public class BestOpMode{
                 targetArmPosition = DifferentialClaws.ClawPositionState.TAKE_SPECIMEN.state;
             }
 
+            if(recOpisideTeam)
+            {
+                Actions.runBlocking(actionControl.spitWrong());
+            }
+
 
             if (gamepad2.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER)) {
                 Actions.runBlocking(actionControl.dropHigh());
@@ -207,10 +211,10 @@ public class BestOpMode{
                 Actions.runBlocking(new SequentialAction(actionControl.splineToDropLine(), actionControl.dropHighAndToPlace()));
             }
 
-            telemetry.addData("leftVert pos", elevators.getLeftVertPos());
-            telemetry.addData("rightVert pos", elevators.getRightVertPos());
-            telemetry.addData("loops done", loopsDone);
-            telemetry.addData("time since start", timeSinceStartSecs);
+//            telemetry.addData("leftVert pos", elevators.getLeftVertPos());
+//            telemetry.addData("rightVert pos", elevators.getRightVertPos());
+//            telemetry.addData("loops done", loopsDone);
+//            telemetry.addData("time since start", timeSinceStartSecs);
             telemetry.addData("loops per second avg", loopsDone/timeSinceStartSecs);
             telemetry.addData("target pos", targetArmPosition);
             telemetry.addData("claw pos", claws.getActualArmRotation());

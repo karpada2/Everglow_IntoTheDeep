@@ -246,7 +246,7 @@ public class DifferentialClaws {
         TAKE_IN(1),
         OFF(0.08),
         SPIT(-0.17),
-        SPIT_AUTO(-0.17);
+        SPIT_HARD(-0.7);
 
         public final double state;
 

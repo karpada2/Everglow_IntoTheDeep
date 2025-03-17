@@ -24,44 +24,48 @@ public class MeepMeepTesting {
         Pose2d basket_pose = new Pose2d(-56,-54.8,1.25*Math.PI);
 
         Pose2d right_beginPose = new Pose2d(23, -63,   Math.PI);
-        TrajectoryActionBuilder left_path = myBot.getDrive().actionBuilder(left_beginPose)
-                .waitSeconds(2)
-                .strafeToSplineHeading(basket_pose.position,basket_pose.heading)
-                // goes to basket
-                .waitSeconds(1) //puts sample in basket
-                .strafeToSplineHeading(new Vector2d(-50,-50),0.5*Math.PI)
-                //.waitSeconds(1)
-                .splineToConstantHeading(new Vector2d(-50,-40), 0.5*Math.PI, new TranslationalVelConstraint(10))
-                .waitSeconds(0.2)
-                .lineToY(-50)
-                // goes to right sample on the left
-                .waitSeconds(1) //grabs sample remove
-                //elevator
-                .strafeToSplineHeading(basket_pose.position,basket_pose.heading)
-                .waitSeconds(1)
-                // goes to basket
-                .strafeToSplineHeading(new Vector2d(-60, -50),0.5*Math.PI)
-                .waitSeconds(1)
-                .lineToY(-40)
-                .waitSeconds(0.2)
-                .lineToY(-50)
-                // goes to middle sample on the left
-                .waitSeconds(1) //grabs sample
-                //elevator
-                .strafeToSplineHeading(basket_pose.position,basket_pose.heading)
-                .waitSeconds(1)
-                // goes to basket
-                .strafeToSplineHeading(new Vector2d(-45, -25),1*Math.PI)
-                .waitSeconds(1)
-                .lineToX(-55)
-                .waitSeconds(0.2)
-                //.lineToY(-50)
-                .strafeToSplineHeading(basket_pose.position,basket_pose.heading)
-                // goes to basket
-                .waitSeconds(1)
+        TrajectoryActionBuilder left_path = myBot.getDrive().actionBuilder(basket_pose)
+//                .waitSeconds(2)
+//                .strafeToSplineHeading(basket_pose.position,basket_pose.heading)
+//                // goes to basket
+//                .waitSeconds(1) //puts sample in basket
+//                .strafeToSplineHeading(new Vector2d(-50,-50),0.5*Math.PI)
+//                //.waitSeconds(1)
+//                .splineToConstantHeading(new Vector2d(-50,-40), 0.5*Math.PI, new TranslationalVelConstraint(10))
+//                .waitSeconds(0.2)
+//                .lineToY(-50)
+//                // goes to right sample on the left
+//                //.waitSeconds(1) //grabs sample remove
+//                //elevator
+//                .strafeToSplineHeading(basket_pose.position,basket_pose.heading)
+//                //.waitSeconds(1)
+//                // goes to basket
+//                .strafeToSplineHeading(new Vector2d(-60, -50),0.5*Math.PI)
+//                //.waitSeconds(1)
+//                .lineToY(-40)
+//                .waitSeconds(0.2)
+//                .lineToY(-50)
+//                // goes to middle sample on the left
+//                //.waitSeconds(1) //grabs sample
+//                //elevator
+//                .strafeToSplineHeading(basket_pose.position,basket_pose.heading)
+//                //.waitSeconds(1)
+//                // goes to basket
+//                .strafeToSplineHeading(new Vector2d(-45, -25),1*Math.PI)
+//                //.waitSeconds(1)
+//                .lineToX(-55)
+//                .waitSeconds(0.2)
+//                //.lineToY(-50)
+//                .strafeToSplineHeading(basket_pose.position,basket_pose.heading)
+//                // goes to basket
+//                //.waitSeconds(1)
                 // goes to park
                 .setTangent(Math.PI * 0.5)
-                .splineToLinearHeading(new Pose2d(-24,-10, 0),0)
+                .splineToLinearHeading(new Pose2d(-24,-10, 0),0, new TranslationalVelConstraint(100))
+                .setTangent(Math.PI)
+                .splineToConstantHeading(new Pose2d(-35,-10, 0).position, Math.PI, new TranslationalVelConstraint(100))
+                .setTangent(Math.PI)
+                .splineToSplineHeading(basket_pose,Math.PI*1.25, new TranslationalVelConstraint(60))
                 .waitSeconds(1) //grabs sample
                 ;
 

@@ -192,12 +192,13 @@ public class ColorSensorSystem {
 //        }
     }
 
-    public void updateAlert(){
+    public boolean updateAlert(){
         currentSpecimentColor = getSpecimenColor();
         if(lastSpecimenColor != currentSpecimentColor || !myTeamSpecimen(currentSpecimentColor)){
             alertToGamePads();
         }
 
         lastSpecimenColor = currentSpecimentColor;
+        return myTeamSpecimen(currentSpecimentColor) || currentSpecimentColor == SpecimenColor.NO_COLOR_DETECTED;
     }
 }
