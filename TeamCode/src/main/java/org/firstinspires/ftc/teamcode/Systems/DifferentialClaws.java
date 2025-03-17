@@ -235,7 +235,7 @@ public class DifferentialClaws {
         TAKE_SPECIMEN(32),
         SPIT_STATE(70),
         READY_TO_SPIT(80),
-        HANG_SPECIMEN(maxPoint-30),
+        HANG_SPECIMEN(71),
         MAX(maxPoint);
 
         public final double state;

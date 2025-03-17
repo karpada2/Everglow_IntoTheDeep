@@ -33,8 +33,9 @@ public class OnePlusOneRightPath extends LinearOpMode {
         double firstSpeciminX = 44;
         double PickSpeciminY = -42;
 
-        Pose2d specimins_basketPose = new Pose2d(0,-34,Math.PI/2);
-        Pose2d specimins_pickupPose = new Pose2d(48,-55,-Math.PI/2);
+        Pose2d specimins_basketPose = new Pose2d(0,-36,Math.PI/2);
+        Pose2d specimins_basketPose2 = new Pose2d(-2,-36,Math.PI/2);
+        Pose2d specimins_pickupPose = new Pose2d(48,-52,-Math.PI/2);
         // Init Systems
         DifferentialClaws claws  = DifferentialClaws.getInstance(this);
         MecanumDrive drive = new MecanumDrive(hardwareMap, specimins_beginPose);
@@ -58,7 +59,7 @@ public class OnePlusOneRightPath extends LinearOpMode {
                 ;
 
         TrajectoryActionBuilder B_hang1 = B_pickup1.endTrajectory().fresh()
-                .strafeToSplineHeading(specimins_basketPose.position,Math.PI/2)
+                .strafeToSplineHeading(specimins_basketPose2.position,Math.PI/2)
                 ;
 
         TrajectoryActionBuilder B_pickup2 = B_hang1.endTrajectory().fresh()
@@ -82,9 +83,9 @@ public class OnePlusOneRightPath extends LinearOpMode {
 
         Action m_park = B_park.build();
 
-        Action preload   = new SequentialAction(
+        Action preload = new SequentialAction(
                 new ParallelAction(
-                        m_preload,
+                        m_preload, //movement
                         elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_HIGH)
                         ),
                 actionControl.hangHighRaise()
@@ -94,11 +95,12 @@ public class OnePlusOneRightPath extends LinearOpMode {
                 new ParallelAction(
                     m_pickup1,
                     elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_PICKUP),
-                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, 750)
+                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750)
         ),
+                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, 800),
                 new ParallelAction(
                         elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN),
-                        claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, 200)
+                        claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, colorSensorSystem)
                 )
         );
 
@@ -114,9 +116,10 @@ public class OnePlusOneRightPath extends LinearOpMode {
         Action pickup2 = new SequentialAction(
                 new ParallelAction(
                         m_pickup2,
-                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, 750),
+                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750),
                         elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_PICKUP)
                 ),
+                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MID.state, 750),
                 new ParallelAction(
                         elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN),
                         claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, 200)
@@ -146,4 +149,3 @@ public class OnePlusOneRightPath extends LinearOpMode {
         );
     }
 }
-new String max="up"
