@@ -2,6 +2,7 @@ package com.example.meepmeeptesting;
 
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.noahbres.meepmeep.MeepMeep;
 import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
@@ -19,8 +20,8 @@ public class specimins {
                 .build();
 
         double dropSpeciminY = -52;
-        double firstSpeciminX = 50;
-        double secondSpeciminX = 56;
+        double firstSpeciminX = 45;
+        double secondSpeciminX = 48;
         double thirdSpeciminX = 60;
         double PickSpeciminY = -12;
 
@@ -53,36 +54,42 @@ public class specimins {
                 //* Hangs
                 // Pushes Both Specimins into place
                 .setTangent(-Math.PI/4)
-                .splineToConstantHeading(new Vector2d(33,-33),Math.PI/2)
+                .splineToConstantHeading(new Vector2d(33,-30),Math.PI/2)
                 .splineToSplineHeading(new Pose2d(firstSpeciminX-10,PickSpeciminY,Math.PI),0)
                 .splineToConstantHeading(new Vector2d(firstSpeciminX,dropSpeciminY),-Math.PI/2)
                 // Moves to the second specimin
                 .splineToConstantHeading(new Vector2d(secondSpeciminX,PickSpeciminY),0)
                 // Waits for human player
                 // Pushes the second specimin
-                .splineToConstantHeading(new Vector2d(secondSpeciminX,dropSpeciminY),-Math.PI/2)
+                .splineToConstantHeading(new Vector2d(55,-45),Math.PI/1.6)
+                .splineToSplineHeading(specimins_pickupPose,-Math.PI/2)
 
-                .splineToConstantHeading(new Vector2d(thirdSpeciminX,PickSpeciminY),0)
+//                .splineToConstantHeading(new Vector2d(thirdSpeciminX,PickSpeciminY),0)
                 // Waits for human player
                 // Pushes the second specimin
-                .splineToConstantHeading(new Vector2d(thirdSpeciminX,dropSpeciminY),-Math.PI/2)
+//                .splineToConstantHeading(new Vector2d(thirdSpeciminX,dropSpeciminY),-Math.PI/2)
                 //* Raises Elevator to picking up height
                 // Goes to pickup first specimin
-                .setTangent(Math.PI/2)
-                .splineToLinearHeading(new Pose2d(specimins_pickupPose.position,-Math.PI/2),-Math.PI/2)
+//                .setTangent(Math.PI/2)
+//                .splineToLinearHeading(new Pose2d(specimins_pickupPose.position,-Math.PI/2),-Math.PI/2)
                 //* Lowers elevator to pickup
                 // Goes to basket
                 // *Raises elevator for hang
-                .setTangent((1) * Math.PI)
-                .strafeToSplineHeading(specimins_basketPose.position, specimins_basketPose.heading)
+
+                .strafeToSplineHeading(new Vector2d(0,-54), specimins_basketPose.heading)
+                .strafeTo(specimins_basketPose.position, new TranslationalVelConstraint(150))
                 //* Hangs Specimen sequentially
 
                 //* Lowers Elevator to picking up height
                 // Goes to pickup second specimen
                 .strafeToLinearHeading(specimins_pickupPose.position,-Math.PI/2)
+                .strafeToSplineHeading(new Vector2d(0,-54), specimins_basketPose.heading)
+                .strafeTo(specimins_basketPose.position, new TranslationalVelConstraint(150))
                 //* Picks up second specimen
                 // Goes to hang Specimen
-                .strafeToLinearHeading(specimins_basketPose.position,Math.PI/2)
+                .strafeToLinearHeading(specimins_pickupPose.position,-Math.PI/2)
+                .strafeToSplineHeading(new Vector2d(0,-54), specimins_basketPose.heading)
+                .strafeTo(specimins_basketPose.position, new TranslationalVelConstraint(150))
                 //* Hangs
                 //*Lowers elevator
                 // Park
@@ -111,7 +118,7 @@ public class specimins {
 
                 .strafeToLinearHeading(new Vector2d(60,-60),Math.PI);
 
-        myBot.runAction(OnePlusOnespecimins_path.build());
+        myBot.runAction(specimins_path.build());
 
 
 

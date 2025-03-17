@@ -1,11 +1,15 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
+import androidx.annotation.NonNull;
+
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
@@ -23,31 +27,49 @@ import org.firstinspires.ftc.teamcode.Systems.Sweeper;
 @Autonomous(name="RightPath", group="Autonomous")
 public class RightPath extends LinearOpMode {
 
+    public class WaitAction implements Action {
+        private double startTime = -1;
+        private final double timeToSleep;
+        public WaitAction(double timeToSleep) {
+            this.timeToSleep = timeToSleep;
+        }
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            if (startTime == -1) {
+                startTime = System.currentTimeMillis();
+            }
+
+            return System.currentTimeMillis() - startTime <= timeToSleep;
+        }
+    }
+
     @Override
     public void runOpMode()  throws InterruptedException{
+
+
         // Init Poses
         Pose2d specimins_beginPose = new Pose2d(16, -62,   Math.PI/2);
-        Pose2d hangPose = new Pose2d(6,-32,Math.PI/2);
-        GamepadEx gamepadEx1 = new GamepadEx(gamepad1), gamepadEx2 = new GamepadEx(gamepad2);
+        Pose2d hangPose = new Pose2d(6,-32,Math.PI/2);;
         double VelConstraint = 20;
 
-        double dropSpeciminY = -52;
-        double firstSpeciminX = 46;
+        double firstSpeciminX = 44;
         double secondSpeciminX = 56;
-        double thirdSpeciminX = 60;
-        double PickSpeciminY = -12;
+        double PickSpeciminY = -42;
+        double dropSpeciminY = -52;
 
-        Pose2d specimins_basketPose = new Pose2d(0,-34,Math.PI/2);
-        Pose2d specimins_endPose = new Pose2d(23,-10,0);
-        Pose2d specimins_pickupPose = new Pose2d(48,-55,-Math.PI/2);
+        Pose2d specimins_basketPose = new Pose2d(0,-36,Math.PI/2);
+        Pose2d specimins_basketPose2 = new Pose2d(-2,-36,Math.PI/2);
+        Pose2d specimins_pickupPose = new Pose2d(48,-52,-Math.PI/2);
+
+
+
         // Init Systems
         DifferentialClaws claws  = DifferentialClaws.getInstance(this);
         MecanumDrive drive = new MecanumDrive(hardwareMap, specimins_beginPose);
         Elevators elevators  = Elevators.getInstance(this);
 
         ColorSensorSystem colorSensorSystem = new ColorSensorSystem(this, true);
-        ActionControl actionControl = new ActionControl(elevators, claws, colorSensorSystem, drive, new Sweeper(this),
-                gamepadEx1, gamepadEx2);
+        ActionControl actionControl = new ActionControl(elevators,claws,colorSensorSystem,drive, new Sweeper(this),new GamepadEx(gamepad1), new GamepadEx(gamepad2));
         //Init Trajectories
 
 
@@ -57,148 +79,114 @@ public class RightPath extends LinearOpMode {
                 //* Hangs
                 ;
 
-
         TrajectoryActionBuilder B_push = B_preload.endTrajectory().fresh()
-                // Goes to basket
-                // Pushes Both Specimins into place
                 .setTangent(-Math.PI/4)
-                .splineToConstantHeading(new Vector2d(33,-33),Math.PI/2)
+                .splineToConstantHeading(new Vector2d(33,-30),Math.PI/2)
                 .splineToSplineHeading(new Pose2d(firstSpeciminX-10,PickSpeciminY,Math.PI),0)
                 .splineToConstantHeading(new Vector2d(firstSpeciminX,dropSpeciminY),-Math.PI/2)
-                // Pushes second specimen
+                // Moves to the second specimin
                 .splineToConstantHeading(new Vector2d(secondSpeciminX,PickSpeciminY),0)
-                .splineToConstantHeading(new Vector2d(secondSpeciminX,dropSpeciminY),-Math.PI/2)
-                // Pushes third specimen
-                .splineToConstantHeading(new Vector2d(thirdSpeciminX,PickSpeciminY),0)
-                .splineToConstantHeading(new Vector2d(thirdSpeciminX,dropSpeciminY),-Math.PI/2)
+                // Waits for human player
+                // Pushes the second specimin
+                .splineToConstantHeading(new Vector2d(55,-45),Math.PI/1.6)
+                .splineToSplineHeading(specimins_pickupPose,-Math.PI/2)
                 ;
 
-        TrajectoryActionBuilder B_pickup1 = B_push.endTrajectory().fresh()
-                //* Raises Elevator to picking up height
-                // Goes to pickup first specimin
-                .setTangent(Math.PI/2)
-                .splineToLinearHeading(new Pose2d(specimins_pickupPose.position,-Math.PI/2),-Math.PI/2)
-                //* Lowers elevator to pickup
-                ;
 
-        TrajectoryActionBuilder B_hang1 = B_pickup1.endTrajectory().fresh()
-                // Goes to basket
-                // *Raises elevator for hang
-                .setTangent((1) * Math.PI)
-                .strafeToSplineHeading(specimins_basketPose.position, specimins_basketPose.heading)
-                //* Hangs Specimen sequentially
+        TrajectoryActionBuilder B_hang1 = B_push.endTrajectory().fresh()
+                .strafeToSplineHeading(new Vector2d(0,-54), specimins_basketPose.heading)
+                .strafeTo(specimins_basketPose.position, new TranslationalVelConstraint(150))
                 ;
 
         TrajectoryActionBuilder B_pickup2 = B_hang1.endTrajectory().fresh()
-                //* Lowers Elevator to picking up height
-                // Goes to pickup second specimen
                 .strafeToLinearHeading(specimins_pickupPose.position,-Math.PI/2)
-                //* Picks up second specimen
                 ;
 
         TrajectoryActionBuilder B_hang2 = B_pickup2.endTrajectory().fresh()
-                // Goes to hang Specimen
-                .strafeToLinearHeading(specimins_basketPose.position,Math.PI/2)
-                //* Hangs
+                .strafeToSplineHeading(new Vector2d(0,-54), specimins_basketPose.heading)
+                .strafeTo(specimins_basketPose.position, new TranslationalVelConstraint(150))
                 ;
 
         TrajectoryActionBuilder B_pickup3 = B_hang2.endTrajectory().fresh()
-                //* Lowers Elevator to picking up height
-                // Goes to pickup second specimen
                 .strafeToLinearHeading(specimins_pickupPose.position,-Math.PI/2)
-                //* Picks up second specimen
                 ;
 
-        TrajectoryActionBuilder B_hang3 = B_pickup3.endTrajectory().fresh()
-                // Goes to hang Specimen
-                .strafeToLinearHeading(specimins_basketPose.position,Math.PI/2)
-                //* Hangs
-                ;
-
-        TrajectoryActionBuilder B_pickup4 = B_hang3.endTrajectory().fresh()
-                //* Lowers Elevator to picking up height
-                // Goes to pickup second specimen
-                .strafeToLinearHeading(specimins_pickupPose.position,-Math.PI/2)
-                //* Picks up second specimen
+        TrajectoryActionBuilder B_hang3 = B_pickup2.endTrajectory().fresh()
+                .strafeToSplineHeading(new Vector2d(0,-54), specimins_basketPose.heading)
+                .strafeTo(specimins_basketPose.position, new TranslationalVelConstraint(150))
                 ;
 
 
-        TrajectoryActionBuilder B_park = B_pickup4.endTrajectory().fresh()
-                //*Lowers elevator
-                // Park
-                .setTangent(-Math.PI/4)
-                .splineToSplineHeading(new Pose2d(60,-60,Math.PI),0);
+
+        TrajectoryActionBuilder B_park = B_pickup2.endTrajectory().fresh()
+                .strafeToLinearHeading(new Vector2d(60,-60),Math.PI)
+                ;
+
 
 
         Action m_preload = B_preload.build();
 
         Action m_push = B_push.build();
-
-        Action m_pickup1 = B_pickup1.build();
         Action m_hang1 = B_hang1.build();
 
         Action m_pickup2 = B_pickup2.build();
-        Action m_hang2 = B_hang2.build();
-
-        Action m_pickup3 = B_pickup3.build();
-        Action m_hang3 = B_hang3.build();
-
-        Action m_pickup4 = B_pickup4.build();
-
 
         Action m_park = B_park.build();
 
-        Action preload   = new SequentialAction(
+        Action preload = new SequentialAction(
                 new ParallelAction(
-                        m_preload,
+                        m_preload, //movement
                         elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_HIGH)
-                        ),
+                ),
                 actionControl.hangHighRaise()
         );
 
-        Action push   = new ParallelAction(
-                m_push,
-                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, 750)
-        );
-
-        Action pickup1 = new SequentialAction(
+        Action push = new SequentialAction(
                 new ParallelAction(
-                    m_pickup1,
-                    elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_PICKUP_AUTO),
-                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, 750)
-        ),
+                        m_push,
+                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN),
+                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750),
+                        new SequentialAction(
+                                new WaitAction(5000),
+                                new ParallelAction(
+                                    claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, 800),
+                                    elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_PICKUP)
+                                ),
+                                new ParallelAction(
+                                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN),
+                                        claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, colorSensorSystem)
+                                )
+                        )
+                ),
+                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, 800),
                 new ParallelAction(
                         elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN),
-                        claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, 200)
+                        claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, colorSensorSystem)
                 )
         );
 
         Action hang1 = new SequentialAction(
                 new ParallelAction(
-                        m_hang1,
-                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750),
-                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_HIGH)
-                        ),
+                        m_hang1
+                ),
                 actionControl.hangHighRaise()
         );
 
         Action pickup2 = new SequentialAction(
                 new ParallelAction(
                         m_pickup2,
-                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, 750),
-                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_PICKUP_AUTO)
+                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750),
+                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_PICKUP)
                 ),
+                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MID.state, 750),
                 new ParallelAction(
                         elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN),
                         claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, 200)
                 )
         );
-
         Action hang2 = new SequentialAction(
                 new ParallelAction(
-                        m_hang2,
-                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750),
-                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_HIGH)
+                        m_hang2
                 ),
                 actionControl.hangHighRaise()
         );
@@ -206,35 +194,16 @@ public class RightPath extends LinearOpMode {
         Action pickup3 = new SequentialAction(
                 new ParallelAction(
                         m_pickup3,
-                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, 750),
-                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_PICKUP_AUTO)
-                ),
-                new ParallelAction(
-                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN),
-                        claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, 200)
-                )
-        );
-
-        Action hang3 = new SequentialAction(
-                new ParallelAction(
-                        m_hang3,
                         claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750),
-                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_HIGH)
+                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_PICKUP)
                 ),
-                actionControl.hangHighRaise()
-        );
-
-        Action pickup4 = new SequentialAction(
-                new ParallelAction(
-                        m_pickup3,
-                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, 750),
-                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_PICKUP_AUTO)
-                ),
+                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MID.state, 750),
                 new ParallelAction(
                         elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN),
                         claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, 200)
                 )
         );
+
 
         Action park = new ParallelAction(
                 m_park,
@@ -250,14 +219,10 @@ public class RightPath extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
                         preload,
-                        push,
                         pickup1,
+                        actionControl.hangSpecimenHigh(),
                         hang1,
                         pickup2,
-                        hang2,
-                        pickup3,
-                        hang3,
-                        pickup4,
                         park
                 )
         );

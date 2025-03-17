@@ -32,10 +32,14 @@ public class OnePlusOneRightPath extends LinearOpMode {
 
         double firstSpeciminX = 44;
         double PickSpeciminY = -42;
+        double secondSpeciminX = 56;
 
         Pose2d specimins_basketPose = new Pose2d(0,-36,Math.PI/2);
         Pose2d specimins_basketPose2 = new Pose2d(-2,-36,Math.PI/2);
         Pose2d specimins_pickupPose = new Pose2d(48,-52,-Math.PI/2);
+
+
+
         // Init Systems
         DifferentialClaws claws  = DifferentialClaws.getInstance(this);
         MecanumDrive drive = new MecanumDrive(hardwareMap, specimins_beginPose);
