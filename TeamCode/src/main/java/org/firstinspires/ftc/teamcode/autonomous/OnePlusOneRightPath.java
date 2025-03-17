@@ -73,6 +73,10 @@ public class OnePlusOneRightPath extends LinearOpMode {
                 .strafeToLinearHeading(new Vector2d(60,-60),Math.PI)
                 ;
 
+        TrajectoryActionBuilder B_readyToHang1 = B_pickup1.endTrajectory().fresh()
+                .setTangent(Math.PI)
+                .splineToSplineHeading(new Pose2d(0, -58, 0.5*Math.PI), Math.PI);
+
 
         Action m_preload = B_preload.build();
 
@@ -95,7 +99,7 @@ public class OnePlusOneRightPath extends LinearOpMode {
                 new ParallelAction(
                     m_pickup1,
                     elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_PICKUP),
-                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750)
+                    claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750)
         ),
                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, 800),
                 new ParallelAction(
@@ -106,9 +110,7 @@ public class OnePlusOneRightPath extends LinearOpMode {
 
         Action hang1 = new SequentialAction(
                 new ParallelAction(
-                        m_hang1,
-                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750),
-                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_HIGH)
+                        m_hang1
                         ),
                 actionControl.hangHighRaise()
         );
@@ -142,6 +144,7 @@ public class OnePlusOneRightPath extends LinearOpMode {
                 new SequentialAction(
                         preload,
                         pickup1,
+                        actionControl.hangSpecimenHigh(),
                         hang1,
                         pickup2,
                         park

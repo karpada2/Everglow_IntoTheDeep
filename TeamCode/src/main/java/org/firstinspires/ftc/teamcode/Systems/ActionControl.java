@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Systems;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.SequentialAction;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
@@ -39,13 +40,31 @@ public class ActionControl {
                 , tokenAction);
     }
 
-    public Action hangSpecimenHigh() {
+    public Action hangSpecimenHighPreLoad() {
         Token stopToken = new Token();
         return returnWithDrive(new TokenSequentialAction(
                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750),
                 elevators.setVerticalElevatorAction(VerticalState.VERTICAL_SPECIMEN_HIGH),
                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.HANG_SPECIMEN.state, 750),
                 elevators.setVerticalElevatorAction(VerticalState.VERTICAL_MIN)
+                )
+                , stopToken);
+    }
+
+    public Action hangSpecimenHigh() {
+        return new SequentialAction(
+                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750),
+                        elevators.setVerticalElevatorAction(VerticalState.VERTICAL_SPECIMEN_HIGH),
+                        elevators.setHorizontalElevatorAction(Elevators.HorizontalState.HORIZONTAL_EXTENDED)
+                );
+    }
+
+    public Action hangSpecimenHighOpMode() {
+        Token stopToken = new Token();
+        return returnWithDrive(new TokenSequentialAction(
+                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750),
+                        elevators.setVerticalElevatorAction(VerticalState.VERTICAL_SPECIMEN_HIGH),
+                        elevators.setHorizontalElevatorAction(Elevators.HorizontalState.HORIZONTAL_EXTENDED)
                 )
                 , stopToken);
     }

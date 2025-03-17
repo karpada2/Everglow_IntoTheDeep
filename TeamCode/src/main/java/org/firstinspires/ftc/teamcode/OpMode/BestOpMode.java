@@ -212,7 +212,9 @@ public class BestOpMode{
                 horElevatorPosition = Elevators.HorizontalState.HORIZONTAL_RETRACTED.state;
             }
             else if (gamepad2.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER)) {
-                Actions.runBlocking(new SequentialAction(actionControl.splineToDropLine(), actionControl.dropHighAndToPlace()));
+                Actions.runBlocking(actionControl.hangSpecimenHighOpMode());
+                horElevatorPosition = Elevators.HorizontalState.HORIZONTAL_EXTENDED.state;
+                //Actions.runBlocking(new SequentialAction(actionControl.splineToDropLine(), actionControl.dropHighAndToPlace()));
             }
 
             if(tookEnemySpec)
