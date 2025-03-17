@@ -151,22 +151,22 @@ public class LeftPath extends LinearOpMode {
         Action unload1 = new SequentialAction(
                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.SPIT_STATE.state, BetweenUpTime),
                 claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,colorSensorSystem),
-                claws.clawMovementAction(DifferentialClaws.ClawPositionState.READY_TO_SPIT.state, BetweenUpTime)
+                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, BetweenUpTime)
         );
         Action unload2 = new SequentialAction(
                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.SPIT_STATE.state, BetweenUpTime),
                 claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,colorSensorSystem),
-                claws.clawMovementAction(DifferentialClaws.ClawPositionState.READY_TO_SPIT.state, BetweenUpTime)
+                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, BetweenUpTime)
         );
         Action unload3 = new SequentialAction(
                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.SPIT_STATE.state, BetweenUpTime),
                 claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,colorSensorSystem),
-                claws.clawMovementAction(DifferentialClaws.ClawPositionState.READY_TO_SPIT.state, BetweenUpTime)
+                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, BetweenUpTime)
         );
         Action unload4 = new SequentialAction(
                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.SPIT_STATE.state, BetweenUpTime),
                 claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,colorSensorSystem),
-                claws.clawMovementAction(DifferentialClaws.ClawPositionState.READY_TO_SPIT.state, BetweenUpTime)
+                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, BetweenUpTime)
         );
         Action pickup1 = new SequentialAction(
                 new ParallelAction(
@@ -179,7 +179,7 @@ public class LeftPath extends LinearOpMode {
                         claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, colorSensorSystem)
                 )
 //                new ParallelAction(
-//                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.READY_TO_SPIT.state, ToUpTime),
+//                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, ToUpTime),
 //                        elevators.setHorizontalElevatorAction(HORIZONTAL_RETRACTED)
 //                )
         );
