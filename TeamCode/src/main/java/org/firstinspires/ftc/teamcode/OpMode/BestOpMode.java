@@ -67,6 +67,7 @@ public class BestOpMode{
         double startTime = System.currentTimeMillis();
         int loopsDone = 0;
         double timeSinceStartSecs = (System.currentTimeMillis() - startTime)/1000.0;
+        boolean tookEnemySpec;
 
         claws.updateLeftClawServoRotation();
         claws.updateRightClawServoRotation();
@@ -83,7 +84,7 @@ public class BestOpMode{
             claws.updateLeftClawServoRotation();
             claws.updateRightClawServoRotation();
 
-            colorSensorSystem.updateAlert();
+            tookEnemySpec = colorSensorSystem.updateAlert();
 
             boolean recLeft = colorSensorSystem.isOnTape(false);
             boolean recRight = colorSensorSystem.isOnTape(true);
@@ -213,6 +214,9 @@ public class BestOpMode{
             else if (gamepad2.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER)) {
                 Actions.runBlocking(new SequentialAction(actionControl.splineToDropLine(), actionControl.dropHighAndToPlace()));
             }
+
+            if(tookEnemySpec)
+                actionControl.spitWrong();
 
             telemetry.addData("leftVert pos", elevators.getLeftVertPos());
             telemetry.addData("rightVert pos", elevators.getRightVertPos());
