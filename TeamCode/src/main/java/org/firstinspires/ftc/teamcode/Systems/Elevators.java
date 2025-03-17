@@ -146,8 +146,8 @@ public class Elevators implements Tokenable {
         setVerticalDestination(VerticalState.VERTICAL_MIN.state);
         rightVert.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         leftVert.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        rightVert.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftVert.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        rightVert.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        leftVert.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightVert.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         leftVert.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         //setVertTolerances();
@@ -166,20 +166,20 @@ public class Elevators implements Tokenable {
     }
 
     public static Elevators getInstance(OpMode opMode) {
-        if (instance == null) {
+//        if (instance == null) {
             instance = new Elevators(opMode);
-        }
-        else {
-            instance.setVertMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            instance.setVertMode(DcMotor.RunMode.RUN_TO_POSITION);
-            instance.resetDirections();
-            instance.setVerticalDestination(instance.getVerticalCurrentPosition());
-            //instance.setVertTolerances();
-
-            instance.setHorizontalCorrectDirection();
-            instance.setHorizontalDestination(HorizontalState.HORIZONTAL_RETRACTED);
-//            instance.setHoriozontalScales();
-        }
+//        }
+//        else {
+////            instance.setVertMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//            instance.setVertMode(DcMotor.RunMode.RUN_TO_POSITION);
+//            instance.resetDirections();
+//            instance.setVerticalDestination(instance.getVerticalCurrentPosition());
+//            //instance.setVertTolerances();
+//
+//            instance.setHorizontalCorrectDirection();
+//            instance.setHorizontalDestination(HorizontalState.HORIZONTAL_RETRACTED);
+////            instance.setHoriozontalScales();
+//        }
         return instance;
     }
 
