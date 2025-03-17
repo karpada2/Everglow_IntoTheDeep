@@ -1,7 +1,12 @@
 package org.firstinspires.ftc.teamcode.Systems;
 
+import androidx.annotation.NonNull;
+
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.teamcode.Systems.Token.TokenAction;
 
 public class Sweeper {
 
@@ -21,6 +26,35 @@ public class Sweeper {
 
         SweeperAngle(double position) {
             this.angle = position;
+        }
+    }
+
+    public class SweeperAction extends TokenAction {
+        boolean toOpen;
+        int timeTillStop;
+        long startTime;
+        public SweeperAction(boolean toOpen, int timeTillStop){
+            this.toOpen = toOpen;
+            this.timeTillStop = timeTillStop;
+            this.isDone = this::isTimeDone;
+            this.isInitialized = false;
+        }
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            if(!isInitialized){
+                startTime = System.currentTimeMillis();
+                if(toOpen)
+                    setPosition(SweeperAngle.SWEEPER_EXTENDED);
+                else
+                    setPosition(SweeperAngle.SWEEPER_RETRACTED);
+                isInitialized = true;
+            }
+            return !isTimeDone();
+        }
+
+        public boolean isTimeDone(){
+            return System.currentTimeMillis() - startTime >= timeTillStop;
         }
     }
 
@@ -44,5 +78,9 @@ public class Sweeper {
 
     public double getPosition() {
         return sweeper.getPosition();
+    }
+
+    public SweeperAction getSweeperAction(boolean isToOpen, int timeTillStop){
+        return new SweeperAction(isToOpen, timeTillStop);
     }
 }
