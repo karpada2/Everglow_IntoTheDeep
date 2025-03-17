@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.Systems.ColorSensorSystem;
 import org.firstinspires.ftc.teamcode.Systems.DifferentialClaws;
 import org.firstinspires.ftc.teamcode.Systems.Elevators;
 
-@TeleOp(name = "BlueOpMode")
+@TeleOp(name = "BlueOpMode", group = "A_OpMode")
 public class BlueOpMode extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {

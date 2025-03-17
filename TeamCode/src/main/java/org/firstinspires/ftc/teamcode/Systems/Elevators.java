@@ -71,14 +71,13 @@ public class Elevators implements Tokenable {
         private final double desitnation;
         private final double timeUntilDone;
         private double startTime;
-        private boolean isInit;
         private Token token;
 
         public HorizontalElevatorAction(HorizontalState state, double timeUntilDone) {
             isDone = HorizontalElevatorAction.this::hasEnoughTimePassed;
             desitnation = state.state;
             this.timeUntilDone = timeUntilDone;
-            this.isInit = false;
+            this.isInitialized = false;
         }
 
         public HorizontalElevatorAction(HorizontalState state, double timeUntilDone, Token token) {
@@ -91,10 +90,10 @@ public class Elevators implements Tokenable {
             if(token != null && token.checkInterruption())
                 return false;
 
-            if (!isInit) {
+            if (!isInitialized) {
                 startTime = System.currentTimeMillis();
                 setHorizontalDestination(desitnation);
-                isInit = true;
+                isInitialized = true;
             }
 
             return !hasEnoughTimePassed();
@@ -147,8 +146,8 @@ public class Elevators implements Tokenable {
         setVerticalDestination(VerticalState.VERTICAL_MIN.state);
         rightVert.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         leftVert.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        rightVert.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftVert.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        rightVert.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        leftVert.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightVert.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         leftVert.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         //setVertTolerances();
@@ -167,20 +166,20 @@ public class Elevators implements Tokenable {
     }
 
     public static Elevators getInstance(OpMode opMode) {
-        if (instance == null) {
+//        if (instance == null) {
             instance = new Elevators(opMode);
-        }
-        else {
-            instance.setVertMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            instance.setVertMode(DcMotor.RunMode.RUN_TO_POSITION);
-            instance.resetDirections();
-            instance.setVerticalDestination(instance.getVerticalCurrentPosition());
-            //instance.setVertTolerances();
-
-            instance.setHorizontalCorrectDirection();
-            instance.setHorizontalDestination(HorizontalState.HORIZONTAL_RETRACTED);
-//            instance.setHoriozontalScales();
-        }
+//        }
+//        else {
+////            instance.setVertMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//            instance.setVertMode(DcMotor.RunMode.RUN_TO_POSITION);
+//            instance.resetDirections();
+//            instance.setVerticalDestination(instance.getVerticalCurrentPosition());
+//            //instance.setVertTolerances();
+//
+//            instance.setHorizontalCorrectDirection();
+//            instance.setHorizontalDestination(HorizontalState.HORIZONTAL_RETRACTED);
+////            instance.setHoriozontalScales();
+//        }
         return instance;
     }
 

@@ -52,7 +52,7 @@ public class BestOpMode{
         double joystickTolerance = 0.05;
 
         double horElevatorPosition = 0;
-        double targetArmPosition = DifferentialClaws.ClawPositionState.MAX.state;
+        double targetArmPosition;
 
         elevators.setHorizontalDestination(Elevators.HorizontalState.HORIZONTAL_RETRACTED.state);
 
@@ -71,7 +71,7 @@ public class BestOpMode{
         claws.updateLeftClawServoRotation();
         claws.updateRightClawServoRotation();
 
-        targetArmPosition = claws.getClawRotation();
+        targetArmPosition = claws.getActualArmRotation();
 
         while (opMode.opModeIsActive()) {
             loopsDone++;
@@ -88,24 +88,51 @@ public class BestOpMode{
             boolean recLeft = colorSensorSystem.isOnTape(false);
             boolean recRight = colorSensorSystem.isOnTape(true);
 
-
-            isPIDF_Active = !(gamepad2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) >= 0.4 || gamepad2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) >= 0.4);
-
-            targetArmPosition += (-gamepad2.getLeftY()/2.5) * (gamepad2.isDown(GamepadKeys.Button.LEFT_STICK_BUTTON) ? 1.0/2.0 : 1);
-
-
-            if (targetArmPosition > maxPoint) {
-                targetArmPosition = maxPoint;
+            if (gamepad1.isDown(GamepadKeys.Button.B)) {
+                claws.rotateArm(-0.15);
             }
-            else if (targetArmPosition < 0) {
-                targetArmPosition = 0;
+            else if (gamepad1.wasJustReleased(GamepadKeys.Button.B)) {
+                claws = DifferentialClaws.getInstance(opMode);
+            }
+            else {
+                isPIDF_Active = !(gamepad2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) >= 0.4 || gamepad2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) >= 0.4);
+
+                targetArmPosition += (-gamepad2.getLeftY()/2.5) * (gamepad2.isDown(GamepadKeys.Button.LEFT_STICK_BUTTON) ? 1.0/2.0 : 1);
+
+
+                if (targetArmPosition > maxPoint) {
+                    targetArmPosition = maxPoint;
+                }
+                else if (targetArmPosition < 0) {
+                    targetArmPosition = 0;
+                }
+
+                if(isPIDF_Active) {
+                    claws.setArmTargetPosition(targetArmPosition);
+
+                    claws.rotateArm(claws.getPIDArmPower());
+                }
+
+                if (gamepad2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) >= 0.4) { //split
+                    claws.rotateWheels(DifferentialClaws.ClawPowerState.TAKE_IN);
+                }
+                else if (gamepad2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) >= 0.4) {
+                    claws.rotateWheels(-gamepad2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER));
+                }
+                else if (gamepad2.wasJustPressed(GamepadKeys.Button.DPAD_DOWN)) {
+                    targetArmPosition = DifferentialClaws.ClawPositionState.MIN.state;
+                }
+                else if (gamepad2.wasJustPressed(GamepadKeys.Button.DPAD_UP)) {
+                    targetArmPosition = DifferentialClaws.ClawPositionState.MAX.state;
+                }
+                else if (gamepad2.wasJustPressed(GamepadKeys.Button.DPAD_LEFT)) {
+                    targetArmPosition = DifferentialClaws.ClawPositionState.SPIT_STATE.state;
+                }
+                else if (gamepad2.wasJustPressed(GamepadKeys.Button.DPAD_RIGHT)) {
+                    targetArmPosition = DifferentialClaws.ClawPositionState.TAKE_SPECIMEN.state;
+                }
             }
 
-            if(isPIDF_Active) {
-                claws.setArmTargetPosition(targetArmPosition);
-
-                claws.rotateArm(claws.getPIDArmPower());
-            }
 
             if (gamepad1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) >= 0.4 && colorSensorSystem.isSpecimenIn() && (recLeft || recRight)) {
                 if (recRight && !recLeft) {
@@ -178,28 +205,10 @@ public class BestOpMode{
             elevators.setHorizontalDestination(horElevatorPosition);
 
 
-            if (gamepad2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) >= 0.4) { //split
-                claws.rotateWheels(DifferentialClaws.ClawPowerState.TAKE_IN);
-            }
-            else if (gamepad2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) >= 0.4) {
-                claws.rotateWheels(-gamepad2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER));
-            }
-            else if (gamepad2.wasJustPressed(GamepadKeys.Button.DPAD_DOWN)) {
-                targetArmPosition = DifferentialClaws.ClawPositionState.MIN.state;
-            }
-            else if (gamepad2.wasJustPressed(GamepadKeys.Button.DPAD_UP)) {
-                targetArmPosition = DifferentialClaws.ClawPositionState.MAX.state;
-            }
-            else if (gamepad2.wasJustPressed(GamepadKeys.Button.DPAD_LEFT)) {
-                targetArmPosition = DifferentialClaws.ClawPositionState.SPIT_STATE.state;
-            }
-            else if (gamepad2.wasJustPressed(GamepadKeys.Button.DPAD_RIGHT)) {
-                targetArmPosition = DifferentialClaws.ClawPositionState.TAKE_SPECIMEN.state;
-            }
-
-
             if (gamepad2.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER)) {
                 Actions.runBlocking(actionControl.dropHigh());
+                targetArmPosition = DifferentialClaws.ClawPositionState.MAX.state;
+                horElevatorPosition = Elevators.HorizontalState.HORIZONTAL_RETRACTED.state;
             }
             else if (gamepad2.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER)) {
                 Actions.runBlocking(new SequentialAction(actionControl.splineToDropLine(), actionControl.dropHighAndToPlace()));

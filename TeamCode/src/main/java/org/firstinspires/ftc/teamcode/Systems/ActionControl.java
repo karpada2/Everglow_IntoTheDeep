@@ -64,6 +64,8 @@ public class ActionControl {
     public Action dropHigh() {
         Token stopToken = new Token();
         return returnWithDrive(new TokenSequentialAction(
+                    elevators.setHorizontalElevatorAction(Elevators.HorizontalState.HORIZONTAL_RETRACTED),
+                    claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 1000, stopToken),
                     elevators.setVerticalElevatorAction(VerticalState.VERTICAL_HIGH, stopToken),
                     claws.clawMovementAction(DifferentialClaws.ClawPositionState.SPIT_STATE.state, 750, stopToken),
                     claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,colorSensorSystem, stopToken),
@@ -73,6 +75,16 @@ public class ActionControl {
                     )
                 )
                 , stopToken);
+    }
+
+    public Action spitWrong(){
+        Token stopToken = new Token();
+        return returnWithDrive(
+                new TokenSequentialAction(
+                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.TAKE_SPECIMEN.state, 750),
+                        claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT_HARD, colorSensorSystem)
+                ), stopToken
+        );
     }
 
     public Action dropHighAndToPlace() {
