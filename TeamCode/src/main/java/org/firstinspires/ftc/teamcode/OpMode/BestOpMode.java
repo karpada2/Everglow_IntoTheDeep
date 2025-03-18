@@ -100,7 +100,7 @@ public class BestOpMode{
                 claws.rotateArm(-0.25);
             }
             else if (gamepad1.wasJustReleased(GamepadKeys.Button.B)) {
-                claws = DifferentialClaws.getInstance(opMode);
+                claws.resetClaws();
             }
             else {
                 isPIDF_Active = !(gamepad2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) >= 0.4 || gamepad2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) >= 0.4);

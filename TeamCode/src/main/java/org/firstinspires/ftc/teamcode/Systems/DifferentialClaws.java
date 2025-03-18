@@ -43,8 +43,8 @@ public class DifferentialClaws {
     private double leftClawOldPos;
     private double rightClawOldPos;
 
-    private final double leftClawStart;
-    private final double rightClawStart;
+    private double leftClawStart;
+    private double rightClawStart;
 
     private double trueLeftRotation = 0;
     private double trueRightRotation = 0;
@@ -353,6 +353,16 @@ public class DifferentialClaws {
 
         leftClawServo.setPower(p1);
         rightClawServo.setPower(p2);
+    }
+
+    public void resetClaws() {
+        updateLeftClawServoRotation();
+        updateRightClawServoRotation();
+        rightClawStart = trueRightRotation;
+        leftClawStart = trueLeftRotation;
+        leftClawOldPos = leftClawStart;
+        rightClawOldPos = rightClawStart;
+        armStartingPosition = getArmPosition() + maxPoint;
     }
 
     public double getleftClawServoRotation() {
