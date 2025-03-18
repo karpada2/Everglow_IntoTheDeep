@@ -306,7 +306,7 @@ public class DifferentialClaws {
         double currentRotation = getRotationOfInput(clawInput1);
         double diff = currentRotation - leftClawOldPos;
 
-        double newRotationEstimate = 165;
+        double newRotationEstimate = 180;
         if(Math.abs(diff) > newRotationEstimate){
             //new rotation occur
             if(diff < 0)
@@ -323,7 +323,7 @@ public class DifferentialClaws {
         double currentRotation = getRotationOfInput(clawInput2);
         double diff = currentRotation - rightClawOldPos;
 
-        double newRotationEstimate = 165; //TODO: verify
+        double newRotationEstimate = 180; //TODO: verify
         if(Math.abs(diff) > newRotationEstimate){
             //new rotation occur
             if(diff < 0)

@@ -66,9 +66,9 @@ public class RightPath extends LinearOpMode {
         double PickSpeciminY = -12;
 
         Pose2d specimins_basketPose = new Pose2d(6,spitPos,Math.PI/2);
-        Pose2d specimins_basketPose2 = new Pose2d(2,spitPos,Math.PI/2);
-        Pose2d specimins_basketPose3 = new Pose2d(-2,spitPos,Math.PI/2);
-        Pose2d specimins_basketPose4 = new Pose2d(-6,spitPos,Math.PI/2);
+        Pose2d specimins_basketPose2 = new Pose2d(2,spitPos-5,Math.PI/2);
+        Pose2d specimins_basketPose3 = new Pose2d(-2,spitPos-5,Math.PI/2);
+        Pose2d specimins_basketPose4 = new Pose2d(-6,spitPos-5,Math.PI/2);
         Pose2d specimins_pickupPose = new Pose2d(32, -58, Math.PI*1.75);//new Pose2d(48,-52,-Math.PI/2);
 
 
@@ -123,21 +123,9 @@ public class RightPath extends LinearOpMode {
                 .splineToSplineHeading(specimins_basketPose3,Math.PI*0.75)
                 ;
 
-        TrajectoryActionBuilder B_pickup3 = B_hang2.endTrajectory().fresh()
+        TrajectoryActionBuilder B_park = B_hang2.endTrajectory().fresh()
                 .setTangent(-Math.PI/2)
-                .splineToLinearHeading(new Pose2d(42, -48, -Math.PI/2),Math.PI*1.75)
-                ;
-
-        TrajectoryActionBuilder B_hang3 = B_pickup2.endTrajectory().fresh()
-                .setTangent(Math.PI*0.75)
-                .splineToSplineHeading(specimins_basketPose4,Math.PI*0.75);
-
-        TrajectoryActionBuilder B_pickup4 = B_hang3.endTrajectory().fresh()
-                .strafeToLinearHeading(specimins_pickupPose.position,-Math.PI/2)
-                ;
-
-        TrajectoryActionBuilder B_park = B_pickup2.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(60,-60),Math.PI)
+                .splineToLinearHeading(new Pose2d(42, -48, -Math.PI/2),Math.PI*1.75, new TranslationalVelConstraint(100))
                 ;
 
 
@@ -150,9 +138,6 @@ public class RightPath extends LinearOpMode {
         Action m_pickup = B_pickup1.build();
         Action m_hang1 = B_hang1.build();
         Action m_hang2 = B_hang2.build();
-        Action m_hang3 = B_hang3.build();
-        Action m_pickup3 = B_pickup3.build();
-        Action m_pickup4 = B_pickup4.build();
 
         Action m_pickup2 = B_pickup2.build();
 
@@ -192,8 +177,6 @@ public class RightPath extends LinearOpMode {
                                 elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_HIGH_PRELOAD)
                         )
                 ),
-                //claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750),
-                //elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_HIGH_PRELOAD),
                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.HANG_SPECIMEN.state, downTime),
                 elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN)
         );
@@ -224,18 +207,6 @@ public class RightPath extends LinearOpMode {
                 m_pickup
         );
 
-        Action pickup3 = new SequentialAction(
-                new ParallelAction(
-                        m_pickup3,
-                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750),
-                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_PICKUP)
-                ),
-                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, 750),
-                new ParallelAction(
-                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN),
-                        claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, colorSensorSystem)
-                )
-        );
 
 
         Action hang2 = new SequentialAction(
@@ -252,39 +223,17 @@ public class RightPath extends LinearOpMode {
                 elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN)
         );
 
-        Action hang3 = new SequentialAction(
-                new ParallelAction(
-                        m_hang3,
-                        new SequentialAction(
-                                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750),
-                                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_HIGH_PRELOAD)
-                        )
-                ),
-                //claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750),
-                //elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_HIGH_PRELOAD),
-                claws.clawMovementAction(DifferentialClaws.ClawPositionState.HANG_SPECIMEN.state, downTime),
-                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN)
-        );
-
-
-
-        Action park = new ParallelAction(
-                m_park,
-                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750),
-                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN)
-        );
-
         Action wall_pickup2 = new ParallelAction(
                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.TAKE_SPECIMEN.state, 1100),
                 elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_AFTERSPIT),
                 //sweeper in,
                 m_pickup2);
 
-        Action wall_pickup3 = new ParallelAction(
-                claws.clawMovementAction(DifferentialClaws.ClawPositionState.TAKE_SPECIMEN.state, 1100),
+        Action park = new ParallelAction(
+                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 1100),
                 elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_AFTERSPIT),
-                //sweeper in,
-                m_pickup3);
+                elevators.setHorizontalElevatorAction(Elevators.HorizontalState.HORIZONTAL_EXTENDED),
+                m_park);
 
         Action clawUpdate = claws.getUpdateClawAction(29);
 
@@ -299,13 +248,11 @@ public class RightPath extends LinearOpMode {
                         new SequentialAction(
                                 preload,
                                 intake,
-                                //floor_pickup1,
 
                                 m_turn,
                                 m_intake2,
                                 sweeper.getSweeperAction(Sweeper.SweeperAngle.SWEEPER_EXTENDED,0),
                                 wall_pickup1,
-                                //TODO: pickup
                                 new SequentialAction(
                                         elevators.setHorizontalElevatorAction(Elevators.HorizontalState.HORIZONTAL_HALFWAY,75),
                                         claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, colorSensorSystem)
@@ -313,7 +260,6 @@ public class RightPath extends LinearOpMode {
                                 hang1,
 
                                 wall_pickup2,
-                                //TODO: pickup
                                 new SequentialAction(
                                         elevators.setHorizontalElevatorAction(Elevators.HorizontalState.HORIZONTAL_HALFWAY,75),
                                         claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, colorSensorSystem)
@@ -321,47 +267,7 @@ public class RightPath extends LinearOpMode {
                                 ),
                                 elevators.setHorizontalElevatorAction(Elevators.HorizontalState.HORIZONTAL_RETRACTED),
                                 hang2,
-
-                                wall_pickup3,
-                                //TODO: pickup
-                                new SequentialAction(
-                                        elevators.setHorizontalElevatorAction(Elevators.HorizontalState.HORIZONTAL_HALFWAY,75),
-                                        claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, colorSensorSystem)
-
-                                ),
-                                elevators.setHorizontalElevatorAction(Elevators.HorizontalState.HORIZONTAL_RETRACTED),
-                                hang3
-
-
-//
-//                        new ParallelAction(
-//                                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_AFTERSPIT),
-//                                elevators.setHorizontalElevatorAction(Elevators.HorizontalState.HORIZONTAL_RETRACTED,1000),
-//                                claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT_HARD, colorSensorSystem)
-//                                ),
-//                        pickup2,
-//                        new ParallelAction(
-//                                hang2,
-//                                actionControl.hangSpecimenHighOpMode()
-//                        ),
-//
-//                        new ParallelAction(
-//                                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_AFTERSPIT),
-//                                elevators.setHorizontalElevatorAction(Elevators.HorizontalState.HORIZONTAL_RETRACTED,1000),
-//                                claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT_HARD, colorSensorSystem)
-//                        ),
-//                        pickup3,
-//                        new ParallelAction(
-//                                hang3,
-//                                actionControl.hangSpecimenHigh()
-//                        ),
-//
-//                        new ParallelAction(
-//                                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_AFTERSPIT),
-//                                elevators.setHorizontalElevatorAction(Elevators.HorizontalState.HORIZONTAL_RETRACTED,1000),
-//                                claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT_HARD, colorSensorSystem)
-//                        ),
-//                        park
+                                park
                         )
                 )
         );

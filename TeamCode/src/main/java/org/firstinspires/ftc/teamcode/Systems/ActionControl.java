@@ -103,6 +103,7 @@ public class ActionControl {
         Token token = new Token();
         return returnWithDrive(
                 new TokenSequentialAction(
+                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.TAKE_SPECIMEN.state, 750),
                         elevators.setHorizontalElevatorAction(Elevators.HorizontalState.HORIZONTAL_HALFWAY,75),
                         claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, colorSensorSystem),
                         claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 750)

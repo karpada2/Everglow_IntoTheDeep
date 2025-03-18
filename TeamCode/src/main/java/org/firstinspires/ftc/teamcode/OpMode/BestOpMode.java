@@ -101,6 +101,7 @@ public class BestOpMode{
             }
             else if (gamepad1.wasJustReleased(GamepadKeys.Button.B)) {
                 claws.resetClaws();
+                targetArmPosition = DifferentialClaws.ClawPositionState.MAX.state;
             }
             else {
                 isPIDF_Active = !(gamepad2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) >= 0.4 || gamepad2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) >= 0.4);
@@ -179,7 +180,7 @@ public class BestOpMode{
 
 
             if (gamepad1.isDown(GamepadKeys.Button.LEFT_BUMPER)) {
-                sweeper.setPosition(Sweeper.SweeperAngle.SWEEPER_EXTENDED);
+                sweeper.setPosition(Sweeper.SweeperAngle.HALF_EXTENDED);
             }
             else {
                 sweeper.setPosition(Sweeper.SweeperAngle.SWEEPER_RETRACTED);
