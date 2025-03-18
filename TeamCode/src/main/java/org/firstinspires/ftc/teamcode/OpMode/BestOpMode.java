@@ -98,7 +98,7 @@ public class BestOpMode{
             else {
                 isPIDF_Active = !(gamepad2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) >= 0.4 || gamepad2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) >= 0.4);
 
-                targetArmPosition += (-gamepad2.getLeftY()/2.5) * (gamepad2.isDown(GamepadKeys.Button.LEFT_STICK_BUTTON) ? 1.0/2.0 : 1);
+                targetArmPosition += (-gamepad2.getLeftY()/1.0) * (gamepad2.isDown(GamepadKeys.Button.LEFT_STICK_BUTTON) ? 1.0/2.0 : 1);
 
 
                 if (targetArmPosition > maxPoint) {
