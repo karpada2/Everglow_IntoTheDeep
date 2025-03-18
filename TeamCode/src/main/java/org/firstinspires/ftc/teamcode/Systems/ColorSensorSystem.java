@@ -199,6 +199,6 @@ public class ColorSensorSystem {
         }
 
         lastSpecimenColor = currentSpecimentColor;
-        return myTeamSpecimen(currentSpecimentColor) || currentSpecimentColor == SpecimenColor.NO_COLOR_DETECTED;
+        return (!myTeamSpecimen(currentSpecimentColor) && currentSpecimentColor != SpecimenColor.NO_COLOR_DETECTED);
     }
 }
