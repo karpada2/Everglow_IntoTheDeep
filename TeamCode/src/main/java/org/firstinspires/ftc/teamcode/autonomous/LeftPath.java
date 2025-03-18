@@ -20,6 +20,7 @@ import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
+import com.arcrobotics.ftclib.drivebase.DifferentialDrive;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -221,56 +222,60 @@ public class LeftPath extends LinearOpMode {
                 claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, colorSensorSystem)
         );
 
+        Action clawUpdate = claws.getUpdateClawAction(29);
+
         waitForStart();
 
         telemetry.addData("claws", claws);
         telemetry.addData("elevators", elevators);
         telemetry.update();
         Actions.runBlocking(
-                new SequentialAction(
-                        new ParallelAction(
-                                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HIGH),
-                                preload //movement
-                        ),
-                        unload1,
-                        pickup1,
-
-
-                        new ParallelAction(
-                                //claws.clawMovementAction(DifferentialClaws.ClawPositionState.READY_TO_SPIT.state, ToUpTime),
-                                elevators.setHorizontalElevatorAction(HORIZONTAL_RETRACTED),
-                                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HIGH),
-                                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 1250),
-                                //TODO: I don't know if we need the claws Action here. if there is no problem do not touch it.
-                                sample1basket //movement
+                new ParallelAction(
+                        clawUpdate,
+                        new SequentialAction(
+                                new ParallelAction(
+                                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HIGH),
+                                        preload //movement
                                 ),
-                        unload2,
-                        pickup2,
+                                unload1,
+                                pickup1,
 
-                        new ParallelAction(
-                                elevators.setHorizontalElevatorAction(HORIZONTAL_RETRACTED),
-                                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HIGH),
-                                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 1250),
-                                sample2basket //movement
-                        ),
 
-                        unload3,
-                        pickup3,
+                                new ParallelAction(
+                                        //claws.clawMovementAction(DifferentialClaws.ClawPositionState.READY_TO_SPIT.state, ToUpTime),
+                                        elevators.setHorizontalElevatorAction(HORIZONTAL_RETRACTED),
+                                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HIGH),
+                                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 1250),
+                                        //TODO: I don't know if we need the claws Action here. if there is no problem do not touch it.
+                                        sample1basket //movement
+                                ),
+                                unload2,
+                                pickup2,
 
-                        new ParallelAction(
-                                elevators.setHorizontalElevatorAction(HORIZONTAL_RETRACTED),
-                                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HIGH),
-                                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 1250),
-                                sample3basket //movement
-                        ),
+                                new ParallelAction(
+                                        elevators.setHorizontalElevatorAction(HORIZONTAL_RETRACTED),
+                                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HIGH),
+                                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 1250),
+                                        sample2basket //movement
+                                ),
 
-                        unload4,
+                                unload3,
+                                pickup3,
 
-                        new ParallelAction(
-                                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN),
-                                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 1200),
-                                Park  //movement
-                        )
+                                new ParallelAction(
+                                        elevators.setHorizontalElevatorAction(HORIZONTAL_RETRACTED),
+                                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HIGH),
+                                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 1250),
+                                        sample3basket //movement
+                                ),
+
+                                unload4,
+
+                                new ParallelAction(
+                                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN),
+                                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 1200),
+                                        Park  //movement
+                                )
 
 //                        new SequentialAction(
 //                            sweeper.getSweeperAction(true, 500),
@@ -297,6 +302,7 @@ public class LeftPath extends LinearOpMode {
 //                                ),
 //                                dropFive //movement
 //                        )
+                        )
                 )
         );
     }

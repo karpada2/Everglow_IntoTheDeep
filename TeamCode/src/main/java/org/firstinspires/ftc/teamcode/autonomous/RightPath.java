@@ -286,6 +286,7 @@ public class RightPath extends LinearOpMode {
                 //sweeper in,
                 m_pickup3);
 
+        Action clawUpdate = claws.getUpdateClawAction(29);
 
 
         //initialization
@@ -293,41 +294,43 @@ public class RightPath extends LinearOpMode {
         waitForStart();
 
         Actions.runBlocking(
-                new SequentialAction(
-                        preload,
-                        intake,
-                        //floor_pickup1,
-
-                        m_turn,
-                        m_intake2,
-                        sweeper.getSweeperAction(Sweeper.SweeperAngle.SWEEPER_EXTENDED,0),
-                        wall_pickup1,
-                        //TODO: pickup
+                new ParallelAction(
+                        clawUpdate,
                         new SequentialAction(
-                                elevators.setHorizontalElevatorAction(Elevators.HorizontalState.HORIZONTAL_HALFWAY,75),
-                                claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, colorSensorSystem)
-                        ),
-                        hang1,
+                                preload,
+                                intake,
+                                //floor_pickup1,
 
-                        wall_pickup2,
-                        //TODO: pickup
-                        new SequentialAction(
-                                elevators.setHorizontalElevatorAction(Elevators.HorizontalState.HORIZONTAL_HALFWAY,75),
-                                claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, colorSensorSystem)
+                                m_turn,
+                                m_intake2,
+                                sweeper.getSweeperAction(Sweeper.SweeperAngle.SWEEPER_EXTENDED,0),
+                                wall_pickup1,
+                                //TODO: pickup
+                                new SequentialAction(
+                                        elevators.setHorizontalElevatorAction(Elevators.HorizontalState.HORIZONTAL_HALFWAY,75),
+                                        claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, colorSensorSystem)
+                                ),
+                                hang1,
 
-                        ),
-                        elevators.setHorizontalElevatorAction(Elevators.HorizontalState.HORIZONTAL_RETRACTED),
-                        hang2,
+                                wall_pickup2,
+                                //TODO: pickup
+                                new SequentialAction(
+                                        elevators.setHorizontalElevatorAction(Elevators.HorizontalState.HORIZONTAL_HALFWAY,75),
+                                        claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, colorSensorSystem)
 
-                        wall_pickup3,
-                        //TODO: pickup
-                        new SequentialAction(
-                                elevators.setHorizontalElevatorAction(Elevators.HorizontalState.HORIZONTAL_HALFWAY,75),
-                                claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, colorSensorSystem)
+                                ),
+                                elevators.setHorizontalElevatorAction(Elevators.HorizontalState.HORIZONTAL_RETRACTED),
+                                hang2,
 
-                        ),
-                        elevators.setHorizontalElevatorAction(Elevators.HorizontalState.HORIZONTAL_RETRACTED),
-                        hang3
+                                wall_pickup3,
+                                //TODO: pickup
+                                new SequentialAction(
+                                        elevators.setHorizontalElevatorAction(Elevators.HorizontalState.HORIZONTAL_HALFWAY,75),
+                                        claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, colorSensorSystem)
+
+                                ),
+                                elevators.setHorizontalElevatorAction(Elevators.HorizontalState.HORIZONTAL_RETRACTED),
+                                hang3
 
 
 //
@@ -359,6 +362,7 @@ public class RightPath extends LinearOpMode {
 //                                claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT_HARD, colorSensorSystem)
 //                        ),
 //                        park
+                        )
                 )
         );
     }

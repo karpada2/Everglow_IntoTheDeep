@@ -452,6 +452,10 @@ public class DifferentialClaws {
         return new HoldClawAndDropSampleAction(timeToHold, timeToDrop);
     }
 
+    public UpdateClawAction getUpdateClawAction(double time) {
+        return new UpdateClawAction(time);
+    }
+
 //    public ClawMovementAction clawMovementAction(double dest) {
 //        return new ClawMovementAction(dest);
 //    }
