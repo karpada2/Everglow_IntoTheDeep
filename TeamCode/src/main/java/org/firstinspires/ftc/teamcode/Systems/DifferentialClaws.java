@@ -202,6 +202,36 @@ public class DifferentialClaws {
         }
     }
 
+
+    public class UpdateClawAction extends TokenAction {
+        private final double timeToUpdate;
+        private double startTime = -1;
+        Token token;
+
+        public UpdateClawAction(double timeToUpdate) {
+            this.timeToUpdate = timeToUpdate;
+        }
+
+        public UpdateClawAction(DifferentialClaws claws, double timeToUpdate, Token token) {
+            this(timeToUpdate);
+            this.token = token;
+        }
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            if (startTime == -1) {
+                startTime = System.currentTimeMillis();
+            }
+            updateLeftClawServoRotation();
+            updateRightClawServoRotation();
+
+            if (System.currentTimeMillis() - startTime >= timeToUpdate) {
+                rotateArm(-0.5);
+            }
+            return System.currentTimeMillis() - startTime < timeToUpdate;
+        }
+    }
+
     private DifferentialClaws(OpMode opMode) {
         leftClawServo = opMode.hardwareMap.get(CRServo.class, "leftClawServo");
         rightClawServo = opMode.hardwareMap.get(CRServo.class, "rightClawServo");
