@@ -89,8 +89,15 @@ public class BestOpMode{
             boolean recLeft = colorSensorSystem.isOnTape(false);
             boolean recRight = colorSensorSystem.isOnTape(true);
 
+            if(gamepad1.wasJustPressed(GamepadKeys.Button.DPAD_UP)){
+                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_ACCENT.state);
+            }
+            if(gamepad1.wasJustPressed(GamepadKeys.Button.DPAD_DOWN)){
+                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_DOWN_ACCENT.state);
+            }
+
             if (gamepad1.isDown(GamepadKeys.Button.B)) {
-                claws.rotateArm(-0.15);
+                claws.rotateArm(-0.25);
             }
             else if (gamepad1.wasJustReleased(GamepadKeys.Button.B)) {
                 claws = DifferentialClaws.getInstance(opMode);
@@ -98,7 +105,7 @@ public class BestOpMode{
             else {
                 isPIDF_Active = !(gamepad2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) >= 0.4 || gamepad2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) >= 0.4);
 
-                targetArmPosition += (-gamepad2.getLeftY()/2.5) * (gamepad2.isDown(GamepadKeys.Button.LEFT_STICK_BUTTON) ? 1.0/2.0 : 1);
+                targetArmPosition += (-gamepad2.getLeftY()/1.0) * (gamepad2.isDown(GamepadKeys.Button.LEFT_STICK_BUTTON) ? 1.0/2.0 : 1);
 
 
                 if (targetArmPosition > maxPoint) {
@@ -130,7 +137,7 @@ public class BestOpMode{
                     targetArmPosition = DifferentialClaws.ClawPositionState.SPIT_STATE.state;
                 }
                 else if (gamepad2.wasJustPressed(GamepadKeys.Button.DPAD_RIGHT)) {
-                    targetArmPosition = DifferentialClaws.ClawPositionState.TAKE_SPECIMEN.state;
+                    Actions.runBlocking(actionControl.takeInSpeciment());
                 }
             }
 
@@ -213,7 +220,7 @@ public class BestOpMode{
             }
             else if (gamepad2.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER)) {
                 Actions.runBlocking(actionControl.hangSpecimenHighOpMode());
-                horElevatorPosition = Elevators.HorizontalState.HORIZONTAL_EXTENDED.state;
+                //horElevatorPosition = Elevators.HorizontalState.HORIZONTAL_EXTENDED.state;
                 //Actions.runBlocking(new SequentialAction(actionControl.splineToDropLine(), actionControl.dropHighAndToPlace()));
             }
 

@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.Systems.Token.TokenAction;
 import org.firstinspires.ftc.teamcode.Systems.Token.Tokenable;
 
 public class Elevators implements Tokenable {
-    final int epsilon = 100;
+    final int epsilon = 50;
 
 
     DcMotorEx rightVert;
@@ -109,11 +109,14 @@ public class Elevators implements Tokenable {
         VERTICAL_HURDLE(356),
         VERTICAL_SPECIMEN_PICKUP(775),
         VERTICAL_SPECIMEN_PICKUP_AUTO(557),
-        VERTICAL_SPECIMEN_HIGH(1360),
-        VERTICAL_SPECIMEN_AFTERSPIT(1000),
+        VERTICAL_SPECIMEN_HIGH(1340),
+        VERTICAL_SPECIMEN_HIGH_PRELOAD(1640),
+        VERTICAL_SPECIMEN_AFTERSPIT(900),
         VERTICAL_LOW(2804),
         VERTICAL_HIGH(3650),
         VERTICAL_OPMODE_HIGH(3570),
+        VERTICAL_ACCENT(3800),
+        VERTICAL_DOWN_ACCENT(2500),
         VERTICAL_MAX(4200); //4200/11448
 
         public final int state;

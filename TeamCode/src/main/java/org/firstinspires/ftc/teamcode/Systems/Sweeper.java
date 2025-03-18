@@ -20,7 +20,9 @@ public class Sweeper {
 
     public enum SweeperAngle {
         SWEEPER_RETRACTED(0.42),
-        SWEEPER_EXTENDED(0.9);
+
+        HALF_EXTENDED(0.77),
+        SWEEPER_EXTENDED(0.87);
 
         public final double angle;
 
@@ -30,11 +32,11 @@ public class Sweeper {
     }
 
     public class SweeperAction extends TokenAction {
-        boolean toOpen;
+        SweeperAngle sweeperAngle;
         int timeTillStop;
         long startTime;
-        public SweeperAction(boolean toOpen, int timeTillStop){
-            this.toOpen = toOpen;
+        public SweeperAction(SweeperAngle sweeperAngle, int timeTillStop){
+            this.sweeperAngle = sweeperAngle;
             this.timeTillStop = timeTillStop;
             this.isDone = this::isTimeDone;
             this.isInitialized = false;
@@ -44,10 +46,7 @@ public class Sweeper {
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             if(!isInitialized){
                 startTime = System.currentTimeMillis();
-                if(toOpen)
-                    setPosition(SweeperAngle.SWEEPER_EXTENDED);
-                else
-                    setPosition(SweeperAngle.SWEEPER_RETRACTED);
+                setPosition(sweeperAngle.angle);
                 isInitialized = true;
             }
             return !isTimeDone();
@@ -80,7 +79,7 @@ public class Sweeper {
         return sweeper.getPosition();
     }
 
-    public SweeperAction getSweeperAction(boolean isToOpen, int timeTillStop){
-        return new SweeperAction(isToOpen, timeTillStop);
+    public SweeperAction getSweeperAction(SweeperAngle sweeperAngle, int timeTillStop){
+        return new SweeperAction(sweeperAngle, timeTillStop);
     }
 }

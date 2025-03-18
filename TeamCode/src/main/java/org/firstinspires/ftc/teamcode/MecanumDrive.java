@@ -559,7 +559,7 @@ public class MecanumDrive{
 
 
         //TODO: change the following powers
-        double power = 0.8;
+        double power = 0.3;
 
         Token stopToken;
 
@@ -591,7 +591,7 @@ public class MecanumDrive{
             if (timeOfStartMillis == -1) {
                 timeOfStartMillis = System.currentTimeMillis();
             }
-            power = System.currentTimeMillis() - timeOfStartMillis < 500 ? 0.8 : 0.3;
+            //power = 0.3;
             recLeft = colorSensorSystem.isOnTape(false);
             recRight = colorSensorSystem.isOnTape(true);
 

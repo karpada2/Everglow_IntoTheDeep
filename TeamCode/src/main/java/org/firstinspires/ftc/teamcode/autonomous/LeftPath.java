@@ -74,7 +74,7 @@ public class LeftPath extends LinearOpMode {
 
     //TODO: change these variables so the Autonomous will be optimal
     //----------------------------------------------//
-    public static int DownTime = 500, BetweenUpTime = 680, ToUpTime = 1000;
+    public static int DownTime = 500, BetweenUpTime = 750, ToUpTime = 1000;
     //----------------------------------------------//
     public static double collectLine = -40;
     public static double collectLineSampleThree = -52;
@@ -270,33 +270,33 @@ public class LeftPath extends LinearOpMode {
                                 elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN),
                                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 1200),
                                 Park  //movement
-                        ),
-
-                        new SequentialAction(
-                            sweeper.getSweeperAction(true, 500),
-                            claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, DownTime),
-                            new ParallelAction(
-                                    claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, colorSensorSystem),
-                                    elevators.setHorizontalElevatorAction(HORIZONTAL_HALFWAY)
-                            )
-                        ),
-
-                        new ParallelAction(
-                                new SequentialAction(
-                                        new ParallelAction(
-                                        elevators.setHorizontalElevatorAction(Elevators.HorizontalState.HORIZONTAL_RETRACTED),
-                                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 1000),
-                                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HIGH)
-                                                ),
-                                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.SPIT_STATE.state, 750),
-                                        claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,colorSensorSystem),
-                                        new ParallelAction(
-                                                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 1000),
-                                                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN)
-                                        )
-                                ),
-                                dropFive //movement
                         )
+
+//                        new SequentialAction(
+//                            sweeper.getSweeperAction(true, 500),
+//                            claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, DownTime),
+//                            new ParallelAction(
+//                                    claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.TAKE_IN, colorSensorSystem),
+//                                    elevators.setHorizontalElevatorAction(HORIZONTAL_HALFWAY)
+//                            )
+//                        ),
+//
+//                        new ParallelAction(
+//                                new SequentialAction(
+//                                        new ParallelAction(
+//                                        elevators.setHorizontalElevatorAction(Elevators.HorizontalState.HORIZONTAL_RETRACTED),
+//                                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 1000),
+//                                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HIGH)
+//                                                ),
+//                                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.SPIT_STATE.state, 750),
+//                                        claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,colorSensorSystem),
+//                                        new ParallelAction(
+//                                                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 1000),
+//                                                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN)
+//                                        )
+//                                ),
+//                                dropFive //movement
+//                        )
                 )
         );
     }
