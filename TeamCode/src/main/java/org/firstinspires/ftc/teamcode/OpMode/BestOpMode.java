@@ -121,7 +121,7 @@ public class BestOpMode{
                     claws.rotateArm(claws.getPIDArmPower());
                 }
 
-                if (gamepad2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) >= 0.4) { //split
+                if (gamepad2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) >= 0.4) { //split6
                     claws.rotateWheels(DifferentialClaws.ClawPowerState.TAKE_IN);
                     tookEnemySpec = colorSensorSystem.updateAlert();
                 }
@@ -229,7 +229,8 @@ public class BestOpMode{
                 Actions.runBlocking(actionControl.spitWrong());
             }
 
-            telemetry.addData("did you took enemt speciment?", tookEnemySpec);
+            telemetry.addData("Color recognize", colorSensorSystem.getCurrentSpecimentColor());
+            telemetry.addLine();
             telemetry.addData("loops done", loopsDone);
             telemetry.addData("time since start", timeSinceStartSecs);
             telemetry.addData("loops per second avg", loopsDone/timeSinceStartSecs);

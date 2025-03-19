@@ -27,7 +27,7 @@ public class ColorSensorSystem {
 
     Gamepad gamepad2;
 
-    Gamepad.RumbleEffect rumbleEffectGood, rumbleEffectBad;
+    Gamepad.RumbleEffect rumbleEffectGood, rumbleEffectBad, rumbleEffectYellow;
 
     private SpecimenColor lastSpecimenColor = SpecimenColor.NO_COLOR_DETECTED;
 
@@ -62,7 +62,7 @@ public class ColorSensorSystem {
     }
 
     public void initializeRamble(){
-        final int rightColorFreq = 310, badColorFreq = 750;
+        final int badColorFreq = 1000;
 
         if (currentSpecimentColor == SpecimenColor.NO_COLOR_DETECTED){
             gamepad1.stopRumble();
@@ -70,35 +70,31 @@ public class ColorSensorSystem {
             return;
         }
 
-        int freqTime = 0;
-        int timeWait = 0;
-        double power = 0;
-        freqTime = rightColorFreq; //right specimen
-        timeWait = 300;
-        power = 1;
+        int freqTime = 500;
+        int timeWait = 500;
+        double power = 1;
+
+        rumbleEffectYellow = new Gamepad.RumbleEffect.Builder()
+                .addStep(power, power, freqTime)  //  Rumble motors 100% for freqTime mSec
+                .addStep(0.0, 0.0, timeWait)  //  Pause for freqTime/2 mSec
+                .addStep(power, power, freqTime)  //  Rumble motors 100% for freqTime mSec
+                .addStep(0.0, 0.0, timeWait)  //  Pause for freqTime/2 mSec
+                .addStep(power, power, freqTime)  //  Rumble motors 100% for freqTime mSec
+                .addStep(0.0, 0.0, timeWait)  //  Pause for freqTime/2 mSec
+                .build();
+
+        freqTime = 4000;
         rumbleEffectGood = new Gamepad.RumbleEffect.Builder()
-                .addStep(power, power, freqTime)  //  Rumble motors 100% for freqTime mSec
-                .addStep(0.0, 0.0, timeWait)  //  Pause for freqTime/2 mSec
-                .addStep(power, power, freqTime)  //  Rumble motors 100% for freqTime mSec
-                .addStep(0.0, 0.0, timeWait)  //  Pause for freqTime/2 mSec
-                .addStep(power, power, freqTime)  //  Rumble motors 100% for freqTime mSec
-                .addStep(0.0, 0.0, timeWait)  //  Pause for freqTime/2 mSec
+                .addStep(power, power, freqTime) //  Pause for freqTime/2 mSec
+                .addStep(0.0, 0.0, timeWait)
                 .build();
 
       //not good specimen
         freqTime = badColorFreq;
-        timeWait = 510;
-        power = 0.9;
         rumbleEffectBad = new Gamepad.RumbleEffect.Builder()
-                .addStep(power, power, freqTime)  //  Rumble motors 100% for freqTime mSec
-                .addStep(0.0, 0.0, timeWait)  //  Pause for freqTime/2 mSec
-                .addStep(power, power, freqTime)  //  Rumble motors 100% for freqTime mSec
-                .addStep(0.0, 0.0, timeWait)  //  Pause for freqTime/2 mSec
-                .addStep(power, power, freqTime)  //  Rumble motors 100% for freqTime mSec
+                .addStep(power, power, freqTime)
                 .addStep(0.0, 0.0, timeWait)  //  Pause for freqTime/2 mSec
                 .build();
-
-
 
     }
 
@@ -159,6 +155,10 @@ public class ColorSensorSystem {
         return (specimenColor == SpecimenColor.BLUE && isTeamBlue) || (specimenColor == SpecimenColor.RED && !isTeamBlue)
                 || (specimenColor == SpecimenColor.YELLOW);
     }
+
+    public SpecimenColor getCurrentSpecimentColor(){
+        return currentSpecimentColor;
+    }
     public void alertToGamePads(){
          //milliseconds
         if(currentSpecimentColor == SpecimenColor.NO_COLOR_DETECTED){
@@ -167,10 +167,15 @@ public class ColorSensorSystem {
             return;
         }
 
+        boolean myTeamSpeciment = myTeamSpecimen(currentSpecimentColor);
 
-        if(myTeamSpecimen(currentSpecimentColor)) {
+        if(myTeamSpeciment){
             gamepad1.runRumbleEffect(rumbleEffectGood);
             gamepad2.runRumbleEffect(rumbleEffectGood);
+        }
+        if(currentSpecimentColor == SpecimenColor.YELLOW) {
+            gamepad1.runRumbleEffect(rumbleEffectYellow);
+            gamepad2.runRumbleEffect(rumbleEffectYellow);
         }
         else {
             gamepad1.runRumbleEffect(rumbleEffectBad);
