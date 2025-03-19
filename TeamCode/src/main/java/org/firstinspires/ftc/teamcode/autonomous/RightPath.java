@@ -75,6 +75,7 @@ public class RightPath extends LinearOpMode {
 
         // Init Systems
         DifferentialClaws claws  = DifferentialClaws.getInstance(this);
+        claws.setArmTargetPosition(DifferentialClaws.ClawPositionState.MAX.state);
         MecanumDrive drive = new MecanumDrive(hardwareMap, specimins_beginPose);
         Elevators elevators  = Elevators.getInstance(this);
         Sweeper sweeper = new Sweeper(this);

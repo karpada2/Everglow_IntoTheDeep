@@ -58,10 +58,13 @@ public class BestOpMode{
 
         elevators.setHorizontalDestination(Elevators.HorizontalState.HORIZONTAL_RETRACTED.state);
 
+        claws.setArmTargetPosition(DifferentialClaws.ClawPositionState.MAX.state);
         double backLeftPower = 0;
         double frontLeftPower = 0;
         double frontRightPower = 0;
         double backRightPower = 0;
+        int iteration = 0;
+        int maxIteration = 15;
 
         opMode.waitForStart();
 
@@ -70,9 +73,6 @@ public class BestOpMode{
         int loopsDone = 0;
         double timeSinceStartSecs = (System.currentTimeMillis() - startTime)/1000.0;
         boolean tookEnemySpec;
-
-        claws.updateLeftClawServoRotation();
-        claws.updateRightClawServoRotation();
 
         targetArmPosition = claws.getActualArmRotation();
 
@@ -83,7 +83,13 @@ public class BestOpMode{
             gamepad1.readButtons();
             gamepad2.readButtons();
 
-            tookEnemySpec = colorSensorSystem.updateAlert();
+            if(iteration % maxIteration == 0)
+                tookEnemySpec = colorSensorSystem.updateAlert();
+            else
+                tookEnemySpec = false;
+
+            claws.updateLeftClawServoRotation();
+            claws.updateRightClawServoRotation();
 
             if(gamepad1.wasJustPressed(GamepadKeys.Button.Y)){
                 elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_ACCENT.state);
@@ -223,15 +229,14 @@ public class BestOpMode{
 
             if(tookEnemySpec)
                 actionControl.spitWrong();
+            iteration ++;
 
-            telemetry.addData("leftVert pos", elevators.getLeftVertPos());
-            telemetry.addData("rightVert pos", elevators.getRightVertPos());
+            telemetry.addData("did you took enemt speciment?", tookEnemySpec);
             telemetry.addData("loops done", loopsDone);
             telemetry.addData("time since start", timeSinceStartSecs);
             telemetry.addData("loops per second avg", loopsDone/timeSinceStartSecs);
             telemetry.addData("target pos", targetArmPosition);
             telemetry.addData("claw pos", claws.getActualArmRotation());
-            telemetry.addData("Vert elvators positions", elevators.getVerticalCurrentPosition());
             telemetry.update();
         }
     }

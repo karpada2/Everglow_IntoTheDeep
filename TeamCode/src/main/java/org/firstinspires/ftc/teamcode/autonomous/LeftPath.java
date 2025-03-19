@@ -96,6 +96,8 @@ public class LeftPath extends LinearOpMode {
         Elevators elevators  = Elevators.getInstance(this);
         ColorSensorSystem colorSensorSystem = new ColorSensorSystem(this, true);
         Sweeper sweeper = new Sweeper(this);
+
+        claws.setArmTargetPosition(DifferentialClaws.ClawPositionState.MAX.state);
         //Init Trajectories
         TrajectoryActionBuilder B_preload = drive.actionBuilder(beginPose)
                 .strafeToSplineHeading(basketPose.position, basketPose.heading, new AngularVelConstraint(Math.PI*1.5));
