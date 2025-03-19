@@ -117,8 +117,8 @@ public class ActionControl {
         Token stopToken = new Token();
         return returnWithDrive(
                 new TokenSequentialAction(
-                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.TAKE_SPECIMEN.state, 750),
-                        claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT_HARD, colorSensorSystem)
+                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.TAKE_SPECIMEN.state +30, 400, stopToken),
+                        claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT_HARD, colorSensorSystem, stopToken)
                 ), stopToken
         );
     }

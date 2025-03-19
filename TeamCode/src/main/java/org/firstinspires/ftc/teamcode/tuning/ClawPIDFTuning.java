@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Systems.ColorSensorSystem;
 import org.firstinspires.ftc.teamcode.Systems.DifferentialClaws;
+import org.firstinspires.ftc.teamcode.Systems.Elevators;
 
 @Config
 @TeleOp(name="ClawPIDFTuning", group = "Tests")
@@ -16,13 +17,14 @@ public class ClawPIDFTuning extends LinearOpMode {
     public static double f = 0.07;//0.05;
     public static double x = 0;
     public static double startTime;
+    public static double powerSpit = -0.17;
 
     @Override
     public void runOpMode() throws InterruptedException {
         DifferentialClaws claws = DifferentialClaws.getInstance(this);
         //MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0,0,0));
         ColorSensorSystem colorSensorSystem = new ColorSensorSystem(this, false);
-
+        Elevators elevators = Elevators.getInstance(this);
         waitForStart();
 
         startTime = System.currentTimeMillis();
@@ -70,6 +72,18 @@ public class ClawPIDFTuning extends LinearOpMode {
 //                }
 //                else
 //                    isDoneOnce = !((isUp || x<=4000) && !(isUp && x<=4000)); //XOR
+            }
+
+            if(gamepad2.right_bumper)
+                claws.rotateWheels(powerSpit);
+            else
+                claws.rotateWheels(0);
+
+            if(gamepad2.dpad_up){
+                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_HIGH.state);
+            }
+            else if (gamepad2.dpad_down){
+                elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_MIN.state);
             }
 
             if(gamepad2.circle)

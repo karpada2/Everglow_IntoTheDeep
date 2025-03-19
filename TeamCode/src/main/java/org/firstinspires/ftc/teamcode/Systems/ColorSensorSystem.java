@@ -62,7 +62,7 @@ public class ColorSensorSystem {
     }
 
     public void initializeRamble(){
-        final int rightColorFreq = 210, badColorFreq = 750;
+        final int rightColorFreq = 310, badColorFreq = 750;
 
         if (currentSpecimentColor == SpecimenColor.NO_COLOR_DETECTED){
             gamepad1.stopRumble();
@@ -194,11 +194,12 @@ public class ColorSensorSystem {
 
     public boolean updateAlert(){
         currentSpecimentColor = getSpecimenColor();
-        if(lastSpecimenColor != currentSpecimentColor || !myTeamSpecimen(currentSpecimentColor)){
+        boolean isColorChange = lastSpecimenColor != currentSpecimentColor || !myTeamSpecimen(currentSpecimentColor);
+        if(isColorChange){
             alertToGamePads();
         }
 
         lastSpecimenColor = currentSpecimentColor;
-        return (!myTeamSpecimen(currentSpecimentColor) && currentSpecimentColor != SpecimenColor.NO_COLOR_DETECTED);
+        return isColorChange && !myTeamSpecimen(currentSpecimentColor) && currentSpecimentColor != SpecimenColor.NO_COLOR_DETECTED;
     }
 }

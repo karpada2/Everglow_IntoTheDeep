@@ -63,8 +63,8 @@ public class BestOpMode{
         double frontLeftPower = 0;
         double frontRightPower = 0;
         double backRightPower = 0;
-        int iteration = 0;
-        int maxIteration = 15;
+//        int iteration = 0;
+//        int maxIteration = 15;
 
         opMode.waitForStart();
 
@@ -83,10 +83,7 @@ public class BestOpMode{
             gamepad1.readButtons();
             gamepad2.readButtons();
 
-            if(iteration % maxIteration == 0)
-                tookEnemySpec = colorSensorSystem.updateAlert();
-            else
-                tookEnemySpec = false;
+            tookEnemySpec = false;
 
             claws.updateLeftClawServoRotation();
             claws.updateRightClawServoRotation();
@@ -126,9 +123,10 @@ public class BestOpMode{
 
                 if (gamepad2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) >= 0.4) { //split
                     claws.rotateWheels(DifferentialClaws.ClawPowerState.TAKE_IN);
+                    tookEnemySpec = colorSensorSystem.updateAlert();
                 }
                 else if (gamepad2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) >= 0.4) {
-                    claws.rotateWheels(-gamepad2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER));
+                    claws.rotateWheels(-0.5);
                 }
                 else if (gamepad2.wasJustPressed(GamepadKeys.Button.DPAD_DOWN)) {
                     targetArmPosition = DifferentialClaws.ClawPositionState.MIN.state;
@@ -227,9 +225,9 @@ public class BestOpMode{
                 //Actions.runBlocking(new SequentialAction(actionControl.splineToDropLine(), actionControl.dropHighAndToPlace()));
             }
 
-            if(tookEnemySpec)
-                actionControl.spitWrong();
-            iteration ++;
+            if(tookEnemySpec) {
+                Actions.runBlocking(actionControl.spitWrong());
+            }
 
             telemetry.addData("did you took enemt speciment?", tookEnemySpec);
             telemetry.addData("loops done", loopsDone);
