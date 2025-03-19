@@ -58,7 +58,7 @@ public class ClawPIDFTuning extends LinearOpMode {
                 x = System.currentTimeMillis() - startTime;
                 x = x % 8000;
 
-                if(!isDoneOnce) {
+//                if(!isDoneOnce) {
                     if (x <= 4000) {
                         Actions.runBlocking(claws.clawMovementAction(DifferentialClaws.ClawPositionState.MIN.state, 750));
                         isUp = true;
@@ -67,9 +67,9 @@ public class ClawPIDFTuning extends LinearOpMode {
                         Actions.runBlocking(claws.clawMovementAction(DifferentialClaws.ClawPositionState.SPIT_STATE.state, 750));
                     }
                     isDoneOnce = true;
-                }
-                else
-                    isDoneOnce = !((isUp || x<=4000) && !(isUp && x<=4000)); //XOR
+//                }
+//                else
+//                    isDoneOnce = !((isUp || x<=4000) && !(isUp && x<=4000)); //XOR
             }
 
             if(gamepad2.circle)

@@ -38,9 +38,11 @@ public class BestOpMode{
     private final double power = 0.3;
     boolean isPIDF_Active = false;
 
+    public DifferentialClaws claws;
+
     public void run(boolean isBlue) {
         Sweeper sweeper = new Sweeper(opMode);
-        DifferentialClaws claws = DifferentialClaws.getInstance(opMode);
+        claws = DifferentialClaws.getInstance(opMode);
         MecanumDrive drive = new MecanumDrive(opMode.hardwareMap, new Pose2d(0, 0, 0));
         ColorSensorSystem colorSensorSystem = new ColorSensorSystem(opMode, isBlue);
 
@@ -81,18 +83,12 @@ public class BestOpMode{
             gamepad1.readButtons();
             gamepad2.readButtons();
 
-            claws.updateLeftClawServoRotation();
-            claws.updateRightClawServoRotation();
-
             tookEnemySpec = colorSensorSystem.updateAlert();
 
-            boolean recLeft = colorSensorSystem.isOnTape(false);
-            boolean recRight = colorSensorSystem.isOnTape(true);
-
-            if(gamepad1.wasJustPressed(GamepadKeys.Button.DPAD_UP)){
+            if(gamepad1.wasJustPressed(GamepadKeys.Button.Y)){
                 elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_ACCENT.state);
             }
-            if(gamepad1.wasJustPressed(GamepadKeys.Button.DPAD_DOWN)){
+            if(gamepad1.wasJustPressed(GamepadKeys.Button.A)){
                 elevators.setVerticalDestination(Elevators.VerticalState.VERTICAL_DOWN_ACCENT.state);
             }
 
@@ -142,28 +138,28 @@ public class BestOpMode{
                 }
             }
 
-
-            if (gamepad1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) >= 0.4 && colorSensorSystem.isSpecimenIn() && (recLeft || recRight)) {
-                if (recRight && !recLeft) {
-                    backLeftPower = 1 * power;
-                    frontLeftPower = 1 * power;
-                    frontRightPower = 0 * power;
-                    backRightPower = -1 * power * (1 + power);
-                } else if (recLeft && !recRight) {
-                    backLeftPower = -1 * power * (1 + power);
-                    frontLeftPower = 0 * power;
-                    frontRightPower = 1 * power;
-                    backRightPower = 1 * power;
-                } else if (recLeft && recRight) {
-                    backLeftPower = 0 * power;
-                    frontLeftPower = 0 * power;
-                    frontRightPower = 0 * power;
-                    backRightPower = 0 * power;
+            if(gamepad1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)>=0.4) {
+                boolean recLeft = colorSensorSystem.isOnTape(false);
+                boolean recRight = colorSensorSystem.isOnTape(true);
+                if ((recLeft || recRight)) {
+                    if (recRight && !recLeft) {
+                        backLeftPower = 1 * power;
+                        frontLeftPower = 1 * power;
+                        frontRightPower = 0 * power;
+                        backRightPower = -1 * power * (1 + power);
+                    } else if (recLeft && !recRight) {
+                        backLeftPower = -1 * power * (1 + power);
+                        frontLeftPower = 0 * power;
+                        frontRightPower = 1 * power;
+                        backRightPower = 1 * power;
+                    } else if (recLeft && recRight) {
+                        Actions.runBlocking(drive.actionBuilder(drive.pose).fresh().strafeTo(drive.pose.position.plus(new Vector2d(5, 0))).build());
+                    }
+                    drive.backLeft.setPower(backLeftPower);
+                    drive.frontLeft.setPower(frontLeftPower);
+                    drive.frontRight.setPower(frontRightPower);
+                    drive.backRight.setPower(backRightPower);
                 }
-                drive.backLeft.setPower(backLeftPower);
-                drive.frontLeft.setPower(frontLeftPower);
-                drive.frontRight.setPower(frontRightPower);
-                drive.backRight.setPower(backRightPower);
             }
             else {
                 //driving

@@ -51,6 +51,10 @@ public class DifferentialClaws {
 
     public static PIDController controller;
 
+    public boolean isInteractingSample = false;
+
+    public boolean isAnyActionRunning = false;
+
     public final double p = 0.016,//.008,
             i = 0.0002,
             d = 0.0002;//.0001;
@@ -92,6 +96,10 @@ public class DifferentialClaws {
             if(!isInitialized){
                 startTime = System.currentTimeMillis();
                 isInitialized = true;
+                isAnyActionRunning = true;
+            }
+            if (isWaitEnough()) {
+                isAnyActionRunning = false;
             }
             return !isWaitEnough();
         }
@@ -133,10 +141,12 @@ public class DifferentialClaws {
             updateRightClawServoRotation();
             updateLeftClawServoRotation();
             if (!isInitialized) {
+                isInteractingSample = true;
                 leftClawServo.setPower(wantedPower);
                 rightClawServo.setPower(-wantedPower);
                 startTime = System.currentTimeMillis();
                 isInitialized = true;
+                isAnyActionRunning = true;
             }
 
             if(colorSensorSystem != null && colorSensorSystem.isSpecimenIn() == isToInsert && !isIn)
@@ -151,6 +161,8 @@ public class DifferentialClaws {
 
             if (isFinished()) {
                 rotateWheels(0);
+                isInteractingSample = false;
+                isAnyActionRunning = false;
             }
             return !isFinished();
         }
@@ -225,9 +237,10 @@ public class DifferentialClaws {
             updateLeftClawServoRotation();
             updateRightClawServoRotation();
 
-            if (System.currentTimeMillis() - startTime >= timeToUpdate) {
-                rotateArm(-0.5);
+            if (!isInteractingSample) {
+                rotateArm(getPIDArmPower());
             }
+
             return System.currentTimeMillis() - startTime < timeToUpdate;
         }
     }
@@ -306,7 +319,7 @@ public class DifferentialClaws {
         double currentRotation = getRotationOfInput(clawInput1);
         double diff = currentRotation - leftClawOldPos;
 
-        double newRotationEstimate = 180;
+        double newRotationEstimate = 165;
         if(Math.abs(diff) > newRotationEstimate){
             //new rotation occur
             if(diff < 0)
@@ -323,7 +336,7 @@ public class DifferentialClaws {
         double currentRotation = getRotationOfInput(clawInput2);
         double diff = currentRotation - rightClawOldPos;
 
-        double newRotationEstimate = 180; //TODO: verify
+        double newRotationEstimate = 165; //TODO: verify // YOU WERE VERY WRONG IT FUCKED UP EVERYTHING
         if(Math.abs(diff) > newRotationEstimate){
             //new rotation occur
             if(diff < 0)
@@ -352,18 +365,21 @@ public class DifferentialClaws {
     public void rotateArm(double power){
         leftClawServo.setPower(power);
         rightClawServo.setPower(power);
+        isInteractingSample = false;
     }
 
 
     public void rotateWheels(double state) {
         leftClawServo.setPower(state);
         rightClawServo.setPower(-state);
+        isInteractingSample = true;
     }
 
     public void rotateWheels(ClawPowerState state) {
         wheelRotationState = state;
         leftClawServo.setPower(state.state);
         rightClawServo.setPower(-state.state);
+        isInteractingSample = true;
     }
 
     public void setArmTargetPosition(double pos){

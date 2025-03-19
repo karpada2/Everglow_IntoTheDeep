@@ -232,7 +232,6 @@ public class RightPath extends LinearOpMode {
         Action park = new ParallelAction(
                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 1100),
                 elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_SPECIMEN_AFTERSPIT),
-                elevators.setHorizontalElevatorAction(Elevators.HorizontalState.HORIZONTAL_EXTENDED),
                 m_park);
 
         Action clawUpdate = claws.getUpdateClawAction(29);
