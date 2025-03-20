@@ -89,7 +89,7 @@ public class specimins {
                 .splineToSplineHeading(specimins_basketPose,Math.PI*0.75)
                 .waitSeconds(0.1)
                 .setTangent(-Math.PI/2)
-                .splineToLinearHeading(new Pose2d(42, -48, -Math.PI/2),Math.PI*1.75);;
+                .splineToLinearHeading(new Pose2d(42, -48, Math.PI/2),Math.PI*1.75);;
 //                //* Hangs Specimen sequentially
 //
 //                //* Lowers Elevator to picking up height

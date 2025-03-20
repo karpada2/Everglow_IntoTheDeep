@@ -126,7 +126,7 @@ public class RightPath extends LinearOpMode {
 
         TrajectoryActionBuilder B_park = B_hang2.endTrajectory().fresh()
                 .setTangent(-Math.PI/2)
-                .splineToLinearHeading(new Pose2d(42, -48, -Math.PI/2),Math.PI*1.75, new TranslationalVelConstraint(100))
+                .splineToLinearHeading(new Pose2d(42, -48, Math.PI/2),Math.PI*1.75, new TranslationalVelConstraint(100))
                 ;
 
 

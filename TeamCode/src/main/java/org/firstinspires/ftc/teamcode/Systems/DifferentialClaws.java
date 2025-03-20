@@ -288,9 +288,9 @@ public class DifferentialClaws {
     public enum ClawPowerState {
         TAKE_IN(1),
         OFF(0.08),
-        SPIT(-0.12),
+        SPIT(-0.135),
 
-        SPIT_SPECIMENT(-0.4),
+        SPIT_AUTO(-0.125),
         SPIT_HARD(-1);
 
         public final double state;

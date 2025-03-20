@@ -88,7 +88,7 @@ public class LeftPath extends LinearOpMode {
     public void runOpMode() throws InterruptedException{
         // Init Poses
         Pose2d beginPose = new Pose2d(-31.1, -63,   Math.PI);
-        Pose2d basketPose = new Pose2d(-54,-53.3,1.25*Math.PI);
+        Pose2d basketPose = new Pose2d(-53,-54.3,1.25*Math.PI);
 
         // Init Systems
         DifferentialClaws claws  = DifferentialClaws.getInstance(this);
@@ -153,22 +153,22 @@ public class LeftPath extends LinearOpMode {
 
         Action unload1 = new SequentialAction(
                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.SPIT_STATE.state, BetweenUpTime),
-                claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,colorSensorSystem),
+                claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT_AUTO,colorSensorSystem),
                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, BetweenUpTime)
         );
         Action unload2 = new SequentialAction(
                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.SPIT_STATE.state, BetweenUpTime),
-                claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,colorSensorSystem),
+                claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT_AUTO,colorSensorSystem),
                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, BetweenUpTime)
         );
         Action unload3 = new SequentialAction(
                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.SPIT_STATE.state, BetweenUpTime),
-                claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,colorSensorSystem),
+                claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT_AUTO,colorSensorSystem),
                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, BetweenUpTime)
         );
         Action unload4 = new SequentialAction(
                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.SPIT_STATE.state, BetweenUpTime),
-                claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,colorSensorSystem),
+                claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT_AUTO,colorSensorSystem),
                 claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, BetweenUpTime)
         );
         Action pickup1 = new SequentialAction(
@@ -263,9 +263,8 @@ public class LeftPath extends LinearOpMode {
 
                                 unload3,
                                 pickup3,
-
+                                elevators.setHorizontalElevatorAction(HORIZONTAL_RETRACTED, 400),
                                 new ParallelAction(
-                                        elevators.setHorizontalElevatorAction(HORIZONTAL_RETRACTED),
                                         elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HIGH),
                                         claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 1250),
                                         sample3basket //movement
@@ -296,7 +295,7 @@ public class LeftPath extends LinearOpMode {
 //                                        elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_HIGH)
 //                                                ),
 //                                        claws.clawMovementAction(DifferentialClaws.ClawPositionState.SPIT_STATE.state, 750),
-//                                        claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT,colorSensorSystem),
+//                                        claws.setClawSampleInteractionAction(DifferentialClaws.ClawPowerState.SPIT_AUTO,colorSensorSystem),
 //                                        new ParallelAction(
 //                                                claws.clawMovementAction(DifferentialClaws.ClawPositionState.MAX.state, 1000),
 //                                                elevators.setVerticalElevatorAction(Elevators.VerticalState.VERTICAL_MIN)
